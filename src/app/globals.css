@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 27% 98%;
+    --foreground: 145 38% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 145 38% 11%;
+    --primary: 148 44% 21%;
+    --primary-foreground: 40 27% 98%;
+    --secondary: 96 36% 90%;
+    --secondary-foreground: 148 44% 21%;
+    --muted: 100 16% 94%;
+    --muted-foreground: 145 12% 38%;
+    --accent: 133 44% 46%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 145 12% 84%;
+    --input: 145 12% 84%;
+    --ring: 148 44% 21%;
+    --radius: 0.75rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-cream text-ink antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  ::selection {
+    @apply bg-leaf text-black;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+  }
+
+  /* Accessible focus ring for keyboard users */
+  :focus-visible {
+    @apply outline-none ring-2 ring-forest ring-offset-2 ring-offset-cream;
+  }
+}
+
+@layer components {
+  /* ── Scroll reveal (ported from design.html) ───────────────── */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(48px);
+    filter: blur(10px);
+    transition:
+      opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  [data-reveal].is-in {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  [data-panel-img] {
+    transform: translateY(12%) scale(1.06);
+    transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  [data-panel-img].is-in {
+    transform: translateY(0) scale(1);
+  }
+
+  .word-reveal {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(24px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .is-in .word-reveal {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  /* ── Shared component classes ──────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center gap-2.5 rounded-full bg-forest px-7 py-3.5 text-base font-medium text-white shadow-xl shadow-forest/30 transition-all duration-300 hover:bg-forest-light hover:shadow-2xl hover:shadow-forest/40 active:scale-95 disabled:pointer-events-none disabled:opacity-60;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 rounded-full border border-black/10 bg-white/70 px-5 py-2.5 text-sm font-medium text-ink backdrop-blur transition-colors duration-300 hover:bg-white active:scale-95 disabled:pointer-events-none disabled:opacity-60;
+  }
+
+  .eyebrow {
+    @apply text-xs font-medium uppercase tracking-[0.25em] text-forest;
+  }
+
+  .shell {
+    @apply mx-auto w-full max-w-7xl px-6 sm:px-10;
+  }
+
+  .card-surface {
+    @apply rounded-2xl border border-black/10 bg-white shadow-sm;
+  }
+
+  .card-vehicle {
+    background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(239,247,240,0.94));
+  }
+
+  .card-property {
+    background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(246,250,240,0.95));
+  }
+
+  .card-product {
+    background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(248,245,239,0.96));
+  }
+
+  .card-kicker {
+    @apply text-[10px] font-semibold uppercase tracking-[0.18em] text-forest/70;
+  }
+
+  .card-price {
+    @apply text-base font-semibold text-ink;
+  }
+
+  .card-badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em];
+  }
+
+  .card-badge-vehicle {
+    @apply border-forest/20 bg-white/90 text-forest;
+  }
+
+  .card-badge-property {
+    @apply border-emerald-600/20 bg-white/90 text-emerald-700;
+  }
+
+  .card-badge-neutral {
+    @apply border-black/10 bg-white/90 text-black/70;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-black/15 bg-white/70 px-4 py-3 text-base text-ink outline-none transition-colors duration-200 placeholder:text-black/30 focus:border-forest focus:ring-0;
+  }
+
+  .field-label {
+    @apply mb-2 block text-xs uppercase tracking-widest text-black/50;
+  }
+
+  /* Underline inputs — the form style used throughout design.html */
+  .field-line {
+    @apply w-full border-b border-black/20 bg-transparent py-3 text-base text-ink outline-none transition-colors duration-300 placeholder:text-black/30 focus:border-forest;
+  }
+  .field-line-error {
+    @apply border-red-500/60;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .wordmark-cropped {
+    font-family: var(--font-geist), sans-serif;
+    letter-spacing: -0.04em;
+    line-height: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  [data-reveal],
+  [data-panel-img],
+  .word-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    transition-duration: 0.01ms !important;
+    animation: none !important;
+  }
+  .animate-drift-a,
+  .animate-drift-b,
+  .animate-drift-c {
+    animation: none !important;
+  }
+}
