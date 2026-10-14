@@ -25,7 +25,12 @@ export const auth = hasBetterAuthConfig
         process.env.AUTH_SECRET ??
         "penman-empire-dev-secret-change-me",
       ...(connectionPool ? { database: connectionPool } : {}),
-      plugins: [nextCookies(), dash()],
+      plugins: [
+        nextCookies(),
+        dash({
+          apiKey: process.env.BETTER_AUTH_API_KEY,
+        }),
+      ],
       emailAndPassword: {
         enabled: true,
         requireEmailVerification: false,

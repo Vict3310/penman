@@ -103,11 +103,16 @@ must never be imported into a client component.
    | `NEXT_PUBLIC_SUPABASE_URL` | `https://<project-ref>.supabase.co` |
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | your anon / publishable key |
    | `SUPABASE_SERVICE_ROLE_KEY` | your service-role key |
+   | `DATABASE_URL` | your Postgres connection string |
+   | `BETTER_AUTH_SECRET` | a long random secret |
+   | `BETTER_AUTH_API_KEY` | Better Auth dashboard key |
    | `ADMIN_EMAIL_ALLOWLIST` | `owner@penmanempire.com,ops@penmanempire.com` |
    | `NEXT_PUBLIC_SITE_URL` | `https://penmanempire.com` |
 
    `NEXT_PUBLIC_SITE_URL` drives canonical URLs, the sitemap and `robots.txt`. Set it
    before the first production deploy so metadata is correct from the start.
+   `BETTER_AUTH_SECRET` and `BETTER_AUTH_API_KEY` are required for the Better Auth
+   dashboard connectivity check and auth session security.
 
 3. **Deploy.**
 4. If the key values change later, redeploy — `next.config.ts` derives its allowed
