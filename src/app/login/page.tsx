@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { SignIn } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { LoginForm } from "./login-form";
 import { LogoMark } from "@/components/logo";
-import { getAdminUser } from "@/lib/auth";
-import { isBetterAuthConfigured } from "@/lib/env";
+import { isClerkConfigured } from "@/lib/env";
 import { isDemoMode } from "@/lib/demo";
 import { getSiteSettings } from "@/lib/site";
 
@@ -22,12 +21,11 @@ export default async function LoginPage({
 }) {
   const { next } = await searchParams;
 
-  // Already signed in as an admin? Go straight through.
-  const existing = await getAdminUser();
+  const existing = await currentUser();
   if (existing) redirect(next && next.startsWith("/") ? next : "/admin");
 
   const settings = await getSiteSettings();
-  const configured = isBetterAuthConfigured();
+  const configured = isClerkConfigured() || isDemoMode();
   const demo = isDemoMode();
 
   if (demo) redirect("/admin");
@@ -35,34 +33,37 @@ export default async function LoginPage({
   return (
     <main className="grid min-h-screen place-items-center bg-cream px-6 py-20">
       <div className="w-full max-w-md">
-        <Link href="/" className="mb-10 flex items-center justify-center gap-2.5">
+        <div className="mb-10 flex items-center justify-center gap-2.5">
           <LogoMark />
           <span className="font-display text-sm font-semibold tracking-tight">
             {settings.brand.business_name}
           </span>
-        </Link>
-
-        <div className="card-surface p-8">
-          <h1 className="font-display text-3xl font-light tracking-tight">Administration</h1>
-          <p className="mt-3 text-sm text-black/50">
-            Sign in with your administrator account to manage listings, enquiries and site content.
-          </p>
-
-          {!configured && (
-            <p className="mt-6 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
-              Better Auth is not configured on this deployment yet, so sign-in is unavailable. Set the
-              database URL and secret in .env.local before enabling admin access.
-            </p>
-          )}
-
-          <div className="mt-8">
-            <LoginForm next={next && next.startsWith("/") ? next : "/admin"} disabled={!configured} />
-          </div>
         </div>
 
-        <p className="mt-8 text-center text-xs text-black/40">
-          Need an account? <Link href="/signup" className="font-medium text-black underline">Create one</Link>
-        </p>
+        {!configured ? (
+          <div className="card-surface p-8">
+            <h1 className="font-display text-3xl font-light tracking-tight">Administration</h1>
+            <p className="mt-6 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
+              Clerk is not configured on this deployment yet, so sign-in is unavailable. Add the Clerk
+              publishable and secret keys before enabling admin access.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-[28px] border border-black/10 bg-white shadow-sm">
+            <SignIn
+              path="/login"
+              routing="path"
+              signUpUrl="/signup"
+              forceRedirectUrl={next && next.startsWith("/") ? next : "/admin"}
+              appearance={{
+                elements: {
+                  rootBox: "mx-auto w-full",
+                  card: "shadow-none border-0 rounded-none",
+                },
+              }}
+            />
+          </div>
+        )}
       </div>
     </main>
   );

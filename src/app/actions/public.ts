@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@clerk/nextjs/server";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { hasServiceRole } from "@/lib/env";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
@@ -34,12 +35,26 @@ function toObject(formData: FormData): Record<string, string> {
 const NOT_CONFIGURED =
   "We could not save your enquiry because the website is not connected to its database yet. Please contact us directly in the meantime.";
 
+const SIGN_IN_REQUIRED = "Please sign in or create an account before sending an enquiry.";
+
+async function requireSignedInUser() {
+  const { userId } = await auth();
+  if (!userId) {
+    return null;
+  }
+
+  return { userId };
+}
+
 /* ── Rental enquiry ──────────────────────────────────────────────────── */
 
 export async function submitRentalEnquiry(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
+  const signedInUser = await requireSignedInUser();
+  if (!signedInUser) return fail(SIGN_IN_REQUIRED);
+
   const limit = rateLimit(await clientKey("rental"));
   if (!limit.ok) return fail(RATE_LIMIT_MESSAGE);
 
@@ -93,6 +108,9 @@ export async function submitPropertyEnquiry(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
+  const signedInUser = await requireSignedInUser();
+  if (!signedInUser) return fail(SIGN_IN_REQUIRED);
+
   const limit = rateLimit(await clientKey("property"));
   if (!limit.ok) return fail(RATE_LIMIT_MESSAGE);
 
@@ -142,6 +160,9 @@ export async function submitShopEnquiry(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
+  const signedInUser = await requireSignedInUser();
+  if (!signedInUser) return fail(SIGN_IN_REQUIRED);
+
   const limit = rateLimit(await clientKey("shop"));
   if (!limit.ok) return fail(RATE_LIMIT_MESSAGE);
 
@@ -191,6 +212,9 @@ export async function submitContactMessage(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
+  const signedInUser = await requireSignedInUser();
+  if (!signedInUser) return fail(SIGN_IN_REQUIRED);
+
   const limit = rateLimit(await clientKey("contact"));
   if (!limit.ok) return fail(RATE_LIMIT_MESSAGE);
 

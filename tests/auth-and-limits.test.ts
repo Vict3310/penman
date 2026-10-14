@@ -1,6 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getAdminAllowlist, isAdminEmail, getSiteUrl } from "@/lib/env";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { auth } from "@clerk/nextjs/server";
+import { getAdminAllowlist, isAdminEmail, getSiteUrl, isClerkConfigured } from "@/lib/env";
 import { rateLimit } from "@/lib/rate-limit";
+import { submitContactMessage } from "@/app/actions/public";
+
+vi.mock("@clerk/nextjs/server", () => ({
+  auth: vi.fn(),
+}));
 
 const ORIGINAL = { ...process.env };
 
@@ -51,6 +57,17 @@ describe("getSiteUrl", () => {
   });
 });
 
+describe("isClerkConfigured", () => {
+  it("returns true only when the public and secret Clerk keys are present", () => {
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_123";
+    process.env.CLERK_SECRET_KEY = "sk_test_123";
+    expect(isClerkConfigured()).toBe(true);
+
+    delete process.env.CLERK_SECRET_KEY;
+    expect(isClerkConfigured()).toBe(false);
+  });
+});
+
 describe("rateLimit", () => {
   it("allows up to the limit and then blocks with a retry hint", () => {
     const key = `test-${Math.random()}`;
@@ -74,5 +91,23 @@ describe("rateLimit", () => {
     const key = `window-${Math.random()}`;
     expect(rateLimit(key, 1, -1).ok).toBe(true); // window already expired
     expect(rateLimit(key, 1, -1).ok).toBe(true);
+  });
+});
+
+describe("public enquiry access", () => {
+  it("blocks unauthenticated users from sending public enquiries", async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: null } as never);
+
+    const formData = new FormData();
+    formData.set("name", "Jane Doe");
+    formData.set("phone", "+2348000000000");
+    formData.set("email", "jane@example.com");
+    formData.set("subject", "Rental request");
+    formData.set("message", "I would like to inquire about a vehicle.");
+
+    const result = await submitContactMessage({ ok: false, message: "", errors: {} }, formData);
+
+    expect(result.ok).toBe(false);
+    expect(result.message).toMatch(/sign in|sign up/i);
   });
 });

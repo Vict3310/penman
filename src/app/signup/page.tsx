@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { SignUp } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
-import { SignupForm } from "@/app/signup/signup-form";
-import { getAdminUser } from "@/lib/admin-access";
 import { getSiteSettings } from "@/lib/site";
+import { isClerkConfigured } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
@@ -14,34 +14,45 @@ export const metadata: Metadata = {
 };
 
 export default async function SignupPage() {
-  const existing = await getAdminUser();
+  const existing = await currentUser();
   if (existing) redirect("/admin");
 
   const settings = await getSiteSettings();
+  const configured = isClerkConfigured();
 
   return (
     <main className="grid min-h-screen place-items-center bg-cream px-6 py-20">
       <div className="w-full max-w-md">
-        <Link href="/" className="mb-10 flex items-center justify-center gap-2.5">
+        <div className="mb-10 flex items-center justify-center gap-2.5">
           <span className="font-display text-sm font-semibold tracking-tight">
             {settings.brand.business_name}
           </span>
-        </Link>
-
-        <div className="card-surface p-8">
-          <h1 className="font-display text-3xl font-light tracking-tight">Create account</h1>
-          <p className="mt-3 text-sm text-black/50">
-            Sign up as a staff member or business owner. Public sign-up never grants admin access.
-          </p>
-
-          <div className="mt-8">
-            <SignupForm />
-          </div>
         </div>
 
-        <p className="mt-8 text-center text-xs text-black/40">
-          Already have an account? <Link href="/signin" className="font-medium text-black underline">Sign in</Link>
-        </p>
+        {!configured ? (
+          <div className="card-surface p-8">
+            <h1 className="font-display text-3xl font-light tracking-tight">Create account</h1>
+            <p className="mt-6 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
+              Clerk is not configured on this deployment yet, so sign-up is unavailable. Add the Clerk
+              publishable and secret keys before enabling admin access.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-[28px] border border-black/10 bg-white shadow-sm">
+            <SignUp
+              path="/signup"
+              routing="path"
+              signInUrl="/login"
+              forceRedirectUrl="/admin"
+              appearance={{
+                elements: {
+                  rootBox: "mx-auto w-full",
+                  card: "shadow-none border-0 rounded-none",
+                },
+              }}
+            />
+          </div>
+        )}
       </div>
     </main>
   );

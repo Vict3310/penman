@@ -175,3 +175,66 @@ from (values
   )
 ) as v(slug, name, sku, description, price, category_slug, track_stock, stock_quantity, images, is_featured, seo_title, seo_description)
 on conflict (slug) do nothing;
+
+-- ── 100-storefront test products (generated) ─────────────────────────────
+insert into public.products
+  (slug, name, sku, description, price, category_id, track_stock, stock_quantity, images, is_featured, status, seo_title, seo_description, published_at)
+with numbered_products as (
+  select
+    gs as idx,
+    case gs % 3
+      when 1 then 'accessories'
+      when 2 then 'car-care'
+      else 'home-living'
+    end as category_slug,
+    case gs % 10
+      when 0 then 'Premium'
+      when 1 then 'Executive'
+      when 2 then 'Urban'
+      when 3 then 'Luxury'
+      when 4 then 'Compact'
+      when 5 then 'Travel'
+      when 6 then 'Classic'
+      when 7 then 'Modern'
+      when 8 then 'Smart'
+      else 'Everyday'
+    end as prefix,
+    case gs % 12
+      when 0 then 'Seat Organizer'
+      when 1 then 'Dash Mat'
+      when 2 then 'Car Care Kit'
+      when 3 then 'Storage Box'
+      when 4 then 'Charging Dock'
+      when 5 then 'Travel Tote'
+      when 6 then 'Air Purifier'
+      when 7 then 'Coffee Set'
+      when 8 then 'Desk Tray'
+      when 9 then 'Safety Kit'
+      when 10 then 'Utility Basket'
+      else 'Home Organizer'
+    end as suffix
+  from generate_series(1, 100) as gs
+)
+select
+  concat(lower(regexp_replace(concat(prefix, ' ', suffix), '[^a-z0-9]+', '-', 'g')), '-', idx),
+  concat(prefix, ' ', suffix),
+  concat('PE-TEST-', lpad(idx::text, 4, '0')),
+  concat('Sample test product ', idx, ' for the storefront, created to populate the catalog with realistic inventory. '),
+  ((idx * 1975) + 18000)::numeric / 100.0,
+  (select id from public.product_categories where slug = category_slug),
+  true,
+  ((idx * 7) % 41) + 2,
+  jsonb_build_array(
+    jsonb_build_object(
+      'path', concat('products/test-', idx, '/1.jpg'),
+      'url', concat('https://picsum.photos/seed/penman-product-', idx, '/1000/1000'),
+      'alt', concat(prefix, ' ', suffix)
+    )
+  ),
+  idx % 6 = 0,
+  'published',
+  concat(prefix, ' ', suffix, ' | Penman Empire'),
+  concat('Sample test product ', idx, ' created for storefront and admin testing.'),
+  now()
+from numbered_products
+on conflict (slug) do nothing;

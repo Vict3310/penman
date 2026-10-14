@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Inter, Instrument_Serif } from "next/font/google";
 import { Toaster } from "sonner";
 import { MotionProvider } from "@/components/motion-provider";
 import { getSiteSettings } from "@/lib/site";
-import { getSiteUrl } from "@/lib/env";
+import { getSiteUrl, isClerkConfigured } from "@/lib/env";
 import "./globals.css";
 
 const geist = Geist({
@@ -63,6 +64,30 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const hasClerk = isClerkConfigured();
+  const content = (
+    <>
+      {children}
+      {/* Reveal animations start elements at opacity 0, which would hide the
+          whole page from users without JavaScript. This restores it. */}
+      <noscript>
+        <style>{`[data-reveal],[data-panel-img],.word-reveal{opacity:1!important;transform:none!important;filter:none!important}`}</style>
+      </noscript>
+      <MotionProvider />
+      <Toaster
+        position="bottom-center"
+        toastOptions={{
+          style: {
+            borderRadius: "9999px",
+            border: "1px solid rgba(0,0,0,0.1)",
+            background: "#FFFFFF",
+            color: "#12281A",
+          },
+        }}
+      />
+    </>
+  );
+
   return (
     <html
       lang="en"
@@ -72,24 +97,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${geist.variable} ${inter.variable} ${instrumentSerif.variable} scroll-smooth`}
     >
       <body>
-        {children}
-        {/* Reveal animations start elements at opacity 0, which would hide the
-            whole page from users without JavaScript. This restores it. */}
-        <noscript>
-          <style>{`[data-reveal],[data-panel-img],.word-reveal{opacity:1!important;transform:none!important;filter:none!important}`}</style>
-        </noscript>
-        <MotionProvider />
-        <Toaster
-          position="bottom-center"
-          toastOptions={{
-            style: {
-              borderRadius: "9999px",
-              border: "1px solid rgba(0,0,0,0.1)",
-              background: "#FFFFFF",
-              color: "#12281A",
-            },
-          }}
-        />
+        {hasClerk ? <ClerkProvider afterSignOutUrl="/">{content}</ClerkProvider> : content}
       </body>
     </html>
   );

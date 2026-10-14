@@ -41,7 +41,15 @@ export function isSupabaseConfigured(): boolean {
   return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 }
 
-/** True when the Better Auth database and secret are configured. */
+/** True when the Clerk auth provider is configured. */
+export function isClerkConfigured(): boolean {
+  return Boolean(
+    (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "").trim() &&
+      (process.env.CLERK_SECRET_KEY ?? "").trim(),
+  );
+}
+
+/** Backward-compatibility alias for older code paths; prefer Clerk. */
 export function isBetterAuthConfigured(): boolean {
   return Boolean((process.env.BETTER_AUTH_SECRET || process.env.AUTH_SECRET) && process.env.DATABASE_URL);
 }

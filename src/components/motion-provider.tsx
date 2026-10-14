@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 
 const REVEAL_SELECTOR = "[data-reveal], [data-panel-img]";
@@ -12,48 +12,60 @@ const REVEAL_SELECTOR = "[data-reveal], [data-panel-img]";
  *   * `[data-parallax]` scroll parallax
  *
  * IMPORTANT: this component is mounted in the root layout, which Next.js keeps
- * alive across client-side navigations. A one-shot effect would therefore only
- * ever observe the elements present on first load, leaving everything on
- * subsequently visited pages stuck at `opacity: 0`. Two mechanisms prevent that:
+ * alive across client-side navigations. Anything that only runs once on mount
+ * therefore only ever sees the elements from the first page.
  *
- *   1. the effect re-runs whenever the route changes, and
- *   2. a MutationObserver picks up elements added later (Suspense boundaries,
- *      streamed content, pagination).
+ * A previous revision re-created the IntersectionObserver on every route change
+ * *and* flagged each element with `data-reveal-bound`. That combination is
+ * subtly broken: the cleanup calls `disconnect()`, which drops every pending
+ * observation, while the next scan skips those same elements because they are
+ * already flagged as "bound". The elements end up observed by nobody, so they
+ * stay at `opacity: 0` until a hard refresh — exactly the "text and listings
+ * only appear when I reload" symptom.
  *
- * Both are guarded by per-element flags so scanning is idempotent — re-wrapping
- * already-split words would nest spans and corrupt the text.
+ * The fix: there is exactly ONE observer for the lifetime of the app and it is
+ * never disconnected while navigating. A WeakSet mirrors what it is currently
+ * watching, so scans are still idempotent (never double-observe) but an element
+ * can always be re-observed if it was missed.
  */
 export function MotionProvider() {
   const pathname = usePathname();
+  const scanRef = useRef<((scope: ParentNode) => void) | null>(null);
 
+  // ── one-shot setup: observer, word wrapping, parallax ──────────────────
   useEffect(() => {
-    const reveal = (el: HTMLElement) => el.classList.add("is-in");
-    const wrappedWords = new WeakSet<Element>();
-    const boundRevealTargets = new WeakSet<Element>();
+    const observed = new WeakSet<Element>();
+
+    const revealAll = () => {
+      document.querySelectorAll<HTMLElement>(REVEAL_SELECTOR).forEach((el) => el.classList.add("is-in"));
+    };
 
     // Without IntersectionObserver (or with reduced motion) show everything.
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced || typeof IntersectionObserver === "undefined") {
-      document.querySelectorAll<HTMLElement>(REVEAL_SELECTOR).forEach(reveal);
-      return;
+      revealAll();
+      scanRef.current = revealAll;
+      return () => {
+        scanRef.current = null;
+      };
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            reveal(entry.target as HTMLElement);
-            observer.unobserve(entry.target);
-          }
-        });
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          (entry.target as HTMLElement).classList.add("is-in");
+          observer.unobserve(entry.target);
+          observed.delete(entry.target);
+        }
       },
       { threshold: 0.15 },
     );
 
     /** Split an element's text into per-word spans — exactly once. */
     const wrapWords = (root: HTMLElement) => {
-      if (wrappedWords.has(root)) return;
-      wrappedWords.add(root);
+      if (root.dataset.wordsWrapped === "true") return;
+      root.dataset.wordsWrapped = "true";
 
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
       const textNodes: Text[] = [];
@@ -83,37 +95,30 @@ export function MotionProvider() {
       });
     };
 
-    const considerElement = (el: Element) => {
-      const html = el as HTMLElement;
-      if (el.matches("[data-reveal-words]")) {
-        wrapWords(html);
-      }
-      if (el.matches(REVEAL_SELECTOR)) {
-        if (boundRevealTargets.has(html)) return;
-        boundRevealTargets.add(html);
-        observer.observe(html);
-      }
+    const observeIfNeeded = (el: Element) => {
+      if (observed.has(el)) return;
+      observed.add(el);
+      observer.observe(el as HTMLElement);
     };
 
     let parallaxLayers: HTMLElement[] = [];
 
     /** Observe every not-yet-seen reveal element in the given subtree. */
     const scan = (scope: ParentNode) => {
-      if (scope instanceof Element) considerElement(scope);
-      scope.querySelectorAll("[data-reveal-words]").forEach(considerElement);
-      scope.querySelectorAll(REVEAL_SELECTOR).forEach((el) => {
-        const html = el as HTMLElement;
-        if (boundRevealTargets.has(html)) return;
-        boundRevealTargets.add(html);
-        observer.observe(html);
-      });
+      if (scope instanceof Element) {
+        if (scope.matches("[data-reveal-words]")) wrapWords(scope as HTMLElement);
+        if (scope.matches(REVEAL_SELECTOR)) observeIfNeeded(scope);
+      }
+      scope.querySelectorAll<HTMLElement>("[data-reveal-words]").forEach(wrapWords);
+      scope.querySelectorAll(REVEAL_SELECTOR).forEach(observeIfNeeded);
       parallaxLayers = Array.from(document.querySelectorAll<HTMLElement>("[data-parallax]"));
     };
 
+    scanRef.current = scan;
     scan(document);
 
-    // Catch content that arrives after this effect ran: route transitions,
-    // Suspense boundaries and streamed server components.
+    // Catches late-arriving content within a page: Suspense boundaries, streamed
+    // server components, filter results.
     const mutation = new MutationObserver((records) => {
       for (const record of records) {
         record.addedNodes.forEach((added) => {
@@ -144,12 +149,21 @@ export function MotionProvider() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
+    // Only runs on a real unmount (i.e. essentially never for a root-layout
+    // provider) — route changes must NOT tear the observer down.
     return () => {
       observer.disconnect();
       mutation.disconnect();
       window.removeEventListener("scroll", onScroll);
+      scanRef.current = null;
     };
-    // Re-runs on every route change so freshly rendered pages are observed.
+  }, []);
+
+  // ── rescan after every route change ────────────────────────────────────
+  // The layout survives navigation, so the setup effect above never re-runs.
+  // The new page's DOM is committed by the time this effect fires.
+  useEffect(() => {
+    scanRef.current?.(document);
   }, [pathname]);
 
   return null;

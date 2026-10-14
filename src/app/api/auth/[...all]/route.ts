@@ -1,4 +1,44 @@
-import { toNextJsHandler } from "better-auth/next-js";
-import { auth } from "@/lib/better-auth";
+export async function GET() {
+  return Response.json(
+    {
+      message: "Authentication is now handled by Clerk. This Better Auth endpoint is intentionally disabled.",
+    },
+    { status: 410 },
+  );
+}
 
-export const { GET, POST, PATCH, PUT, DELETE } = toNextJsHandler(auth);
+export async function POST() {
+  return Response.json(
+    {
+      message: "Authentication is now handled by Clerk. This Better Auth endpoint is intentionally disabled.",
+    },
+    { status: 410 },
+  );
+}
+
+export async function PATCH() {
+  return Response.json(
+    {
+      message: "Authentication is now handled by Clerk. This Better Auth endpoint is intentionally disabled.",
+    },
+    { status: 410 },
+  );
+}
+
+export async function PUT() {
+  return Response.json(
+    {
+      message: "Authentication is now handled by Clerk. This Better Auth endpoint is intentionally disabled.",
+    },
+    { status: 410 },
+  );
+}
+
+export async function DELETE() {
+  return Response.json(
+    {
+      message: "Authentication is now handled by Clerk. This Better Auth endpoint is intentionally disabled.",
+    },
+    { status: 410 },
+  );
+}

@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { SignIn, SignUp, useUser } from "@clerk/nextjs";
+import { ArrowRight, CheckCircle2, X } from "lucide-react";
+import { useActionState, useState } from "react";
 import { IDLE_RESULT, type ActionResult } from "@/lib/action-result";
 import { cn } from "@/lib/utils";
 
@@ -38,6 +39,15 @@ export function EnquiryForm({
   compact?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(action, IDLE_RESULT);
+  const { isLoaded, isSignedIn } = useUser();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    if (isLoaded && !isSignedIn) {
+      event.preventDefault();
+      setAuthModalOpen(true);
+    }
+  };
 
   if (state.ok) {
     return (
@@ -55,10 +65,30 @@ export function EnquiryForm({
   }
 
   return (
-    <form action={formAction} className={cn("space-y-6", compact && "space-y-5")} noValidate>
-      {Object.entries(hidden).map(([key, value]) =>
-        value ? <input key={key} type="hidden" name={key} value={value} /> : null,
+    <>
+      {isLoaded && !isSignedIn && (
+        <div className="mb-5 rounded-2xl border border-sage bg-sage/20 p-4 text-sm text-ink">
+          <p className="font-medium">Create an account to continue</p>
+          <p className="mt-1 text-black/60">Sign in or sign up to send enquiries and requests.</p>
+          <button
+            type="button"
+            onClick={() => setAuthModalOpen(true)}
+            className="mt-3 inline-flex items-center rounded-full bg-ink px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-white transition hover:bg-forest"
+          >
+            Sign in / Sign up
+          </button>
+        </div>
       )}
+
+      <form
+        action={formAction}
+        onSubmit={handleSubmit}
+        className={cn("space-y-6", compact && "space-y-5")}
+        noValidate
+      >
+        {Object.entries(hidden).map(([key, value]) =>
+          value ? <input key={key} type="hidden" name={key} value={value} /> : null,
+        )}
 
       <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
         {fields.map((field) => {
@@ -115,24 +145,48 @@ export function EnquiryForm({
         </p>
       )}
 
-      <div className="flex flex-wrap items-center gap-5 pt-2">
-        <button type="submit" disabled={pending} className="btn-primary group text-base">
-          {pending ? "Sending…" : submitLabel}
-          {!pending && (
-            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
+        <div className="flex flex-wrap items-center gap-5 pt-2">
+          <button type="submit" disabled={pending || (isLoaded && !isSignedIn)} className="btn-primary group text-base">
+            {pending ? "Sending…" : submitLabel}
+            {!pending && (
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
+            )}
+          </button>
+          {whatsappHref && (
+            <a
+              href={whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-b border-black/20 pb-0.5 text-sm text-black/50 transition-colors hover:border-forest hover:text-forest"
+            >
+              {whatsappLabel}
+            </a>
           )}
-        </button>
-        {whatsappHref && (
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border-b border-black/20 pb-0.5 text-sm text-black/50 transition-colors hover:border-forest hover:text-forest"
-          >
-            {whatsappLabel}
-          </a>
-        )}
-      </div>
-    </form>
+        </div>
+      </form>
+
+      {authModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-xl overflow-hidden rounded-3xl bg-white p-4 shadow-2xl sm:p-6">
+            <button
+              type="button"
+              onClick={() => setAuthModalOpen(false)}
+              aria-label="Close sign in"
+              className="absolute right-4 top-4 rounded-full border border-black/10 p-2 text-black/60 transition hover:text-forest"
+            >
+              <X className="h-4 w-4" strokeWidth={1.8} />
+            </button>
+            <div className="pt-8">
+              <SignIn
+                routing="path"
+                path="/sign-in"
+                signUpUrl="/sign-up"
+                forceRedirectUrl={typeof window !== "undefined" ? window.location.href : undefined}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
