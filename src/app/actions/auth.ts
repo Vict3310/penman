@@ -1,12 +1,11 @@
 "use server";
 
-import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { auth } from "@/lib/better-auth";
-import { isAdminEmail, isBetterAuthConfigured } from "@/lib/env";
-import { clientKey, rateLimit } from "@/lib/rate-limit";
-import { fail, type ActionResult } from "@/lib/action-result";
+
+import { fail, succeed, type ActionResult } from "@/lib/action-result";
+import { getAdminUser, isExplicitAdminFlag } from "@/lib/admin-access";
+import { getServerClient } from "@/lib/supabase/server";
 import { zodFieldErrors } from "@/lib/validation";
 
 const signInSchema = z.object({
@@ -15,38 +14,19 @@ const signInSchema = z.object({
   next: z.string().optional(),
 });
 
-async function applySetCookieHeaders(response: Response) {
-  const cookieStore = await cookies();
-  const setCookies = response.headers.getSetCookie?.() ?? [];
-
-  for (const entry of setCookies) {
-    const [nameValue] = entry.split(";");
-    if (!nameValue) continue;
-    const separatorIndex = nameValue.indexOf("=");
-    if (separatorIndex === -1) continue;
-    const name = nameValue.slice(0, separatorIndex).trim();
-    const value = nameValue.slice(separatorIndex + 1).trim();
-
-    if (!name) continue;
-    if (value.length === 0) {
-      cookieStore.delete(name);
-      continue;
-    }
-
-    cookieStore.set(name, value, { path: "/" });
-  }
-}
+const signUpSchema = z
+  .object({
+    fullName: z.string().trim().min(2, "Enter your full name"),
+    email: z.string().trim().email("Enter a valid email address"),
+    password: z.string().min(8, "Use at least 8 characters"),
+    confirmPassword: z.string().min(8, "Confirm your password"),
+  })
+  .refine((values) => values.password === values.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
 
 export async function signIn(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
-  if (!isBetterAuthConfigured()) {
-    return fail("Authentication is not configured on this deployment yet.");
-  }
-
-  const limit = rateLimit(await clientKey("signin"), 8, 15 * 60 * 1000);
-  if (!limit.ok) {
-    return fail("Too many sign-in attempts. Please wait a few minutes and try again.");
-  }
-
   const parsed = signInSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),
@@ -58,57 +38,91 @@ export async function signIn(_prev: ActionResult, formData: FormData): Promise<A
   }
 
   const { email, password, next } = parsed.data;
-  const invalid = "Those credentials did not work. Please check and try again.";
 
   try {
-    const response = await auth.api.signInEmail({
-      body: {
-        email,
-        password,
-      },
-      asResponse: true,
-      headers: new Headers({
-        origin: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-      }),
-    });
+    const supabase = await getServerClient();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-    await applySetCookieHeaders(response);
-
-    if (!response.ok) {
-      const payload = await response.json().catch(() => null);
-      const message = payload?.message ?? invalid;
-      if (message.toLowerCase().includes("admin") || message.toLowerCase().includes("allowlist")) {
-        return fail("That account does not have administrator access to this site.");
-      }
-      return fail(message || invalid);
+    if (error) {
+      return fail("Those credentials did not work. Please check and try again.");
     }
 
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user?.email || !isAdminEmail(session.user.email)) {
+    const user = await getAdminUser();
+    if (!user) {
       return fail("That account does not have administrator access to this site.");
     }
+
+    const target = next && next.startsWith("/") ? next : "/admin";
+    redirect(target);
   } catch {
     return fail("Sign-in failed. Please try again.");
   }
 
-  const target = next && next.startsWith("/") ? next : "/admin";
-  redirect(target);
+  return fail("Unable to continue.");
+}
+
+export async function signUp(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
+  const parsed = signUpSchema.safeParse({
+    fullName: formData.get("fullName"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    confirmPassword: formData.get("confirmPassword"),
+  });
+
+  if (!parsed.success) {
+    return fail("Please check the highlighted fields.", zodFieldErrors(parsed.error));
+  }
+
+  const { fullName, email, password } = parsed.data;
+
+  try {
+    const supabase = await getServerClient();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+        },
+      },
+    });
+
+    if (error) {
+      return fail(error.message || "Registration failed.");
+    }
+
+    const createdUser = data.user;
+    if (!createdUser) {
+      return fail("Your account was not created. Please try again.");
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, role, is_admin")
+      .eq("id", createdUser.id)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error("Profile lookup failed after sign-up:", profileError.message);
+      return fail("Your account was created, but profile setup could not be verified.");
+    }
+
+    if (profile && !isExplicitAdminFlag(profile)) {
+      return succeed("Account created successfully. Please sign in to continue.");
+    }
+
+    return succeed("Account created successfully. Please sign in to continue.");
+  } catch {
+    return fail("Sign-up failed. Please try again.");
+  }
 }
 
 export async function signOut(): Promise<void> {
   try {
-    const response = await auth.api.signOut({
-      asResponse: true,
-      headers: new Headers({
-        origin: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-      }),
-    });
-    await applySetCookieHeaders(response);
+    const supabase = await getServerClient();
+    await supabase.auth.signOut();
   } catch {
-    // Ignore — the redirect below still clears the user's route access.
+    // Ignore and still redirect.
   }
   redirect("/login");
 }

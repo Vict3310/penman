@@ -8,6 +8,8 @@ import { isBetterAuthConfigured } from "@/lib/env";
 import { isDemoMode } from "@/lib/demo";
 import { getSiteSettings } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Sign in",
   robots: { index: false, follow: false },
@@ -59,8 +61,7 @@ export default async function LoginPage({
         </div>
 
         <p className="mt-8 text-center text-xs text-black/40">
-          Administrator accounts are created deliberately — members of the public cannot register here. See the
-          README for how to create the first administrator.
+          Need an account? <Link href="/signup" className="font-medium text-black underline">Create one</Link>
         </p>
       </div>
     </main>

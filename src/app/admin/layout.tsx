@@ -5,6 +5,8 @@ import { requireAdmin } from "@/lib/auth";
 import { adminDashboardCounts } from "@/lib/queries";
 import { getSiteSettings } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Admin",
   robots: { index: false, follow: false },

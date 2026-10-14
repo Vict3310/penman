@@ -1,57 +1,18 @@
 import "server-only";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { isAdminEmail, isBetterAuthConfigured } from "@/lib/env";
-import { isDemoMode } from "@/lib/demo";
-import { auth } from "@/lib/better-auth";
-import type { ProfileRole } from "@/lib/types";
+import { notFound } from "next/navigation";
 
-export interface SessionUser {
-  id: string;
-  email: string;
-  fullName: string | null;
-  role: ProfileRole;
-}
+import { getAdminUser as getTrustedAdminUser, type AdminUser } from "@/lib/admin-access";
 
-/**
- * Resolve the signed-in user and confirm the email is on the server-side allowlist.
- * Better Auth handles the session itself; the deployment allowlist remains the admin gate.
- */
+export type SessionUser = AdminUser;
+
+/** Resolve the signed-in admin user using the database-backed profile decision. */
 export async function getAdminUser(): Promise<SessionUser | null> {
-  if (isDemoMode()) {
-    return {
-      id: "demo-admin",
-      email: "admin@demo.local",
-      fullName: "Demo Administrator",
-      role: "admin",
-    };
-  }
-
-  if (!isBetterAuthConfigured()) return null;
-
-  try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    const user = session?.user;
-    if (!user?.email) return null;
-    if (!isAdminEmail(user.email)) return null;
-
-    return {
-      id: user.id,
-      email: user.email,
-      fullName: user.name ?? null,
-      role: "admin",
-    };
-  } catch {
-    return null;
-  }
+  return getTrustedAdminUser();
 }
 
-/** Redirect to the login page unless the caller is a verified administrator. */
+/** Fail closed: no session or non-admin profile => custom 404 page. */
 export async function requireAdmin(): Promise<SessionUser> {
   const user = await getAdminUser();
-  if (!user) redirect("/login?next=/admin");
+  if (!user) notFound();
   return user;
 }
