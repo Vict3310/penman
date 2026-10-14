@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
+import { dash } from "@better-auth/infra";
 import { Pool } from "pg";
 import { getSiteUrl } from "@/lib/env";
 
@@ -24,7 +25,7 @@ export const auth = hasBetterAuthConfig
         process.env.AUTH_SECRET ??
         "penman-empire-dev-secret-change-me",
       ...(connectionPool ? { database: connectionPool } : {}),
-      plugins: [nextCookies()],
+      plugins: [nextCookies(), dash()],
       emailAndPassword: {
         enabled: true,
         requireEmailVerification: false,
