@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Inter, Instrument_Serif } from "next/font/google";
 import { Toaster } from "sonner";
 import { MotionProvider } from "@/components/motion-provider";
 import { getSiteSettings } from "@/lib/site";
-import { getSiteUrl, isClerkConfigured } from "@/lib/env";
+import { getSiteUrl } from "@/lib/env";
 import "./globals.css";
 
 const geist = Geist({
@@ -64,7 +63,6 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const hasClerk = isClerkConfigured();
   const content = (
     <>
       {children}
@@ -96,9 +94,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       data-scroll-behavior="smooth"
       className={`${geist.variable} ${inter.variable} ${instrumentSerif.variable} scroll-smooth`}
     >
-      <body>
-        {hasClerk ? <ClerkProvider afterSignOutUrl="/">{content}</ClerkProvider> : content}
-      </body>
+      <body>{content}</body>
     </html>
   );
 }

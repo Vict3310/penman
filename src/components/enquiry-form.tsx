@@ -3,6 +3,7 @@
 import { SignIn, useUser } from "@clerk/nextjs";
 import { ArrowRight, CheckCircle2, X } from "lucide-react";
 import { useActionState, useState } from "react";
+import { ClerkAuthProvider } from "@/components/clerk-auth-provider";
 import { IDLE_RESULT, type ActionResult } from "@/lib/action-result";
 import { isClerkConfigured } from "@/lib/env";
 import { cn } from "@/lib/utils";
@@ -52,16 +53,20 @@ export function EnquiryForm({
     />;
   }
 
-  return <EnquiryFormBody
-    action={action}
-    fields={fields}
-    hidden={hidden}
-    submitLabel={submitLabel}
-    whatsappHref={whatsappHref}
-    whatsappLabel={whatsappLabel}
-    compact={compact}
-    requireAuth
-  />;
+  return (
+    <ClerkAuthProvider>
+      <EnquiryFormBody
+        action={action}
+        fields={fields}
+        hidden={hidden}
+        submitLabel={submitLabel}
+        whatsappHref={whatsappHref}
+        whatsappLabel={whatsappLabel}
+        compact={compact}
+        requireAuth
+      />
+    </ClerkAuthProvider>
+  );
 }
 
 function EnquiryFormBody({
@@ -222,12 +227,14 @@ function EnquiryFormBody({
               <X className="h-4 w-4" strokeWidth={1.8} />
             </button>
             <div className="pt-8">
-              <SignIn
-                routing="path"
-                path="/sign-in"
-                signUpUrl="/sign-up"
-                forceRedirectUrl={typeof window !== "undefined" ? window.location.href : undefined}
-              />
+              <ClerkAuthProvider>
+                <SignIn
+                  routing="path"
+                  path="/sign-in"
+                  signUpUrl="/sign-up"
+                  forceRedirectUrl={typeof window !== "undefined" ? window.location.href : undefined}
+                />
+              </ClerkAuthProvider>
             </div>
           </div>
         </div>

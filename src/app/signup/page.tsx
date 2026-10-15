@@ -3,6 +3,7 @@ import { SignUp } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
+import { ClerkAuthProvider } from "@/components/clerk-auth-provider";
 import { getSiteSettings } from "@/lib/site";
 import { isClerkConfigured } from "@/lib/env";
 
@@ -14,11 +15,33 @@ export const metadata: Metadata = {
 };
 
 export default async function SignupPage() {
-  const existing = await currentUser();
-  if (existing) redirect("/admin");
-
   const settings = await getSiteSettings();
   const configured = isClerkConfigured();
+
+  if (!configured) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-cream px-6 py-20">
+        <div className="w-full max-w-md">
+          <div className="mb-10 flex items-center justify-center gap-2.5">
+            <span className="font-display text-sm font-semibold tracking-tight">
+              {settings.brand.business_name}
+            </span>
+          </div>
+
+          <div className="card-surface p-8">
+            <h1 className="font-display text-3xl font-light tracking-tight">Create account</h1>
+            <p className="mt-6 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
+              Clerk is not configured on this deployment yet, so sign-up is unavailable. Add the Clerk
+              publishable and secret keys before enabling admin access.
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  const existing = await currentUser();
+  if (existing) redirect("/admin");
 
   return (
     <main className="grid min-h-screen place-items-center bg-cream px-6 py-20">
@@ -29,16 +52,8 @@ export default async function SignupPage() {
           </span>
         </div>
 
-        {!configured ? (
-          <div className="card-surface p-8">
-            <h1 className="font-display text-3xl font-light tracking-tight">Create account</h1>
-            <p className="mt-6 rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
-              Clerk is not configured on this deployment yet, so sign-up is unavailable. Add the Clerk
-              publishable and secret keys before enabling admin access.
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-hidden rounded-[28px] border border-black/10 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-[28px] border border-black/10 bg-white shadow-sm">
+          <ClerkAuthProvider>
             <SignUp
               path="/signup"
               routing="path"
@@ -51,8 +66,8 @@ export default async function SignupPage() {
                 },
               }}
             />
-          </div>
-        )}
+          </ClerkAuthProvider>
+        </div>
       </div>
     </main>
   );
