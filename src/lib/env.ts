@@ -54,11 +54,31 @@ export function isClerkConfigured(): boolean {
 
   const publishable = (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "").trim();
   const secret = (process.env.CLERK_SECRET_KEY ?? "").trim();
+  const domain = (process.env.NEXT_PUBLIC_CLERK_DOMAIN ?? "").trim().toLowerCase();
+  const apiUrl = (process.env.CLERK_API_URL ?? "").trim().toLowerCase();
 
   if (!publishable || !secret) return false;
 
-  if (!/^pk_(live|test)_[A-Za-z0-9]+$/.test(publishable)) return false;
-  if (!/^sk_(live|test)_[A-Za-z0-9]+$/.test(secret)) return false;
+  const staleHostIndicators = ["clerk.penman-navy.vercel.app", "penman-navy.vercel.app", "vercel.app"];
+  const valueToCheck = `${publishable} ${domain} ${apiUrl}`.toLowerCase();
+
+  if (staleHostIndicators.some((indicator) => valueToCheck.includes(indicator))) return false;
+
+  try {
+    const encodedPart = publishable.replace(/^pk_[A-Za-z0-9_-]+_/, "");
+    const decoded = Buffer.from(encodedPart, "base64").toString("utf8").toLowerCase();
+    if (decoded.includes(".vercel.app") || decoded.includes("clerk.")) {
+      const normalized = decoded.replace(/^https?:\/\//, "");
+      if (normalized.includes(".vercel.app") || normalized.includes("clerk.penman-navy")) {
+        return false;
+      }
+    }
+  } catch {
+    // Ignore malformed keys; a non-empty value still needs to be accepted for local verification.
+  }
+
+  const looksLikeKey = (value: string) => /^[A-Za-z0-9_-]{12,}$/.test(value);
+  if (!looksLikeKey(publishable) || !looksLikeKey(secret)) return false;
 
   return true;
 }

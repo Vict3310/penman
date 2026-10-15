@@ -10,6 +10,7 @@ import {
   vehicleSchema,
   zodFieldErrors,
 } from "@/lib/validation";
+import { isClerkConfigured } from "@/lib/env";
 
 const validRental = {
   name: "Ada Obi",
@@ -168,5 +169,33 @@ describe("settingsSectionSchema", () => {
   it("only permits known settings keys", () => {
     expect(settingsSectionSchema.safeParse({ key: "contact", value: { phone: "123" } }).success).toBe(true);
     expect(settingsSectionSchema.safeParse({ key: "evil", value: {} }).success).toBe(false);
+  });
+});
+
+describe("isClerkConfigured", () => {
+  it("rejects stale Clerk keys tied to the dead vercel host", () => {
+    const previousPublishable = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+    const previousSecret = process.env.CLERK_SECRET_KEY;
+
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "demo-publishable-key-clerk.penman-navy.vercel.app";
+    process.env.CLERK_SECRET_KEY = "demo-secret-key-penman-navy.vercel.app";
+
+    expect(isClerkConfigured()).toBe(false);
+
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = previousPublishable;
+    process.env.CLERK_SECRET_KEY = previousSecret;
+  });
+
+  it("accepts valid current-instance config without using secret-like literals", () => {
+    const previousPublishable = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+    const previousSecret = process.env.CLERK_SECRET_KEY;
+
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "demo-publishable-key-current-instance";
+    process.env.CLERK_SECRET_KEY = "demo-secret-key-current-instance";
+
+    expect(isClerkConfigured()).toBe(true);
+
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = previousPublishable;
+    process.env.CLERK_SECRET_KEY = previousSecret;
   });
 });
