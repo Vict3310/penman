@@ -59,11 +59,19 @@ describe("getSiteUrl", () => {
 
 describe("isClerkConfigured", () => {
   it("returns true only when the public and secret Clerk keys are present", () => {
+    process.env.NEXT_PUBLIC_SITE_URL = "https://penmanempire.com";
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_123";
     process.env.CLERK_SECRET_KEY = "sk_test_123";
     expect(isClerkConfigured()).toBe(true);
 
     delete process.env.CLERK_SECRET_KEY;
+    expect(isClerkConfigured()).toBe(false);
+  });
+
+  it("disables Clerk on localhost to avoid loading production scripts in local development", () => {
+    process.env.NEXT_PUBLIC_SITE_URL = "http://localhost:3000";
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_live_abc123";
+    process.env.CLERK_SECRET_KEY = "sk_live_def456";
     expect(isClerkConfigured()).toBe(false);
   });
 });

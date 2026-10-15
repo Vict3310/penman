@@ -1,9 +1,10 @@
 "use client";
 
-import { SignIn, SignUp, useUser } from "@clerk/nextjs";
+import { SignIn, useUser } from "@clerk/nextjs";
 import { ArrowRight, CheckCircle2, X } from "lucide-react";
 import { useActionState, useState } from "react";
 import { IDLE_RESULT, type ActionResult } from "@/lib/action-result";
+import { isClerkConfigured } from "@/lib/env";
 import { cn } from "@/lib/utils";
 
 export interface EnquiryField {
@@ -38,12 +39,56 @@ export function EnquiryForm({
   whatsappLabel?: string;
   compact?: boolean;
 }) {
+  if (!isClerkConfigured()) {
+    return <EnquiryFormBody
+      action={action}
+      fields={fields}
+      hidden={hidden}
+      submitLabel={submitLabel}
+      whatsappHref={whatsappHref}
+      whatsappLabel={whatsappLabel}
+      compact={compact}
+      requireAuth={false}
+    />;
+  }
+
+  return <EnquiryFormBody
+    action={action}
+    fields={fields}
+    hidden={hidden}
+    submitLabel={submitLabel}
+    whatsappHref={whatsappHref}
+    whatsappLabel={whatsappLabel}
+    compact={compact}
+    requireAuth
+  />;
+}
+
+function EnquiryFormBody({
+  action,
+  fields,
+  hidden,
+  submitLabel,
+  whatsappHref,
+  whatsappLabel,
+  compact,
+  requireAuth,
+}: {
+  action: Action;
+  fields: EnquiryField[];
+  hidden: Record<string, string | null | undefined>;
+  submitLabel: string;
+  whatsappHref?: string | null;
+  whatsappLabel: string;
+  compact: boolean;
+  requireAuth: boolean;
+}) {
   const [state, formAction, pending] = useActionState(action, IDLE_RESULT);
-  const { isLoaded, isSignedIn } = useUser();
+  const { isLoaded, isSignedIn } = requireAuth ? useUser() : { isLoaded: true, isSignedIn: true };
   const [authModalOpen, setAuthModalOpen] = useState(false);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (isLoaded && !isSignedIn) {
+    if (requireAuth && isLoaded && !isSignedIn) {
       event.preventDefault();
       setAuthModalOpen(true);
     }
@@ -66,7 +111,7 @@ export function EnquiryForm({
 
   return (
     <>
-      {isLoaded && !isSignedIn && (
+      {requireAuth && isLoaded && !isSignedIn && (
         <div className="mb-5 rounded-2xl border border-sage bg-sage/20 p-4 text-sm text-ink">
           <p className="font-medium">Create an account to continue</p>
           <p className="mt-1 text-black/60">Sign in or sign up to send enquiries and requests.</p>
@@ -90,63 +135,63 @@ export function EnquiryForm({
           value ? <input key={key} type="hidden" name={key} value={value} /> : null,
         )}
 
-      <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
-        {fields.map((field) => {
-          const errors = state.errors?.[field.name];
-          const hasError = Boolean(errors?.length);
-          const id = `field-${field.name}`;
-          return (
-            <div key={field.name} className={cn(!field.half && "sm:col-span-2")}>
-              <label htmlFor={id} className="field-label">
-                {field.label}
-                {field.required && <span className="ml-1 text-forest">*</span>}
-              </label>
+        <div className="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+          {fields.map((field) => {
+            const errors = state.errors?.[field.name];
+            const hasError = Boolean(errors?.length);
+            const id = `field-${field.name}`;
+            return (
+              <div key={field.name} className={cn(!field.half && "sm:col-span-2")}>
+                <label htmlFor={id} className="field-label">
+                  {field.label}
+                  {field.required && <span className="ml-1 text-forest">*</span>}
+                </label>
 
-              {field.type === "textarea" ? (
-                <textarea
-                  id={id}
-                  name={field.name}
-                  rows={field.rows ?? 4}
-                  required={field.required}
-                  placeholder={field.placeholder}
-                  defaultValue={field.defaultValue}
-                  aria-invalid={hasError}
-                  aria-describedby={hasError ? `${id}-error` : undefined}
-                  className={cn("field-line resize-none", hasError && "field-line-error")}
-                />
-              ) : (
-                <input
-                  id={id}
-                  name={field.name}
-                  type={field.type}
-                  required={field.required}
-                  placeholder={field.placeholder}
-                  defaultValue={field.defaultValue}
-                  min={field.min}
-                  aria-invalid={hasError}
-                  aria-describedby={hasError ? `${id}-error` : undefined}
-                  className={cn("field-line", hasError && "field-line-error")}
-                />
-              )}
+                {field.type === "textarea" ? (
+                  <textarea
+                    id={id}
+                    name={field.name}
+                    rows={field.rows ?? 4}
+                    required={field.required}
+                    placeholder={field.placeholder}
+                    defaultValue={field.defaultValue}
+                    aria-invalid={hasError}
+                    aria-describedby={hasError ? `${id}-error` : undefined}
+                    className={cn("field-line resize-none", hasError && "field-line-error")}
+                  />
+                ) : (
+                  <input
+                    id={id}
+                    name={field.name}
+                    type={field.type}
+                    required={field.required}
+                    placeholder={field.placeholder}
+                    defaultValue={field.defaultValue}
+                    min={field.min}
+                    aria-invalid={hasError}
+                    aria-describedby={hasError ? `${id}-error` : undefined}
+                    className={cn("field-line", hasError && "field-line-error")}
+                  />
+                )}
 
-              {hasError && (
-                <p id={`${id}-error`} className="mt-2 text-xs text-red-600">
-                  {errors?.join(" ")}
-                </p>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                {hasError && (
+                  <p id={`${id}-error`} className="mt-2 text-xs text-red-600">
+                    {errors?.join(" ")}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
 
-      {!state.ok && state.message && (
-        <p role="alert" className="text-sm text-red-600">
-          {state.message}
-        </p>
-      )}
+        {!state.ok && state.message && (
+          <p role="alert" className="text-sm text-red-600">
+            {state.message}
+          </p>
+        )}
 
         <div className="flex flex-wrap items-center gap-5 pt-2">
-          <button type="submit" disabled={pending || (isLoaded && !isSignedIn)} className="btn-primary group text-base">
+          <button type="submit" disabled={pending || (requireAuth && isLoaded && !isSignedIn)} className="btn-primary group text-base">
             {pending ? "Sending…" : submitLabel}
             {!pending && (
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
@@ -165,7 +210,7 @@ export function EnquiryForm({
         </div>
       </form>
 
-      {authModalOpen && (
+      {requireAuth && authModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-xl overflow-hidden rounded-3xl bg-white p-4 shadow-2xl sm:p-6">
             <button

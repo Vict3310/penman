@@ -41,12 +41,24 @@ export function isSupabaseConfigured(): boolean {
   return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 }
 
-/** True when the Clerk auth provider is configured. */
+/** True when the Clerk auth provider is configured.
+ *
+ * We intentionally disable Clerk on localhost/dev setups even if a live
+ * production key is present. This avoids the browser-side failure where the app
+ * tries to boot a Clerk script for a different deployment host while the site is
+ * running locally.
+ */
 export function isClerkConfigured(): boolean {
-  return Boolean(
-    (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "").trim() &&
-      (process.env.CLERK_SECRET_KEY ?? "").trim(),
-  );
+  const publishable = (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY ?? "").trim();
+  const secret = (process.env.CLERK_SECRET_KEY ?? "").trim();
+
+  if (!publishable || !secret) return false;
+
+  if (!/^pk_(live|test)_[A-Za-z0-9]+$/.test(publishable)) return false;
+  if (!/^sk_(live|test)_[A-Za-z0-9]+$/.test(secret)) return false;
+
+  const siteUrl = getSiteUrl();
+  return !siteUrl.includes("localhost") && !siteUrl.includes("127.0.0.1");
 }
 
 /** Backward-compatibility alias for older code paths; prefer Clerk. */
