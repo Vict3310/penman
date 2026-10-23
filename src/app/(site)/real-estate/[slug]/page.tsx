@@ -6,6 +6,7 @@ import { submitPropertyEnquiry } from "@/app/actions/public";
 import { EnquiryForm, type EnquiryField } from "@/components/enquiry-form";
 import { Gallery } from "@/components/gallery";
 import { Badge, StatusBadge } from "@/components/ui/misc";
+import { SaveButton } from "@/components/account/save-button";
 import { getPropertyBySlug } from "@/lib/queries";
 import { getSiteSettings } from "@/lib/site";
 import { formatCurrency, whatsappLink } from "@/lib/utils";
@@ -103,9 +104,17 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                 <StatusBadge status={property.availability} />
               </div>
 
-              <h1 className="mt-5 font-display text-3xl font-light tracking-tighter sm:text-4xl">
-                {property.title}
-              </h1>
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+                <h1 className="font-display text-3xl font-light tracking-tighter sm:text-4xl">
+                  {property.title}
+                </h1>
+                <SaveButton
+                  kind="property"
+                  listingId={property.id}
+                  title={property.title}
+                  variant="inline"
+                />
+              </div>
               <p className="mt-3 flex items-center gap-2 text-base text-black/50">
                 <MapPin className="h-4 w-4 text-forest" strokeWidth={1.5} />
                 {property.location}

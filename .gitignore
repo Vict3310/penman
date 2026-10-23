@@ -15,6 +15,12 @@ dist/
 .env.*.local
 .env.production.local
 
+# ── Importer working files (downloaded dataset, image cache, run logs)
+.cache/
+
+# ── Local scratch scripts (verification/report helpers, not shipped)
+*.tmp.mjs
+
 # ── Misc
 .DS_Store
 *.pem

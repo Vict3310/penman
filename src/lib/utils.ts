@@ -21,6 +21,17 @@ export function formatCurrency(
   }).format(value);
 }
 
+/**
+ * Odometer reading: 184781 → "184,781 km".
+ *
+ * Returns null rather than a placeholder when there is no reading, so callers
+ * can leave the row out entirely instead of printing an invented zero.
+ */
+export function formatMileage(km: number | null | undefined, locale = "en-NG"): string | null {
+  if (km === null || km === undefined || !Number.isFinite(km)) return null;
+  return `${new Intl.NumberFormat(locale).format(km)} km`;
+}
+
 export function formatDate(value: string | Date | null | undefined): string {
   if (!value) return "—";
   const date = typeof value === "string" ? new Date(value) : value;

@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+// The limits live in ./auth/policy.ts, which is the one module under
+// src/lib/auth/ that is NOT server-only precisely so shared validation and
+// client forms can agree on the same numbers.
+import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from "@/lib/auth/policy";
+
 /* ── primitives ──────────────────────────────────────────────────────── */
 
 const trimmed = (max: number) => z.string().trim().max(max);
@@ -99,6 +104,67 @@ export const contactMessageSchema = z.object({
 });
 
 export type ContactMessageInput = z.input<typeof contactMessageSchema>;
+
+/* ── account area ────────────────────────────────────────────────────── */
+
+/**
+ * The customer's own profile.
+ *
+ * What this schema deliberately CANNOT accept is the point: there is no
+ * `role`, no `status`, no `password_hash` and no `id`. Every field a customer
+ * may edit is listed; anything else is dropped by Zod before it can reach a
+ * query, so privilege escalation through the profile form is not a matter of
+ * remembering to omit a field.
+ */
+export const profileUpdateSchema = z.object({
+  fullName: trimmed(120).min(2, "Enter your full name"),
+  email: z.string().trim().max(254).email("Enter a valid email address"),
+  phone: z
+    .union([z.literal(""), phoneSchema])
+    .optional()
+    .transform((v) => v || null),
+  /**
+   * Only consulted when the email address actually changes — see
+   * `emailChangeNeedsPassword()` in src/lib/account/profile.ts. A stolen
+   * session cookie must not be enough to move an account to a new sign-in
+   * address, so changing it requires the current password.
+   */
+  currentPassword: z
+    .string()
+    .max(MAX_PASSWORD_LENGTH)
+    .optional()
+    .transform((v) => v ?? ""),
+});
+
+export type ProfileUpdateInput = z.input<typeof profileUpdateSchema>;
+
+/**
+ * A password change.
+ *
+ * `currentPassword` is required unconditionally: unlike a reset (where the
+ * reset token is the proof), this is a signed-in user replacing their own
+ * credential, and re-proving knowledge of the existing one is what stops a
+ * borrowed session from locking the owner out.
+ */
+export const passwordChangeSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Enter your current password"),
+    newPassword: z
+      .string()
+      .min(MIN_PASSWORD_LENGTH, `Use at least ${MIN_PASSWORD_LENGTH} characters`)
+      .max(MAX_PASSWORD_LENGTH, "That password is too long"),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  })
+  .refine((d) => d.newPassword !== d.currentPassword, {
+    message: "That is your current password. Choose a different one.",
+    path: ["newPassword"],
+  });
+
+export type PasswordChangeInput = z.input<typeof passwordChangeSchema>;
 
 /* ── admin: vehicles ─────────────────────────────────────────────────── */
 

@@ -6,6 +6,7 @@ import { submitRentalEnquiry } from "@/app/actions/public";
 import { EnquiryForm, type EnquiryField } from "@/components/enquiry-form";
 import { Gallery } from "@/components/gallery";
 import { Badge, StatusBadge } from "@/components/ui/misc";
+import { SaveButton } from "@/components/account/save-button";
 import { getVehicleBySlug } from "@/lib/queries";
 import { getSiteSettings } from "@/lib/site";
 import { formatCurrency, whatsappLink } from "@/lib/utils";
@@ -115,7 +116,17 @@ export default async function VehicleDetailPage({ params }: PageProps) {
                 <StatusBadge status={vehicle.availability} />
                 {vehicle.is_featured && <Badge tone="green">Featured</Badge>}
               </div>
-              <h1 className="mt-5 font-display text-3xl font-light tracking-tighter sm:text-4xl">{vehicle.name}</h1>
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+                <h1 className="font-display text-3xl font-light tracking-tighter sm:text-4xl">
+                  {vehicle.name}
+                </h1>
+                <SaveButton
+                  kind="vehicle"
+                  listingId={vehicle.id}
+                  title={vehicle.name}
+                  variant="inline"
+                />
+              </div>
               <p className="mt-4 text-2xl font-medium text-forest">{priceLabel}</p>
 
               {specs.length > 0 && (

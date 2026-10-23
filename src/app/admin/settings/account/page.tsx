@@ -1,11 +1,11 @@
 import { LockKeyhole, ShieldCheck, UserRound } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/ui";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdminPage } from "@/lib/auth/admin";
 
 export const dynamic = "force-dynamic";
 
 export default async function AccountSettingsPage() {
-  const user = await requireAdmin();
+  const user = await requireAdminPage();
 
   return (
     <>

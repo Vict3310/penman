@@ -16,6 +16,7 @@
  * This proves the SQL is valid and self-consistent. It does not replace testing
  * against a real Supabase project, which has additional extensions and roles.
  */
+import { createHash, randomBytes } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -105,6 +106,9 @@ const EXPECTED_TABLES = [
   "shop_enquiries",
   "site_settings",
   "contact_messages",
+  // Imported inventory (migration 0005). Its policies are admin-only, so it is
+  // also asserted below alongside the enquiry tables.
+  "inventory_imports",
 ];
 
 const { rows: tables } = await db.query(
@@ -131,11 +135,18 @@ function expectedPolicyTables() {
   return [...EXPECTED_TABLES];
 }
 
-// Enquiry tables must be administration-only. Policies are granted to PUBLIC by
-// default, so the meaningful assertion is that every USING / WITH CHECK
-// expression on those tables actually gates on is_admin() — not merely that the
-// policy is silently absent.
-const ENQUIRY_TABLES = ["rental_enquiries", "property_enquiries", "shop_enquiries", "contact_messages"];
+// Enquiry tables — and the import-run log, which describes internal operations
+// rather than catalogue content — must be administration-only. Policies are
+// granted to PUBLIC by default, so the meaningful assertion is that every USING
+// / WITH CHECK expression on those tables actually gates on is_admin() — not
+// merely that the policy is silently absent.
+const ENQUIRY_TABLES = [
+  "rental_enquiries",
+  "property_enquiries",
+  "shop_enquiries",
+  "contact_messages",
+  "inventory_imports",
+];
 const { rows: enquiryPolicies } = await db.query(
   `select tablename, policyname, coalesce(qual, '') as qual, coalesce(with_check, '') as with_check
      from pg_policies
@@ -285,6 +296,369 @@ check(
   "published counts are computable and non-zero",
   metrics[0].vehicles > 0 && metrics[0].properties > 0 && metrics[0].products > 0,
   JSON.stringify(metrics[0]),
+);
+
+/* ══════════════════════════════════════════════════════════════════════
+   Application-owned authentication (migration 0003)
+
+   Placed last so the seed assertions above run against pristine seed data.
+   Everything here asserts the two things that matter most about the auth
+   schema: that the Supabase Auth dependency is genuinely severed, and that a
+   session can only be valid when the database says so.
+   ══════════════════════════════════════════════════════════════════════ */
+
+console.log("\nAuthentication schema");
+
+const { rows: profileFks } = await db.query(
+  `select conname
+     from pg_constraint
+    where conrelid = 'public.profiles'::regclass
+      and contype = 'f'
+      and confrelid = 'auth.users'::regclass`,
+);
+check(
+  "profiles is no longer a foreign key to auth.users",
+  profileFks.length === 0,
+  profileFks.map((r) => r.conname).join(", "),
+);
+
+const { rows: legacyFn } = await db.query(
+  `select 1
+     from pg_proc p
+     join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'handle_new_user'`,
+);
+check("legacy handle_new_user() provisioning function is gone", legacyFn.length === 0);
+
+const { rows: legacyTrigger } = await db.query(
+  `select 1 from pg_trigger where tgname = 'on_auth_user_created'`,
+);
+check("legacy on_auth_user_created trigger is gone", legacyTrigger.length === 0);
+
+for (const column of [
+  "password_hash",
+  "phone",
+  "status",
+  "email_verified_at",
+  "last_login_at",
+]) {
+  const { rows } = await db.query(
+    `select 1 from information_schema.columns
+      where table_schema = 'public' and table_name = 'profiles' and column_name = $1`,
+    [column],
+  );
+  check(`profiles.${column} exists`, rows.length > 0);
+}
+
+const { rows: roleDefault } = await db.query(
+  `select column_default from information_schema.columns
+    where table_schema = 'public' and table_name = 'profiles' and column_name = 'role'`,
+);
+check(
+  "profiles.role defaults to the non-admin 'viewer'",
+  (roleDefault[0]?.column_default ?? "").includes("viewer"),
+  roleDefault[0]?.column_default ?? "no default",
+);
+
+const { rows: emailIndex } = await db.query(
+  `select 1 from pg_class where relname = 'profiles_email_key' and relkind = 'i'`,
+);
+check("profiles_email_key unique index survives", emailIndex.length > 0);
+
+const { rows: statusCheck } = await db.query(
+  `select 1 from pg_constraint where conname = 'profiles_status_check' and contype = 'c'`,
+);
+check("CHECK constraint profiles_status_check exists", statusCheck.length > 0);
+
+// These tables must be RLS-enabled with NO policy. A missing policy is a
+// stronger guarantee than a restrictive one: it denies anonymous and
+// authenticated roles alike, so a session row — or another customer's saved
+// listing — can never be read via the anon key. Asserting "zero policies" is
+// the point, not merely that RLS is on.
+//
+// The account tables are on this list deliberately. A policy of
+// `user_id = auth.uid()` would look like a control while enforcing nothing:
+// auth.uid() resolves from a Supabase Auth JWT, and application-owned sessions
+// do not carry one, so it evaluates to false for every real request.
+const DENY_ALL_TABLES = [
+  "sessions",
+  "password_reset_tokens",
+  "saved_vehicles",
+  "saved_products",
+  "saved_properties",
+];
+
+for (const table of DENY_ALL_TABLES) {
+  const { rows } = await db.query(
+    `select c.relrowsecurity as rls
+       from pg_class c
+       join pg_namespace n on n.oid = c.relnamespace
+      where n.nspname = 'public' and c.relname = $1`,
+    [table],
+  );
+  check(`public.${table} exists`, rows.length > 0);
+  check(`public.${table} has RLS enabled`, rows[0]?.rls === true);
+
+  const { rows: tablePolicies } = await db.query(
+    `select policyname from pg_policies where schemaname = 'public' and tablename = $1`,
+    [table],
+  );
+  check(
+    `public.${table} has no policy at all — deny-all to anon and authenticated`,
+    tablePolicies.length === 0,
+    tablePolicies.map((p) => p.policyname).join(", "),
+  );
+}
+
+for (const index of ["sessions_token_hash_key", "password_reset_tokens_token_hash_key"]) {
+  const { rows } = await db.query(
+    `select 1 from pg_class where relname = $1 and relkind = 'i'`,
+    [index],
+  );
+  check(`unique index ${index} exists`, rows.length > 0);
+}
+
+console.log("\nAuthentication behaviour");
+
+const sha256 = (value) => createHash("sha256").update(value).digest("hex");
+const newToken = () => randomBytes(32).toString("base64url");
+
+/** Mirrors the lookup in src/lib/auth/session.ts resolveSession(). */
+const RESOLVE_SESSION = `select p.id
+   from public.sessions s
+   join public.profiles p on p.id = s.user_id
+  where s.token_hash = $1
+    and s.revoked_at is null
+    and s.expires_at > now()
+    and p.status = 'active'
+  limit 1`;
+
+await db.query(
+  `insert into public.profiles (email, password_hash, full_name) values ($1, $2, $3)`,
+  ["  Owner@PenmanEmpire.COM  ", "$argon2id$placeholder", "Owner"],
+);
+const { rows: createdOwner } = await db.query(
+  `select id, email, role, status from public.profiles where full_name = 'Owner'`,
+);
+const owner = createdOwner[0];
+
+check(
+  "a stored email is normalized to lowercase and trimmed",
+  owner?.email === "owner@penmanempire.com",
+  owner?.email ?? "no row",
+);
+check("a new account is non-admin by default", owner?.role === "viewer", owner?.role ?? "none");
+check("a new account is active by default", owner?.status === "active", owner?.status ?? "none");
+
+await expectConstraintViolation(
+  "duplicate account email is rejected regardless of case",
+  `insert into public.profiles (email, password_hash) values ('OWNER@penmanempire.com', 'x')`,
+);
+await expectConstraintViolation(
+  "profile with an unknown status is rejected",
+  `insert into public.profiles (email, status) values ('status-probe@example.com', 'suspended')`,
+);
+
+const liveToken = newToken();
+await db.query(
+  `insert into public.sessions (user_id, token_hash, expires_at)
+   values ($1, $2, now() + interval '1 hour')`,
+  [owner.id, sha256(liveToken)],
+);
+const { rows: live } = await db.query(RESOLVE_SESSION, [sha256(liveToken)]);
+check("a live session resolves to its user", live.length === 1);
+
+const { rows: byRawToken } = await db.query(RESOLVE_SESSION, [liveToken]);
+check(
+  "the raw token is NOT a valid lookup key — only its hash is stored",
+  byRawToken.length === 0,
+);
+
+await expectConstraintViolation(
+  "a session token hash cannot be reused",
+  `insert into public.sessions (user_id, token_hash, expires_at)
+   values ($1, $2, now() + interval '1 hour')`,
+  [owner.id, sha256(liveToken)],
+);
+
+const expiredToken = newToken();
+await db.query(
+  `insert into public.sessions (user_id, token_hash, expires_at)
+   values ($1, $2, now() - interval '1 second')`,
+  [owner.id, sha256(expiredToken)],
+);
+const { rows: expired } = await db.query(RESOLVE_SESSION, [sha256(expiredToken)]);
+check("an expired session is rejected", expired.length === 0);
+
+await db.query(`update public.sessions set revoked_at = now() where token_hash = $1`, [
+  sha256(liveToken),
+]);
+const { rows: revoked } = await db.query(RESOLVE_SESSION, [sha256(liveToken)]);
+check("a revoked session is rejected", revoked.length === 0);
+
+// Spec test 14: a disabled account must not keep using its existing session.
+const disabledToken = newToken();
+await db.query(
+  `insert into public.sessions (user_id, token_hash, expires_at)
+   values ($1, $2, now() + interval '1 hour')`,
+  [owner.id, sha256(disabledToken)],
+);
+await db.query(`update public.profiles set status = 'disabled' where id = $1`, [owner.id]);
+const { rows: whileDisabled } = await db.query(RESOLVE_SESSION, [sha256(disabledToken)]);
+check(
+  "disabling an account immediately invalidates its live sessions",
+  whileDisabled.length === 0,
+);
+await db.query(`update public.profiles set status = 'active' where id = $1`, [owner.id]);
+
+const { rows: afterReenable } = await db.query(RESOLVE_SESSION, [sha256(disabledToken)]);
+check("re-enabling an account restores its unrevoked sessions", afterReenable.length === 1);
+
+// Sessions must not outlive their user.
+await db.query(`insert into public.profiles (email) values ('cascade-probe@example.com')`);
+const { rows: cascadeUser } = await db.query(
+  `select id from public.profiles where email = 'cascade-probe@example.com'`,
+);
+const cascadeToken = newToken();
+await db.query(
+  `insert into public.sessions (user_id, token_hash, expires_at)
+   values ($1, $2, now() + interval '1 hour')`,
+  [cascadeUser[0].id, sha256(cascadeToken)],
+);
+await db.query(`delete from public.profiles where id = $1`, [cascadeUser[0].id]);
+const { rows: orphaned } = await db.query(
+  `select 1 from public.sessions where token_hash = $1`,
+  [sha256(cascadeToken)],
+);
+check("sessions are deleted with their user (on delete cascade)", orphaned.length === 0);
+
+console.log("\nAccount area");
+
+// Enquiries may be attributed to the account that sent them, but must never
+// require one: an enquiry is a business record first, and a guest submitting
+// one is the ordinary case.
+for (const table of ["rental_enquiries", "property_enquiries", "shop_enquiries"]) {
+  const { rows } = await db.query(
+    `select is_nullable from information_schema.columns
+      where table_schema = 'public' and table_name = $1 and column_name = 'user_id'`,
+    [table],
+  );
+  check(`public.${table} has a nullable user_id column`, rows[0]?.is_nullable === "YES", JSON.stringify(rows));
+
+  const { rows: indexRows } = await db.query(
+    `select indexname from pg_indexes
+      where schemaname = 'public' and tablename = $1 and indexname = $2`,
+    [table, `${table}_user_idx`],
+  );
+  check(`${table}_user_idx index exists`, indexRows.length === 1);
+}
+
+await db.query(
+  `insert into public.rental_enquiries (name, phone, pickup_date, return_date)
+   values ('Guest Enquirer', '08000000000', '2026-03-01', '2026-03-02')`,
+);
+const { rows: guestEnquiries } = await db.query(
+  `select user_id from public.rental_enquiries where name = 'Guest Enquirer'`,
+);
+check(
+  "an enquiry from a visitor with no account is still accepted",
+  guestEnquiries.length === 1 && guestEnquiries[0].user_id === null,
+  JSON.stringify(guestEnquiries),
+);
+
+const probeVehicle = (
+  await db.query(
+    `insert into public.vehicles (slug, name, category, status)
+     values ('save-probe-vehicle', 'Save probe vehicle', 'SUV', 'published') returning id`,
+  )
+).rows[0].id;
+const probeProduct = (
+  await db.query(
+    `insert into public.products (slug, name, status)
+     values ('save-probe-product', 'Save probe product', 'published') returning id`,
+  )
+).rows[0].id;
+const probeProperty = (
+  await db.query(
+    `insert into public.properties (slug, title, location, status)
+     values ('save-probe-property', 'Save probe property', 'Lagos', 'published') returning id`,
+  )
+).rows[0].id;
+
+// The duplicate-save guarantee is the whole point of the unique constraint: a
+// double tap, a retry or two open tabs must not produce two rows.
+for (const [table, column, listingId, noun] of [
+  ["saved_vehicles", "vehicle_id", probeVehicle, "vehicle"],
+  ["saved_products", "product_id", probeProduct, "product"],
+  ["saved_properties", "property_id", probeProperty, "property"],
+]) {
+  await db.query(`insert into public.${table} (user_id, ${column}) values ($1, $2)`, [
+    owner.id,
+    listingId,
+  ]);
+
+  await expectConstraintViolation(
+    `saving the same ${noun} twice is rejected by the database`,
+    `insert into public.${table} (user_id, ${column}) values ($1, $2)`,
+    [owner.id, listingId],
+  );
+
+  const { rows: afterDuplicate } = await db.query(
+    `select 1 from public.${table} where user_id = $1 and ${column} = $2`,
+    [owner.id, listingId],
+  );
+  check(`one ${noun} save row survives the duplicate attempt`, afterDuplicate.length === 1);
+
+  await expectConstraintViolation(
+    `a saved ${noun} must point at a listing that exists`,
+    `insert into public.${table} (user_id, ${column}) values ($1, $2)`,
+    [owner.id, "00000000-0000-0000-0000-000000000000"],
+  );
+}
+
+// Removing a listing must tidy up the saves that referred to it, or the
+// account page would show entries pointing at nothing.
+await db.query(`delete from public.vehicles where id = $1`, [probeVehicle]);
+const { rows: savesAfterListingDelete } = await db.query(
+  `select 1 from public.saved_vehicles where vehicle_id = $1`,
+  [probeVehicle],
+);
+check(
+  "deleting a vehicle removes the saves that pointed at it (on delete cascade)",
+  savesAfterListingDelete.length === 0,
+);
+
+// Deleting an account takes its saves with it, but must NOT erase the business
+// record of what that customer asked for.
+const { rows: doomed } = await db.query(
+  `insert into public.profiles (email, password_hash) values ('delete-probe@example.com', 'x') returning id`,
+);
+const doomedId = doomed[0].id;
+await db.query(
+  `insert into public.property_enquiries (user_id, name, phone, property_title)
+   values ($1, 'Doomed User', '08000000000', 'A property')`,
+  [doomedId],
+);
+await db.query(`insert into public.saved_products (user_id, product_id) values ($1, $2)`, [
+  doomedId,
+  probeProduct,
+]);
+
+await db.query(`delete from public.profiles where id = $1`, [doomedId]);
+
+const { rows: orphanedSaves } = await db.query(
+  `select 1 from public.saved_products where user_id = $1`,
+  [doomedId],
+);
+check("deleting an account deletes its saved listings (on delete cascade)", orphanedSaves.length === 0);
+
+const { rows: survivingEnquiry } = await db.query(
+  `select user_id, property_title from public.property_enquiries where name = 'Doomed User'`,
+);
+check(
+  "deleting an account keeps its enquiries but clears the owner (on delete set null)",
+  survivingEnquiry.length === 1 && survivingEnquiry[0].user_id === null,
+  JSON.stringify(survivingEnquiry),
 );
 
 await db.close();

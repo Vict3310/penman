@@ -5,38 +5,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/logo";
+import { SECTION_MENUS, findSection } from "@/lib/site-sections";
 import { cn } from "@/lib/utils";
-
-const SECTION_LINKS: Record<string, { href: string; label: string }[]> = {
-  "/autos": [
-    { href: "/autos", label: "Home" },
-    { href: "/autos/cars", label: "Cars" },
-    { href: "/autos/about", label: "About" },
-    { href: "/autos/faq", label: "FAQ" },
-    { href: "/autos/contact", label: "Contact" },
-  ],
-  "/rental": [
-    { href: "/rental", label: "Home" },
-    { href: "/rental/cars", label: "Cars" },
-    { href: "/rental/how-it-works", label: "How it works" },
-    { href: "/rental/faq", label: "FAQ" },
-    { href: "/rental/contact", label: "Contact" },
-  ],
-  "/shop": [
-    { href: "/shop", label: "Home" },
-    { href: "/shop/cars", label: "Cars" },
-    { href: "/shop/buying-guide", label: "Buying guide" },
-    { href: "/shop/faq", label: "FAQ" },
-    { href: "/shop/contact", label: "Contact" },
-  ],
-  "/real-estate": [
-    { href: "/real-estate", label: "Home" },
-    { href: "/real-estate/properties", label: "Properties" },
-    { href: "/real-estate/services", label: "Services" },
-    { href: "/real-estate/faq", label: "FAQ" },
-    { href: "/real-estate/contact", label: "Contact" },
-  ],
-};
 
 interface SiteNavProps {
   businessName: string;
@@ -49,23 +19,14 @@ export function SiteNav({ businessName, ctaLabel = "Contact", ctaHref }: SiteNav
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  const sectionHome = useMemo(() => {
-    if (pathname === "/") return "/autos";
+  const section = useMemo(() => findSection(pathname), [pathname]);
 
-    const matched = Object.entries(SECTION_LINKS).find(
-      ([key]) => pathname === key || pathname.startsWith(`${key}/`),
-    ) as [string, Array<{ href: string; label: string }>] | undefined;
-
-    return matched ? matched[0] : "/autos";
-  }, [pathname]);
+  const sectionHome = section?.key ?? "/autos";
 
   const sectionLinks = useMemo<Array<{ href: string; label: string }>>(() => {
-    const matched = Object.entries(SECTION_LINKS).find(
-      ([key]) => pathname === key || pathname.startsWith(`${key}/`),
-    ) as [string, Array<{ href: string; label: string }>] | undefined;
-
-    return matched ? matched[1] : (SECTION_LINKS["/autos"] ?? []);
-  }, [pathname]);
+    const baseLinks = section?.links ?? (SECTION_MENUS[0]?.links ?? []);
+    return [...baseLinks, { href: "/account", label: "Account" }];
+  }, [section]);
 
   useEffect(() => setOpen(false), [pathname]);
 
@@ -84,7 +45,10 @@ export function SiteNav({ businessName, ctaLabel = "Contact", ctaHref }: SiteNav
   }, [open]);
 
   return (
-    <nav className="fixed left-1/2 top-4 z-50 w-[calc(100%-1rem)] max-w-[480px] -translate-x-1/2 sm:top-7 lg:w-auto lg:max-w-none">
+    <nav
+      aria-label="Primary"
+      className="fixed left-1/2 top-4 z-50 w-[calc(100%-1rem)] max-w-[480px] -translate-x-1/2 sm:top-7 lg:w-auto lg:max-w-none"
+    >
       <div
         className={cn(
           "relative flex items-center gap-2 rounded-full border border-black/10 bg-white/90 px-2 py-1.5 shadow-xl backdrop-blur-md transition-all duration-300",

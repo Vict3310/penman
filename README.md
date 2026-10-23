@@ -19,8 +19,8 @@ administration dashboard at `/admin`.
 | Language | TypeScript, `strict` + `noUncheckedIndexedAccess` |
 | Styling | Tailwind CSS, tokens ported from `design.html` |
 | Components | Hand-rolled primitives (Radix UI underneath where a component needs it) |
-| Database | Supabase PostgreSQL |
-| Auth | Supabase Auth |
+| Database | PostgreSQL (Supabase, Neon or any Postgres) |
+| Auth | Application-owned: Argon2id passwords, server-managed sessions |
 | Storage | Supabase Storage (public `media` bucket) |
 | Server logic | Server Actions and Server Components only |
 | Validation | Zod, shared by public forms and admin CRUD |
@@ -39,17 +39,22 @@ Visitor / Admin
 Next.js on Vercel          ← all pages, server actions and route handlers
       │
       ▼
-Supabase                   ← Postgres (+ RLS), Auth, Storage
+Supabase                   ← Postgres (+ RLS), Storage
+Postgres (DATABASE_URL)    ← accounts, sessions, reset tokens (direct `pg`)
 ```
 
-There is no separate API server and no second frontend deployment.
+There is no separate API server and no second frontend deployment. Authentication
+is owned by the application itself (see `src/lib/auth/`): passwords are hashed with
+Argon2id, and sessions are opaque tokens whose hashes live in `public.sessions`.
+There is no third-party identity provider in the request path.
 
 ```
 src/
   app/
     (site)/                 public pages (shared nav + footer)
+    (site)/account/         customer account area
     admin/                  protected dashboard
-    login/                  administrator sign-in
+    login/                  sign-in for every account
     actions/
       public.ts             public enquiry submissions
       admin.ts              authorized CRUD
@@ -60,7 +65,7 @@ src/
   lib/
     queries.ts              data access (public + admin)
     validation.ts           Zod schemas
-    auth.ts                 server-side authorization
+    auth/                   passwords, sessions, authorization
     site.ts                 editable site settings
     supabase/               public / server / admin / browser clients
 supabase/
@@ -73,13 +78,19 @@ tests/                      unit tests
 
 Three independent layers, so hiding the admin UI is never the only defence:
 
-1. **Middleware** redirects anonymous visitors away from `/admin` (convenience only).
-2. **`requireAdmin()`** runs at the top of every admin page and every admin server
-   action. It requires both a `profiles.role = 'admin'` row *and* an email listed in
-   `ADMIN_EMAIL_ALLOWLIST`.
-3. **Postgres RLS** is enabled on every table. Public visitors can read published
+1. **Proxy (`src/proxy.ts`)** redirects traffic without a session cookie away from
+   `/account` (convenience only).
+2. **`requireAdminPage()` / `getAdminSession()`** run at the top of every admin page
+   and every admin server action. They resolve the session cookie against the
+   database on every request and require `profiles.role = 'admin'`. The role is the
+   only signal: `ADMIN_EMAIL_ALLOWLIST` no longer grants access.
+3. **`requireCustomer()`** guards the account layout the same way, resolving the
+   session rather than trusting the cookie's presence.
+4. **Postgres RLS** is enabled on every table. Public visitors can read published
    listings only. Enquiry tables have no anon policy at all — public submissions are
-   written by server actions using the service-role key.
+   written by server actions using the service-role key. `sessions` and
+   `password_reset_tokens` have RLS enabled and **no** policy, so they are readable
+   only through the server's `pg` connection.
 
 ---
 
@@ -87,7 +98,7 @@ Three independent layers, so hiding the admin UI is never the only defence:
 
 ```bash
 npm install
-cp .env.example .env.local     # then fill in your Supabase values
+cp .env.example .env.local     # fill in Supabase values and DATABASE_URL
 npm run dev                    # http://localhost:3000
 ```
 
@@ -141,8 +152,11 @@ domain and a non-dialable number, and images come from an allow-listed placehold
    …or paste each file from `supabase/migrations/` into the Supabase SQL editor, in
    filename order:
 
-   - `0001_init.sql` — tables, indexes, constraints, triggers, RLS policies
+      - `0001_init.sql` — tables, indexes, constraints, triggers, RLS policies
    - `0002_storage.sql` — the public `media` bucket and its access policies
+   - `0003_own_auth.sql` — application-owned accounts, sessions and reset tokens
+   - `0004_account_area.sql` — per-customer enquiry ownership and saved listings
+   - `0005_imported_inventory.sql` — imported inventory provenance and audit runs
 
 3. **Development only:** load the demonstration data.
 
@@ -154,11 +168,13 @@ domain and a non-dialable number, and images come from an allow-listed placehold
    **Never run it against production.**
 
 4. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and
-   `SUPABASE_SERVICE_ROLE_KEY` from **Project Settings → API**.
+   `SUPABASE_SERVICE_ROLE_KEY` from **Project Settings → API**, and set
+   `DATABASE_URL` to the project's direct Postgres connection string (used for
+   accounts, sessions and password changes).
 
 ### Verifying the schema without a database
 
-`npm run db:verify` applies both migrations and the seed file to an embedded
+`npm run db:verify` applies every migration and the seed file to an embedded
 PostgreSQL engine (PGlite) with the small pieces of Supabase's own schema stubbed in,
 then asserts the result: every table exists with RLS enabled, every policy is present
 and correctly gated, constraints genuinely reject invalid data, triggers maintain
@@ -173,27 +189,32 @@ core from v13 onward, which every current Supabase project runs.
 
 ---
 
-## Creating the first administrator
+## Accounts and the first administrator
 
-Public users cannot register and cannot promote themselves. An administrator is
-created deliberately:
+Customers register at `/signup` and sign in at `/login`; they land in `/account`.
+Registration is open, but it cannot create an administrator: the INSERT that
+registers a customer never names `role`, so the database default (`viewer`) applies.
 
-1. In the Supabase dashboard, go to **Authentication → Users → Add user**, create the
-   account with the owner's email and a strong password. (The `on_auth_user_created`
-   trigger automatically creates a matching `profiles` row with role `viewer`.)
-2. Promote that account:
+An administrator is created deliberately, once, with the operator-run bootstrap
+script (it talks to `DATABASE_URL` directly and is not reachable from a request):
 
-   ```sql
-   update public.profiles
-      set role = 'admin'
-    where lower(email) = lower('owner@penmanempire.com');
-   ```
+```bash
+npm run create-admin -- --email owner@penmanempire.com
+# prompts for a password, or pass --password for non-interactive use
+```
 
-3. Add the same address to `ADMIN_EMAIL_ALLOWLIST` in your environment (comma-separate
-   multiple administrators).
-4. Sign in at `/login`.
+It refuses to overwrite an existing account. To promote an existing customer,
+change `profiles.role` in SQL instead:
 
-Both checks must pass, so a compromised allowlist entry alone is not enough.
+```sql
+update public.profiles
+   set role = 'admin'
+ where lower(email) = lower('owner@penmanempire.com');
+```
+
+Access to `/admin` is decided by `profiles.role` on every request. The
+`ADMIN_EMAIL_ALLOWLIST` variable is only a default email for the bootstrap script;
+it does not grant access.
 
 ---
 
@@ -206,11 +227,58 @@ Everything the business owner needs to change lives in `/admin`:
 - **Categories** — shop product categories and their display order.
 - **Enquiries** — rental, property, shop and contact messages, each with a status
   workflow and private internal notes.
+- **Import** — review imported stock held as drafts, then publish it (see below).
 - **Settings** — business name, logo, phone, WhatsApp, email, address, social links,
   homepage hero, about text, footer note and default SEO metadata.
 
 Site content is stored in `site_settings`; featured homepage items are driven by the
 `is_featured` flag on each record. No content requires a code change.
+
+---
+
+## Imported inventory
+
+Cars for sale can be brought in from an external dataset instead of being typed in by
+hand. The importer writes into the same `products` catalogue the shop already uses —
+there is no second inventory — and it is deliberately narrow about what it will do.
+
+```bash
+npm run cars:import -- --dry-run     # report only; writes no products at all
+npm run cars:import -- --limit 12    # a small first batch, held as drafts
+npm run cars:import                  # every record, still as drafts
+npm run cars:import -- --publish     # publish as it imports, skipping review
+npm run cars:import -- --help
+```
+
+Source: the Hugging Face dataset `Binaryy/cars-for-sale` (1,332 for-sale listings with
+price, mileage and condition). Other flags: `--images embedded|url|none`,
+`--dataset <path|url>`, `--refresh`, `--only-missing`, `--batch <n>`, `--quiet`.
+
+**How it stays safe**
+
+- Imported rows are the only rows it writes. Every statement is scoped to
+  `inventory_source = 'huggingface:Binaryy/cars-for-sale'`, so a hand-curated listing is
+  outside its reach by construction. It never deletes, never resets a table, and never
+  writes to `vehicles` — the rental fleet, which this data cannot honestly describe.
+- Re-running is a no-op. Each row stores a hash of exactly what the importer wrote
+  (`specs.import_hash`); a row that no longer matches it has been edited here since, and
+  is skipped rather than overwritten.
+- Listings arrive as `draft` and `unavailable`, so nothing reaches the catalogue until
+  it is reviewed at `/admin/import`. Imported cards and pages are always labelled, the
+  price is attributed to the source marketplace, and availability is never claimed.
+- Every run is recorded: `inventory_imports` holds the summary (counts by reason,
+  dataset revision) and `.cache/cars-import/logs/` holds the per-record detail.
+
+**Images.** By default the JPEG bytes shipped inside the dataset are validated (magic
+bytes, not the extension), size-capped at the bucket's 5 MB limit and uploaded into the
+existing `media` storage bucket. `--images url` fetches the original URL instead, with a
+15-second timeout, bounded retries and `403`/`404` treated as permanent. `--images none`
+imports without pictures. Objects are keyed by content hash, so the same picture is
+never stored twice, and a failed picture leaves the card's placeholder in place.
+
+**Before publishing publicly:** the dataset declares no licence, and its photographs
+originate from a third-party Nigerian marketplace. Confirm the rights first — which is
+why the import is held as drafts. No imported car is ever added to the rental fleet.
 
 ---
 
@@ -244,8 +312,8 @@ checkout can be layered on later without a rewrite.
 ## Deployment
 
 See **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** for the full Vercel + Supabase runbook,
-including authentication redirect URLs, storage policy verification, backups and the
-post-deploy verification checklist.
+including the database and TLS settings, administrator bootstrap, storage policy
+verification, backups and the post-deploy verification checklist.
 
 ---
 

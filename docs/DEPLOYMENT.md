@@ -1,10 +1,13 @@
 # Deployment guide — Vercel + Supabase
 
 The whole product is **one** Next.js application. Vercel hosts it; Supabase provides the
-database, authentication and image storage.
+database and image storage. Authentication is owned by the application: Passwords are
+hashed with Argon2id and sessions are stored in `public.sessions`, reached over
+`DATABASE_URL` with the `pg` driver.
 
 ```
-Visitor / Admin → Next.js on Vercel → Supabase (Postgres + Auth + Storage)
+Visitor / Admin → Next.js on Vercel → Supabase (Postgres + Storage)
+                                    → Postgres via DATABASE_URL (accounts + sessions)
 ```
 
 ---
@@ -29,47 +32,50 @@ supabase link --project-ref <your-project-ref>
 supabase db push
 ```
 
-Or paste `supabase/migrations/0001_init.sql` and then `0002_storage.sql` into the SQL
-editor, in that order.
+Or paste every file in `supabase/migrations/` into the SQL editor in filename order:
+`0001_init.sql`, `0002_storage.sql`, `0003_own_auth.sql`, `0004_account_area.sql`,
+`0005_imported_inventory.sql`.
 
 Confirm afterwards that:
 
 - every table in `public` shows **RLS enabled**
+- `public.sessions` and `public.password_reset_tokens` have RLS enabled and **no**
+  policy (they are server-only by construction)
+- `public.profiles` no longer depends on `auth.users`
 - the `media` bucket exists and is **public**
 - `storage.objects` has the four `media_*` policies
 
-### 2.2 Configure authentication redirect URLs
+### 2.2 Authentication configuration
 
-**Authentication → URL Configuration**:
+No Supabase Auth configuration is required: the application does not use Supabase
+Auth, so there are no redirect URLs or email templates to set there. Sign-in is
+email + password against `public.profiles`, and the only deployment setting that
+matters is a reachable `DATABASE_URL` (see §3).
 
-- **Site URL:** `https://penmanempire.com`
-- **Redirect URLs:** add
-
-  ```
-  https://penmanempire.com/**
-  https://*.vercel.app/**
-  http://localhost:3000/**
-  ```
-
-Sign-in here uses email + password, so no OAuth provider is required. If email
-confirmation is enabled, remember the owner must confirm before their first sign-in.
+Optional session tuning: `AUTH_SESSION_TTL_DAYS` (1–90, default 7) and
+`AUTH_COOKIE_SECURE` (defaults to on in production).
 
 ### 2.3 Create the first administrator
 
-1. **Authentication → Users → Add user** with the owner's email and a strong password.
-   The `on_auth_user_created` trigger creates a `profiles` row with role `viewer`.
-2. Promote it:
+Customers can sign up at `/signup`, but they can never become administrators; the
+registration path does not accept a role at all. Bootstrap the first administrator
+once, against `DATABASE_URL`:
 
-   ```sql
-   update public.profiles
-      set role = 'admin'
-    where lower(email) = lower('owner@penmanempire.com');
-   ```
+```bash
+npm run create-admin -- --email owner@penmanempire.com
+```
 
-3. Put the same address in `ADMIN_EMAIL_ALLOWLIST` (see §3).
+The script prompts for a password and refuses to overwrite an existing account.
+To promote an existing customer instead:
 
-Never create administrator accounts from the public site — there is deliberately no
-public sign-up.
+```sql
+update public.profiles
+   set role = 'admin'
+ where lower(email) = lower('owner@penmanempire.com');
+```
+
+`ADMIN_EMAIL_ALLOWLIST` is not an access check; it is only the default email for the
+bootstrap script.
 
 ### 2.4 Production data
 
@@ -104,15 +110,21 @@ must never be imported into a client component.
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | your anon / publishable key |
    | `SUPABASE_SERVICE_ROLE_KEY` | your service-role key |
    | `DATABASE_URL` | your Postgres connection string |
-   | `BETTER_AUTH_SECRET` | a long random secret |
-   | `BETTER_AUTH_API_KEY` | Better Auth dashboard key |
-   | `ADMIN_EMAIL_ALLOWLIST` | `owner@penmanempire.com,ops@penmanempire.com` |
+   | `ADMIN_EMAIL_ALLOWLIST` | `owner@penmanempire.com` (bootstrap default only) |
    | `NEXT_PUBLIC_SITE_URL` | `https://penmanempire.com` |
 
    `NEXT_PUBLIC_SITE_URL` drives canonical URLs, the sitemap and `robots.txt`. Set it
    before the first production deploy so metadata is correct from the start.
-   `BETTER_AUTH_SECRET` and `BETTER_AUTH_API_KEY` are required for the Better Auth
-   dashboard connectivity check and auth session security.
+
+   `DATABASE_URL` must be the **direct** Postgres connection string (or a pooler URL),
+   not the PostgREST endpoint: account creation, password changes and session
+   revocation are transactions. Remote hosts are always connected over TLS; the peer
+   certificate is not verified by default because Supabase's pooler chain does not
+   resolve. Set `DATABASE_SSL_VERIFY=true` where the chain does resolve, or
+   `sslmode=verify-full` in the URL.
+
+   The old `BETTER_AUTH_SECRET`, `BETTER_AUTH_API_KEY`, `AUTH_SECRET` and `CLERK_*`
+   variables are no longer read — delete them if they are still set.
 
 3. **Deploy.**
 4. If the key values change later, redeploy — `next.config.ts` derives its allowed
@@ -152,8 +164,8 @@ Run through this against the production URL:
 
 **Admin**
 
-- [ ] `/admin` redirects to `/login` when signed out
-- [ ] Signing in with a non-admin account is refused
+- [ ] `/admin` returns the custom 404 when signed out
+- [ ] Signing in with a non-admin account reaches `/account`, not `/admin`
 - [ ] Signing in with the admin account lands on the overview
 - [ ] Dashboard counts match the real data (not zero, not invented)
 - [ ] Creating, editing, publishing, unpublishing and archiving a vehicle/property/product works
@@ -161,6 +173,13 @@ Run through this against the production URL:
 - [ ] Deleting an enquiry-referenced listing keeps the enquiry readable
 - [ ] Saving Settings changes the public site
 - [ ] Destructive actions ask for confirmation
+
+**Accounts**
+
+- [ ] Signing up at `/signup` creates an account and lands in `/account`
+- [ ] `/account` redirects to `/login?next=…` when signed out, and returns there after
+- [ ] Changing the password signs out other devices and keeps this one signed in
+- [ ] Saving and removing a listing works, and only affects the signed-in customer
 
 **Security**
 
@@ -181,7 +200,8 @@ For production traffic, also enable a platform control:
 - Vercel **Firewall / Bot Protection** on `/actions/*` and form POSTs, or
 - a WAF rule limiting POST frequency per IP
 
-Sign-in attempts are rate limited separately (8 per 15 minutes per IP).
+Sign-in attempts are rate limited separately (8 per 10 minutes per IP), and password
+changes are limited to 8 per 10 minutes per session.
 
 ---
 
@@ -218,7 +238,11 @@ rewrite:
 - Automated payment confirmation and order fulfilment / delivery tracking
 - Real-time fleet availability and automated reservation guarantees
 - Driver dispatch and scheduling
-- Customer accounts
+- Email delivery for password resets (the token table and flows exist; there is no
+  email provider wired up yet)
+
+Customer accounts already exist: `/signup`, `/login` and `/account` (overview, profile,
+security, saved listings and enquiry history).
 
 `shop_enquiries` already carries `quantity` and `channel`, and every business record
 uses consistent `status` fields, so these can be layered on top.

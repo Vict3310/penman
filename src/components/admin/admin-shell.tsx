@@ -9,6 +9,7 @@ import {
   CarFront,
   ChevronRight,
   ExternalLink,
+  FileDown,
   FileText,
   FolderOpen,
   ImageIcon,
@@ -58,6 +59,7 @@ const NAV_GROUPS: { title: string; items: NavItem[] }[] = [
     title: "Website",
     items: [
       { href: "/admin/categories", label: "Categories", icon: Tags },
+      { href: "/admin/import", label: "Inventory import", icon: FileDown },
       { href: "/admin/media", label: "Media library", icon: ImageIcon },
       { href: "/admin/content", label: "Website content", icon: FolderOpen },
     ],

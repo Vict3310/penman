@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
+import { getSessionUser } from "@/lib/auth/current-user";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { hasServiceRole } from "@/lib/env";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
@@ -35,15 +35,40 @@ function toObject(formData: FormData): Record<string, string> {
 const NOT_CONFIGURED =
   "We could not save your enquiry because the website is not connected to its database yet. Please contact us directly in the meantime.";
 
-const SIGN_IN_REQUIRED = "Please sign in or create an account before sending an enquiry.";
+/*
+ * Enquiries are open to anonymous visitors on purpose.
+ *
+ * An earlier revision required a signed-in account before an enquiry could be
+ * sent, which meant an unconfigured identity provider silently blocked every
+ * contact form on the site. That is the opposite of what a business with a
+ * contact page needs, so the gate is gone: browse and enquire freely, create
+ * an account only if you want one.
+ *
+ * The protections that actually matter stay in place. Each action below
+ * applies a per-client rate limit before touching the database, every payload
+ * is validated with zod, and the inserts run through the service-role client,
+ * which is never reachable from the browser.
+ *
+ * When a signed-in customer submits one, the row is stamped with THEIR id so
+ * it can appear in their account area. That id comes from the session and is
+ * never read from the form — a hidden field carrying a user id would let
+ * anyone attribute an enquiry to anyone. A guest enquiry simply has no owner,
+ * which is a legitimate state: see migration 0004.
+ */
 
-async function requireSignedInUser() {
-  const { userId } = await auth();
-  if (!userId) {
+/**
+ * The id of the signed-in customer, or null for a guest.
+ *
+ * Wrapped because these actions must never fail on attribution: if the session
+ * cannot be resolved the enquiry is still a valid enquiry, and refusing to
+ * accept it would be a worse outcome than filing it unowned.
+ */
+async function currentCustomerId(): Promise<string | null> {
+  try {
+    return (await getSessionUser())?.id ?? null;
+  } catch {
     return null;
   }
-
-  return { userId };
 }
 
 /* ── Rental enquiry ──────────────────────────────────────────────────── */
@@ -52,9 +77,6 @@ export async function submitRentalEnquiry(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
-  const signedInUser = await requireSignedInUser();
-  if (!signedInUser) return fail(SIGN_IN_REQUIRED);
-
   const limit = rateLimit(await clientKey("rental"));
   if (!limit.ok) return fail(RATE_LIMIT_MESSAGE);
 
@@ -82,6 +104,7 @@ export async function submitRentalEnquiry(
     }
 
     const { error } = await supabase.from("rental_enquiries").insert({
+      user_id: await currentCustomerId(),
       vehicle_id: input.vehicle_id,
       vehicle_name: vehicleName,
       name: input.name,
@@ -108,9 +131,6 @@ export async function submitPropertyEnquiry(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
-  const signedInUser = await requireSignedInUser();
-  if (!signedInUser) return fail(SIGN_IN_REQUIRED);
-
   const limit = rateLimit(await clientKey("property"));
   if (!limit.ok) return fail(RATE_LIMIT_MESSAGE);
 
@@ -136,6 +156,7 @@ export async function submitPropertyEnquiry(
     }
 
     const { error } = await supabase.from("property_enquiries").insert({
+      user_id: await currentCustomerId(),
       property_id: input.property_id,
       property_title: propertyTitle,
       name: input.name,
@@ -160,9 +181,6 @@ export async function submitShopEnquiry(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
-  const signedInUser = await requireSignedInUser();
-  if (!signedInUser) return fail(SIGN_IN_REQUIRED);
-
   const limit = rateLimit(await clientKey("shop"));
   if (!limit.ok) return fail(RATE_LIMIT_MESSAGE);
 
@@ -188,6 +206,7 @@ export async function submitShopEnquiry(
     }
 
     const { error } = await supabase.from("shop_enquiries").insert({
+      user_id: await currentCustomerId(),
       product_id: input.product_id,
       product_name: productName,
       name: input.name,
@@ -212,9 +231,6 @@ export async function submitContactMessage(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
-  const signedInUser = await requireSignedInUser();
-  if (!signedInUser) return fail(SIGN_IN_REQUIRED);
-
   const limit = rateLimit(await clientKey("contact"));
   if (!limit.ok) return fail(RATE_LIMIT_MESSAGE);
 

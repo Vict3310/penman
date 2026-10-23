@@ -626,6 +626,7 @@ export const DEMO_PRODUCTS: Product[] = [
 export const DEMO_RENTAL_ENQUIRIES: RentalEnquiry[] = [
   {
     id: "50000000-0000-4000-8000-000000000001",
+    user_id: null,
     vehicle_id: DEMO_VEHICLES[0]!.id,
     vehicle_name: DEMO_VEHICLES[0]!.name,
     name: "Amara Okafor",
@@ -641,6 +642,7 @@ export const DEMO_RENTAL_ENQUIRIES: RentalEnquiry[] = [
   },
   {
     id: "50000000-0000-4000-8000-000000000002",
+    user_id: null,
     vehicle_id: DEMO_VEHICLES[2]!.id,
     vehicle_name: DEMO_VEHICLES[2]!.name,
     name: "Nneka Solomon",
@@ -656,6 +658,7 @@ export const DEMO_RENTAL_ENQUIRIES: RentalEnquiry[] = [
   },
   {
     id: "50000000-0000-4000-8000-000000000003",
+    user_id: null,
     vehicle_id: DEMO_VEHICLES[4]!.id,
     vehicle_name: DEMO_VEHICLES[4]!.name,
     name: "Daniel Eze",
@@ -674,6 +677,7 @@ export const DEMO_RENTAL_ENQUIRIES: RentalEnquiry[] = [
 export const DEMO_PROPERTY_ENQUIRIES: PropertyEnquiry[] = [
   {
     id: "60000000-0000-4000-8000-000000000001",
+    user_id: null,
     property_id: DEMO_PROPERTIES[0]!.id,
     property_title: DEMO_PROPERTIES[0]!.title,
     name: "Mabel Adeyemi",
@@ -687,6 +691,7 @@ export const DEMO_PROPERTY_ENQUIRIES: PropertyEnquiry[] = [
   },
   {
     id: "60000000-0000-4000-8000-000000000002",
+    user_id: null,
     property_id: DEMO_PROPERTIES[1]!.id,
     property_title: DEMO_PROPERTIES[1]!.title,
     name: "Ifeanyi Okoye",
@@ -700,6 +705,7 @@ export const DEMO_PROPERTY_ENQUIRIES: PropertyEnquiry[] = [
   },
   {
     id: "60000000-0000-4000-8000-000000000003",
+    user_id: null,
     property_id: DEMO_PROPERTIES[3]!.id,
     property_title: DEMO_PROPERTIES[3]!.title,
     name: "Grace Thompson",
@@ -716,6 +722,7 @@ export const DEMO_PROPERTY_ENQUIRIES: PropertyEnquiry[] = [
 export const DEMO_SHOP_ENQUIRIES: ShopEnquiry[] = [
   {
     id: "70000000-0000-4000-8000-000000000001",
+    user_id: null,
     product_id: DEMO_PRODUCTS[1]!.id,
     product_name: DEMO_PRODUCTS[1]!.name,
     name: "Tosin Adebayo",
@@ -731,6 +738,7 @@ export const DEMO_SHOP_ENQUIRIES: ShopEnquiry[] = [
   },
   {
     id: "70000000-0000-4000-8000-000000000002",
+    user_id: null,
     product_id: DEMO_PRODUCTS[4]!.id,
     product_name: DEMO_PRODUCTS[4]!.name,
     name: "Chinedu Nnaji",
@@ -746,6 +754,7 @@ export const DEMO_SHOP_ENQUIRIES: ShopEnquiry[] = [
   },
   {
     id: "70000000-0000-4000-8000-000000000003",
+    user_id: null,
     product_id: DEMO_PRODUCTS[0]!.id,
     product_name: DEMO_PRODUCTS[0]!.name,
     name: "Ada Okafor",

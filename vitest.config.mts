@@ -17,5 +17,11 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts"],
+    // Several suites boot their own embedded Postgres (PGlite) and apply all
+    // five migrations in `beforeAll`. That is real work — roughly 5 seconds per
+    // engine before any test runs — so the 10 second default is too tight once
+    // suites start in parallel on a modest machine. The assertions themselves
+    // keep the default per-test timeout.
+    hookTimeout: 60_000,
   },
 });

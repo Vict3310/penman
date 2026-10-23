@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { signOut } from "@/app/actions/auth";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdminPage } from "@/lib/auth/admin";
 import { adminDashboardCounts } from "@/lib/queries";
 import { getSiteSettings } from "@/lib/site";
 
@@ -13,7 +13,8 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireAdmin();
+  // Renders the site's custom 404 for anyone who is not an administrator.
+  const user = await requireAdminPage();
   const settings = await getSiteSettings();
   const counts = await adminDashboardCounts();
 

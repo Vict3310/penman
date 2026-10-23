@@ -1,12 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { auth } from "@clerk/nextjs/server";
-import { getAdminAllowlist, isAdminEmail, getSiteUrl, isClerkConfigured } from "@/lib/env";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { getAdminAllowlist, isAdminEmail, getSiteUrl } from "@/lib/env";
 import { rateLimit } from "@/lib/rate-limit";
 import { submitContactMessage } from "@/app/actions/public";
-
-vi.mock("@clerk/nextjs/server", () => ({
-  auth: vi.fn(),
-}));
 
 const ORIGINAL = { ...process.env };
 
@@ -57,25 +52,6 @@ describe("getSiteUrl", () => {
   });
 });
 
-describe("isClerkConfigured", () => {
-  it("returns true only when the public and secret Clerk keys are present", () => {
-    process.env.NEXT_PUBLIC_SITE_URL = "https://penmanempire.com";
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_123";
-    process.env.CLERK_SECRET_KEY = "sk_test_123";
-    expect(isClerkConfigured()).toBe(true);
-
-    delete process.env.CLERK_SECRET_KEY;
-    expect(isClerkConfigured()).toBe(false);
-  });
-
-  it("disables Clerk on localhost to avoid loading production scripts in local development", () => {
-    process.env.NEXT_PUBLIC_SITE_URL = "http://localhost:3000";
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_live_abc123";
-    process.env.CLERK_SECRET_KEY = "sk_live_def456";
-    expect(isClerkConfigured()).toBe(false);
-  });
-});
-
 describe("rateLimit", () => {
   it("allows up to the limit and then blocks with a retry hint", () => {
     const key = `test-${Math.random()}`;
@@ -103,9 +79,18 @@ describe("rateLimit", () => {
 });
 
 describe("public enquiry access", () => {
-  it("blocks unauthenticated users from sending public enquiries", async () => {
-    vi.mocked(auth).mockResolvedValue({ userId: null } as never);
-
+  /**
+   * This test previously asserted the exact opposite, and that assertion was
+   * the bug: it required a signed-in account before an enquiry could be sent,
+   * which left every contact form on the site unusable for ordinary visitors
+   * and, with the identity provider unconfigured, unusable for everyone.
+   *
+   * Browsing and enquiring are open to the public by design, so the test now
+   * pins that down. What is asserted is that an anonymous visitor gets past
+   * authentication entirely: the outcome is decided by whether the database is
+   * configured, never by whether someone is signed in.
+   */
+  it("accepts an enquiry from an anonymous visitor without asking for an account", async () => {
     const formData = new FormData();
     formData.set("name", "Jane Doe");
     formData.set("phone", "+2348000000000");
@@ -115,7 +100,12 @@ describe("public enquiry access", () => {
 
     const result = await submitContactMessage({ ok: false, message: "", errors: {} }, formData);
 
+    // The visitor must never be told to sign in or create an account.
+    expect(result.message).not.toMatch(/sign in|sign up|create an account/i);
+
+    // With no database configured, the action must say so honestly rather than
+    // claim the enquiry was saved.
     expect(result.ok).toBe(false);
-    expect(result.message).toMatch(/sign in|sign up/i);
+    expect(result.message).toMatch(/not connected|database/i);
   });
 });

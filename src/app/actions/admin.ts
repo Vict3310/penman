@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdminForAction } from "@/lib/auth/admin";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { fail, succeed, type ActionResult } from "@/lib/action-result";
 import {
@@ -14,10 +14,34 @@ import {
 } from "@/lib/validation";
 
 /**
- * Every action below begins with `requireAdmin()`, which redirects unless the
- * caller is a verified administrator. Authorization is therefore enforced on
- * the server for every mutation, independent of what the UI shows.
+ * Every action below establishes that the caller is an administrator by
+ * reading their session and then their `profiles` row from the database. No
+ * client-supplied claim is involved, so authorization is enforced on the
+ * server for every mutation regardless of what the UI renders.
+ *
+ * Two guards exist because the actions return two different shapes:
+ *
+ *   denialResult() — for actions returning an ActionResult, so the refusal is
+ *                    a message the operator can read.
+ *   assertAdmin()  — for <form>-bound actions returning void. Those cannot
+ *                    carry a message, so they abort loudly rather than
+ *                    appearing to succeed while silently changing nothing.
+ *
+ * Neither guard is capable of reporting a fake success: an unauthorised call
+ * never mutates anything and is never told that it did.
  */
+
+/** Returns a failure result when the caller is not an administrator, else null. */
+async function denialResult(): Promise<ActionResult | null> {
+  const admin = await requireAdminForAction();
+  return admin ? null : fail("You do not have permission to do that.");
+}
+
+/** Aborts a form-bound action when the caller is not an administrator. */
+async function assertAdmin(): Promise<void> {
+  const admin = await requireAdminForAction();
+  if (!admin) throw new Error("You do not have permission to perform that action.");
+}
 
 function parsePayload(formData: FormData): unknown {
   const raw = formData.get("payload");
@@ -52,7 +76,8 @@ function revalidatePublic(section: "rental" | "real-estate" | "shop") {
    ══════════════════════════════════════════════════════════════════════ */
 
 export async function saveVehicle(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
-  await requireAdmin();
+  const denial = await denialResult();
+  if (denial) return denial;
 
   const parsed = vehicleSchema.safeParse(parsePayload(formData));
   if (!parsed.success) {
@@ -83,7 +108,7 @@ export async function saveVehicle(_prev: ActionResult, formData: FormData): Prom
 }
 
 export async function setVehicleStatus(formData: FormData): Promise<void> {
-  await requireAdmin();
+  await assertAdmin();
   const id = formData.get("id");
   const status = formData.get("status");
   if (!isUuid(id) || typeof status !== "string") return;
@@ -98,7 +123,7 @@ export async function setVehicleStatus(formData: FormData): Promise<void> {
 }
 
 export async function deleteVehicle(formData: FormData): Promise<void> {
-  await requireAdmin();
+  await assertAdmin();
   const id = formData.get("id");
   if (!isUuid(id)) return;
 
@@ -115,7 +140,8 @@ export async function deleteVehicle(formData: FormData): Promise<void> {
    ══════════════════════════════════════════════════════════════════════ */
 
 export async function saveProperty(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
-  await requireAdmin();
+  const denial = await denialResult();
+  if (denial) return denial;
 
   const parsed = propertySchema.safeParse(parsePayload(formData));
   if (!parsed.success) {
@@ -146,7 +172,7 @@ export async function saveProperty(_prev: ActionResult, formData: FormData): Pro
 }
 
 export async function setPropertyStatus(formData: FormData): Promise<void> {
-  await requireAdmin();
+  await assertAdmin();
   const id = formData.get("id");
   const status = formData.get("status");
   if (!isUuid(id) || typeof status !== "string") return;
@@ -161,7 +187,7 @@ export async function setPropertyStatus(formData: FormData): Promise<void> {
 }
 
 export async function deleteProperty(formData: FormData): Promise<void> {
-  await requireAdmin();
+  await assertAdmin();
   const id = formData.get("id");
   if (!isUuid(id)) return;
 
@@ -176,7 +202,8 @@ export async function deleteProperty(formData: FormData): Promise<void> {
    ══════════════════════════════════════════════════════════════════════ */
 
 export async function saveProduct(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
-  await requireAdmin();
+  const denial = await denialResult();
+  if (denial) return denial;
 
   const parsed = productSchema.safeParse(parsePayload(formData));
   if (!parsed.success) {
@@ -207,7 +234,7 @@ export async function saveProduct(_prev: ActionResult, formData: FormData): Prom
 }
 
 export async function setProductStatus(formData: FormData): Promise<void> {
-  await requireAdmin();
+  await assertAdmin();
   const id = formData.get("id");
   const status = formData.get("status");
   if (!isUuid(id) || typeof status !== "string") return;
@@ -222,7 +249,7 @@ export async function setProductStatus(formData: FormData): Promise<void> {
 }
 
 export async function deleteProduct(formData: FormData): Promise<void> {
-  await requireAdmin();
+  await assertAdmin();
   const id = formData.get("id");
   if (!isUuid(id)) return;
 
@@ -237,7 +264,8 @@ export async function deleteProduct(formData: FormData): Promise<void> {
    ══════════════════════════════════════════════════════════════════════ */
 
 export async function saveCategory(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
-  await requireAdmin();
+  const denial = await denialResult();
+  if (denial) return denial;
 
   const parsed = categorySchema.safeParse(parsePayload(formData));
   if (!parsed.success) return fail("Please correct the highlighted fields.", zodFieldErrors(parsed.error));
@@ -261,7 +289,7 @@ export async function saveCategory(_prev: ActionResult, formData: FormData): Pro
 }
 
 export async function deleteCategory(formData: FormData): Promise<void> {
-  await requireAdmin();
+  await assertAdmin();
   const id = formData.get("id");
   if (!isUuid(id)) return;
 
@@ -287,7 +315,7 @@ const SHOP_STATUSES = ["new", "contacted", "fulfilled", "cancelled"];
 const STATUSES = ["new", "contacted", "confirmed", "declined", "closed"];
 
 export async function updateEnquiry(formData: FormData): Promise<void> {
-  await requireAdmin();
+  await assertAdmin();
 
   const table = formData.get("table");
   const id = formData.get("id");
@@ -321,7 +349,8 @@ export async function saveSettingsSection(
   _prev: ActionResult,
   formData: FormData,
 ): Promise<ActionResult> {
-  await requireAdmin();
+  const denial = await denialResult();
+  if (denial) return denial;
 
   const parsed = settingsSectionSchema.safeParse(parsePayload(formData));
   if (!parsed.success) return fail("Those settings could not be read. Please try again.");

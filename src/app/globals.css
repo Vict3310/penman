@@ -181,6 +181,23 @@
   }
 }
 
+/*
+ * Width of the persistent site rail.
+ *
+ * A custom property rather than a prop threaded through each component: the
+ * rail, the content offset and the collapse animation all read the same value,
+ * so they cannot disagree about how wide the rail currently is. The collapsed
+ * width is set on <html> by the rail itself, which is also where the stored
+ * preference is applied.
+ */
+:root {
+  --rail-w: 16.5rem;
+}
+
+:root[data-rail="collapsed"] {
+  --rail-w: 5rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -193,6 +210,12 @@
     filter: none !important;
     transition-duration: 0.01ms !important;
     animation: none !important;
+  }
+
+  /* The rail still collapses; it just gets there without animating. */
+  aside,
+  .rail-offset {
+    transition-duration: 0.01ms !important;
   }
   .animate-drift-a,
   .animate-drift-b,

@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { Client } from "pg";
 
+import { resolveSslConfig } from "./database-ssl.mjs";
+
 function readEnvLocal() {
   const filePath = path.resolve(process.cwd(), ".env.local");
   if (!fs.existsSync(filePath)) return {};
@@ -71,9 +73,12 @@ async function main() {
     throw new Error("DATABASE_URL is missing. Add it to .env.local or your shell environment.");
   }
 
+  // TLS is decided by the target host, not by NODE_ENV. Keying it off NODE_ENV
+  // meant that seeding a HOSTED database failed outside production: no TLS was
+  // requested at all, and a hosted Postgres refuses a plaintext connection.
   const client = new Client({
     connectionString: databaseUrl,
-    ssl: env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
+    ssl: resolveSslConfig(env),
   });
 
   await client.connect();

@@ -51,8 +51,20 @@ export interface Vehicle {
   updated_at: string;
 }
 
+/**
+ * The account that submitted an enquiry, or null.
+ *
+ * Null is the ordinary case rather than a defect: enquiries are open to
+ * anonymous visitors, and every enquiry sent before migration 0004 predates
+ * the column entirely. An enquiry is a business record first and an account's
+ * possession second, so ownership is optional attribution, never a
+ * requirement.
+ */
+export type EnquiryOwnerId = string | null;
+
 export interface RentalEnquiry {
   id: string;
+  user_id: EnquiryOwnerId;
   vehicle_id: string | null;
   vehicle_name: string | null;
   name: string;
@@ -111,6 +123,7 @@ export interface Property {
 
 export interface PropertyEnquiry {
   id: string;
+  user_id: EnquiryOwnerId;
   property_id: string | null;
   property_title: string | null;
   name: string;
@@ -133,6 +146,41 @@ export interface ProductCategory {
   updated_at: string;
 }
 
+/**
+ * Facts about an imported listing that came from its source dataset rather
+ * than from hand entry (migration 0005).
+ *
+ * Every field is optional and a null means the source did not state it — the
+ * importer never infers a year, a mileage or a condition to fill a gap.
+ */
+export interface ProductSpecs {
+  year?: number | null;
+  mileage_km?: number | null;
+  condition?: string | null;
+  condition_label?: string | null;
+  colour?: string | null;
+  make?: string | null;
+  model?: string | null;
+  region?: string | null;
+  state?: string | null;
+  area?: string | null;
+  /** The dataset's second name column; `name` is the one that matches the image. */
+  source_title_alt?: string | null;
+  source_price_raw?: string | null;
+  source_mileage_raw?: string | null;
+  source_row_index?: number | null;
+  source_image_path?: string | null;
+  /** Marks a historic marketplace listing rather than current Penman stock. */
+  historic_listing?: boolean;
+  availability_note?: string | null;
+  price_note?: string | null;
+  imported_by?: string | null;
+  /** Hash of what the importer last wrote; a mismatch means a human edited the row. */
+  import_hash?: string | null;
+  image_stored?: boolean;
+  image_problem?: string | null;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -153,11 +201,28 @@ export interface Product {
   published_at: string | null;
   created_at: string;
   updated_at: string;
+  /** Imported-listing provenance (migration 0005). Null on hand-curated rows. */
+  inventory_source?: string | null;
+  source_id?: string | null;
+  source_url?: string | null;
+  imported_at?: string | null;
+  specs?: ProductSpecs | null;
   category?: Pick<ProductCategory, "id" | "slug" | "name"> | null;
+}
+
+/**
+ * True when a listing was imported rather than curated by hand.
+ *
+ * The UI uses this to say so plainly, and to avoid claiming availability or a
+ * current market price for something that is a historic marketplace listing.
+ */
+export function isImported(product: Pick<Product, "inventory_source" | "imported_at">): boolean {
+  return Boolean(product.inventory_source || product.imported_at);
 }
 
 export interface ShopEnquiry {
   id: string;
+  user_id: EnquiryOwnerId;
   product_id: string | null;
   product_name: string | null;
   name: string;
@@ -193,3 +258,35 @@ export interface Profile {
   created_at: string;
   updated_at: string;
 }
+
+/**
+ * Saved-listing rows (migration 0004).
+ *
+ * One table per listing type, so each carries a real foreign key to the row it
+ * refers to. `UNIQUE (user_id, <listing>_id)` in the database is what makes a
+ * duplicate save impossible, and `ON DELETE CASCADE` is what makes a removed
+ * listing disappear from the account page on its own.
+ */
+export interface SavedVehicle {
+  id: string;
+  user_id: string;
+  vehicle_id: string;
+  created_at: string;
+}
+
+export interface SavedProduct {
+  id: string;
+  user_id: string;
+  product_id: string;
+  created_at: string;
+}
+
+export interface SavedProperty {
+  id: string;
+  user_id: string;
+  property_id: string;
+  created_at: string;
+}
+
+/** The three listing types a customer can save, in the order the UI shows them. */
+export type SavedKind = "vehicle" | "product" | "property";
