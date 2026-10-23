@@ -49,11 +49,14 @@ Confirm afterwards that:
 
 No Supabase Auth configuration is required: the application does not use Supabase
 Auth, so there are no redirect URLs or email templates to set there. Sign-in is
-email + password against `public.profiles`, and the only deployment setting that
-matters is a reachable `DATABASE_URL` (see §3).
+email + password against `public.profiles`. The deployment settings that matter are
+a reachable `DATABASE_URL` and, for password reset, a Resend key (see §3).
 
 Optional session tuning: `AUTH_SESSION_TTL_DAYS` (1–90, default 7) and
 `AUTH_COOKIE_SECURE` (defaults to on in production).
+
+Password reset lives at `/forgot-password` and `/reset-password`. Links are single
+use, expire after 60 minutes, and revoke every session when used.
 
 ### 2.3 Create the first administrator
 
@@ -110,6 +113,8 @@ must never be imported into a client component.
    | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | your anon / publishable key |
    | `SUPABASE_SERVICE_ROLE_KEY` | your service-role key |
    | `DATABASE_URL` | your Postgres connection string |
+   | `RESEND_API_KEY` | Resend key for password-reset email |
+   | `EMAIL_FROM` | `Penman Empire <no-reply@penmanempire.com>` |
    | `ADMIN_EMAIL_ALLOWLIST` | `owner@penmanempire.com` (bootstrap default only) |
    | `NEXT_PUBLIC_SITE_URL` | `https://penmanempire.com` |
 
@@ -125,6 +130,11 @@ must never be imported into a client component.
 
    The old `BETTER_AUTH_SECRET`, `BETTER_AUTH_API_KEY`, `AUTH_SECRET` and `CLERK_*`
    variables are no longer read — delete them if they are still set.
+
+   Password-reset mail is sent through Resend. Verify the sending domain under
+   Resend → Domains first, then set `EMAIL_FROM` to an address on it. Without
+   `RESEND_API_KEY`, the reset form still answers normally but no mail is sent —
+   a server log records the omission.
 
 3. **Deploy.**
 4. If the key values change later, redeploy — `next.config.ts` derives its allowed
@@ -179,6 +189,8 @@ Run through this against the production URL:
 - [ ] Signing up at `/signup` creates an account and lands in `/account`
 - [ ] `/account` redirects to `/login?next=…` when signed out, and returns there after
 - [ ] Changing the password signs out other devices and keeps this one signed in
+- [ ] "Forgot password?" on `/login` sends a link, and the link sets a new password once
+- [ ] An expired or reused reset link is refused with a clear message
 - [ ] Saving and removing a listing works, and only affects the signed-in customer
 
 **Security**
@@ -238,8 +250,8 @@ rewrite:
 - Automated payment confirmation and order fulfilment / delivery tracking
 - Real-time fleet availability and automated reservation guarantees
 - Driver dispatch and scheduling
-- Email delivery for password resets (the token table and flows exist; there is no
-  email provider wired up yet)
+- Email verification for new accounts (password-reset mail exists, but nothing
+  proves the customer owns the address)
 
 Customer accounts already exist: `/signup`, `/login` and `/account` (overview, profile,
 security, saved listings and enquiry history).

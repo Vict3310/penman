@@ -23,5 +23,10 @@ export default defineConfig({
     // suites start in parallel on a modest machine. The assertions themselves
     // keep the default per-test timeout.
     hookTimeout: 60_000,
+    // Four suites each boot their own embedded Postgres. Letting all of them
+    // initialise at once on a busy machine starves the CPU and turns a 4-second
+    // engine boot into a timeout, so cap concurrency; the pure unit suites are
+    // milliseconds and lose nothing.
+    maxWorkers: 2,
   },
 });

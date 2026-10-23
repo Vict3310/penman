@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import { ArrowRight, Eye, EyeOff } from "lucide-react";
 import { signIn } from "@/app/actions/auth";
@@ -32,9 +33,17 @@ export function LoginForm({ next, disabled }: { next: string; disabled?: boolean
       </div>
 
       <div>
-        <label htmlFor="password" className="field-label">
-          Password
-        </label>
+        <div className="flex items-baseline justify-between gap-3">
+          <label htmlFor="password" className="field-label">
+            Password
+          </label>
+          <Link
+            href="/forgot-password"
+            className="text-xs font-medium text-forest underline decoration-forest/30 underline-offset-4 transition-colors hover:decoration-forest"
+          >
+            Forgot password?
+          </Link>
+        </div>
         <div className="relative">
           <input
             id="password"

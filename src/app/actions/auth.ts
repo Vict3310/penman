@@ -3,15 +3,21 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { fail, type ActionResult } from "@/lib/action-result";
+import { fail, succeed, type ActionResult } from "@/lib/action-result";
 import { endSession, startFreshSession } from "@/lib/auth/current-user";
-import { getPool, isAuthDatabaseConfigured } from "@/lib/auth/db";
+import { getPool, isAuthDatabaseConfigured, withTransaction } from "@/lib/auth/db";
 import {
   MAX_PASSWORD_LENGTH,
   MIN_PASSWORD_LENGTH,
+  consumeVerificationTime,
   hashPassword,
   verifyPassword,
 } from "@/lib/auth/password";
+import {
+  RESET_TOKEN_TTL_MINUTES,
+  consumePasswordResetToken,
+  createPasswordResetToken,
+} from "@/lib/auth/reset";
 import {
   DuplicateEmailError,
   canSignIn,
@@ -19,10 +25,16 @@ import {
   findUserByEmail,
   markLogin,
 } from "@/lib/auth/users";
+import { sendPasswordResetEmail } from "@/lib/email";
+import { getSiteUrl } from "@/lib/env";
 import { clientKey, rateLimit } from "@/lib/rate-limit";
 import { safeInternalPath } from "@/lib/safe-path";
 import type { ProfileRole } from "@/lib/types";
-import { zodFieldErrors } from "@/lib/validation";
+import {
+  passwordResetRequestSchema,
+  passwordResetSchema,
+  zodFieldErrors,
+} from "@/lib/validation";
 
 const signInSchema = z.object({
   email: z.string().trim().email("Enter a valid email address"),
@@ -258,4 +270,148 @@ export async function signUp(_prev: ActionResult, formData: FormData): Promise<A
 export async function signOut(): Promise<void> {
   await endSession();
   redirect("/login");
+}
+
+/* ── Password reset ──────────────────────────────────────────────────── */
+
+/**
+ * The single answer to every reset request.
+ *
+ * Unknown address, disabled account, mail outage — all produce this, because a
+ * distinguishable answer would turn the form into an account-enumeration
+ * oracle. The customer still gets the useful instruction; they just cannot
+ * learn from it whether the address is registered.
+ */
+const RESET_REQUESTED = `If an account exists for that address, a reset link is on its way. It expires in ${RESET_TOKEN_TTL_MINUTES} minutes.`;
+
+/**
+ * Request a password reset link.
+ *
+ * Three protections, in order: validation, a tight per-IP rate limit, and a
+ * response that never varies with whether the account exists. Tokens are
+ * generated only for an active account that actually has a credential — a
+ * profile carried over from the old provider has no password to reset, and
+ * issuing a link would let anyone claim it by setting the first password.
+ */
+export async function requestPasswordReset(
+  _prev: ActionResult,
+  formData: FormData,
+): Promise<ActionResult> {
+  const parsed = passwordResetRequestSchema.safeParse({ email: text(formData, "email") });
+  if (!parsed.success) {
+    return fail("Please check the highlighted fields.", zodFieldErrors(parsed.error));
+  }
+
+  if (!isAuthDatabaseConfigured()) {
+    return fail(
+      "Password reset is not available on this deployment yet, because it has no database configured.",
+    );
+  }
+
+  const limit = rateLimit(await clientKey("password-reset"), 3, 15 * 60 * 1000);
+  if (!limit.ok) {
+    const minutes = Math.max(1, Math.ceil(limit.retryAfterSeconds / 60));
+    return fail(`Too many reset requests. Please try again in about ${minutes} minute(s).`);
+  }
+
+  try {
+    const pool = getPool();
+    const user = await findUserByEmail(pool, parsed.data.email);
+
+    if (!user || !canSignIn(user)) {
+      // Burn a comparable amount of work when there is nothing to send, so the
+      // response time does not answer the question the message refuses to.
+      await consumeVerificationTime(parsed.data.email);
+      return succeed(RESET_REQUESTED);
+    }
+
+    const { token } = await createPasswordResetToken(pool, user.id);
+    const resetUrl = `${getSiteUrl()}/reset-password?token=${encodeURIComponent(token)}`;
+
+    await sendPasswordResetEmail({
+      to: user.email,
+      name: user.full_name,
+      resetUrl,
+      expiresInMinutes: RESET_TOKEN_TTL_MINUTES,
+    });
+
+    return succeed(RESET_REQUESTED);
+  } catch (error) {
+    // A database or mail failure is not the customer's problem to diagnose, and
+    // saying anything else here would differ from the "no such account" answer.
+    console.error(
+      "Password reset request failed:",
+      error instanceof Error ? error.message : "unknown error",
+    );
+    return succeed(RESET_REQUESTED);
+  }
+}
+
+/**
+ * Complete a reset with a single-use token.
+ *
+ * The token is consumed, the password replaced and every session revoked in
+ * one transaction. A fresh session is then issued for this request, so the
+ * customer is signed in on the device where they just chose the password
+ * instead of being bounced back to a sign-in form.
+ */
+export async function resetPassword(
+  _prev: ActionResult,
+  formData: FormData,
+): Promise<ActionResult> {
+  const parsed = passwordResetSchema.safeParse({
+    token: text(formData, "token"),
+    password: text(formData, "password"),
+    confirmPassword: text(formData, "confirmPassword"),
+  });
+
+  if (!parsed.success) {
+    return fail("Please check the highlighted fields.", zodFieldErrors(parsed.error));
+  }
+
+  if (!isAuthDatabaseConfigured()) {
+    return fail(
+      "Password reset is not available on this deployment yet, because it has no database configured.",
+    );
+  }
+
+  const limit = rateLimit(await clientKey("password-reset-complete"), 8, 15 * 60 * 1000);
+  if (!limit.ok) {
+    const minutes = Math.max(1, Math.ceil(limit.retryAfterSeconds / 60));
+    return fail(`Too many attempts. Please try again in about ${minutes} minute(s).`);
+  }
+
+  let userId: string;
+
+  try {
+    const passwordHash = await hashPassword(parsed.data.password);
+    const result = await withTransaction((tx) =>
+      consumePasswordResetToken(tx, parsed.data.token, passwordHash),
+    );
+
+    if (!result) {
+      return fail("That reset link is invalid or has expired. Request a new one.");
+    }
+
+    userId = result.userId;
+  } catch (error) {
+    console.error(
+      "Password reset failed:",
+      error instanceof Error ? error.message : "unknown error",
+    );
+    return fail("We could not reset your password. Please try again.");
+  }
+
+  try {
+    await startFreshSession(userId);
+  } catch (error) {
+    console.error(
+      "Session could not be created after a password reset:",
+      error instanceof Error ? error.message : "unknown error",
+    );
+    // The password WAS changed, so do not imply otherwise. Send them to sign in.
+    redirect("/login?reset=1");
+  }
+
+  redirect("/account");
 }

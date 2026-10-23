@@ -62,6 +62,60 @@ export default async function SignupPage() {
       />
 
       <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16 lg:py-16">
+        {/*
+         * ── Form panel ────────────────────────────────────────────────
+         *
+         * First in the source, so a phone shows the fields immediately rather
+         * than a screen of marketing copy before them — and so the keyboard and
+         * screen-reader order matches what is on screen. `lg:order-last` moves
+         * it to the right-hand column when the two panels sit side by side.
+         */}
+        <section className="lg:order-last lg:px-4">
+          <div className="card-surface p-7 sm:p-9">
+            <p className="eyebrow">Get started</p>
+            <h2 className="mt-3 font-display text-3xl font-light tracking-tighter text-ink sm:text-4xl">
+              Create your account
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-black/55">
+              Takes a moment. You only need a name, an email and a password.
+            </p>
+
+            <div className="mt-8">
+              {isAuthDatabaseConfigured() ? (
+                <SignupForm />
+              ) : (
+                <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
+                  Accounts cannot be created on this deployment yet, because it has no database
+                  configured. Set
+                  <span className="mx-1 font-medium">DATABASE_URL</span>
+                  and apply the migrations to enable registration.
+                </p>
+              )}
+            </div>
+
+            <div className="mt-8 flex items-center gap-4">
+              <span className="h-px flex-1 bg-black/10" />
+              <span className="text-[11px] uppercase tracking-[0.2em] text-black/35">or</span>
+              <span className="h-px flex-1 bg-black/10" />
+            </div>
+
+            <p className="mt-6 text-center text-sm text-black/60">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-medium text-forest underline decoration-forest/30 underline-offset-4 transition-colors hover:decoration-forest"
+              >
+                Sign in
+              </Link>
+            </p>
+          </div>
+
+          <p className="mt-6 px-2 text-center text-xs leading-relaxed text-black/40">
+            You can delete your account at any time by contacting the team. We never sell your
+            details or use them for advertising.
+          </p>
+        </section>
+
         {/* ── Brand panel ─────────────────────────────────────────────── */}
         <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-forest via-forest to-forest-light p-8 text-white shadow-[0_30px_90px_rgba(18,40,26,0.28)] sm:p-12">
           <div
@@ -122,53 +176,6 @@ export default async function SignupPage() {
               </p>
             </div>
           </div>
-        </section>
-
-        {/* ── Form panel ──────────────────────────────────────────────── */}
-        <section className="lg:px-4">
-          <div className="card-surface p-7 sm:p-9">
-            <p className="eyebrow">Get started</p>
-            <h2 className="mt-3 font-display text-3xl font-light tracking-tighter text-ink sm:text-4xl">
-              Create your account
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-black/55">
-              Takes a moment. You only need a name, an email and a password.
-            </p>
-
-            <div className="mt-8">
-              {isAuthDatabaseConfigured() ? (
-                <SignupForm />
-              ) : (
-                <p className="rounded-xl bg-amber-50 p-4 text-sm text-amber-800">
-                  Accounts cannot be created on this deployment yet, because it has no database
-                  configured. Set
-                  <span className="mx-1 font-medium">DATABASE_URL</span>
-                  and apply the migrations to enable registration.
-                </p>
-              )}
-            </div>
-
-            <div className="mt-8 flex items-center gap-4">
-              <span className="h-px flex-1 bg-black/10" />
-              <span className="text-[11px] uppercase tracking-[0.2em] text-black/35">or</span>
-              <span className="h-px flex-1 bg-black/10" />
-            </div>
-
-            <p className="mt-6 text-center text-sm text-black/60">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="font-medium text-forest underline decoration-forest/30 underline-offset-4 transition-colors hover:decoration-forest"
-              >
-                Sign in
-              </Link>
-            </p>
-          </div>
-
-          <p className="mt-6 px-2 text-center text-xs leading-relaxed text-black/40">
-            You can delete your account at any time by contacting the team. We never sell your
-            details or use them for advertising.
-          </p>
         </section>
       </div>
     </main>

@@ -33,12 +33,13 @@ export interface ProfileCompletion {
  * Profile completeness, counted from fields this deployment can actually
  * store and the customer can actually fill in.
  *
- * `email_verified_at` is deliberately NOT one of the items. Nothing in this
- * project sends email yet, so that column can only be set by the operator's
- * bootstrap script — counting it would show every real customer a profile
- * that can never reach 100%, which is a fabricated statistic dressed up as a
- * progress bar. It is surfaced instead as an explicit note on the profile
- * page, saying plainly that verification is not yet enforced.
+ * `email_verified_at` is deliberately NOT one of the items. Password-reset mail
+ * exists (src/lib/email.ts), but nothing verifies that the customer owns the
+ * address, so that column can only be set by the operator's bootstrap script —
+ * counting it would show every real customer a profile that can never reach
+ * 100%, which is a fabricated statistic dressed up as a progress bar. It is
+ * surfaced instead as an explicit note on the profile page, saying plainly
+ * that verification is not yet enforced.
  */
 export function computeProfileCompletion(profile: ProfileSnapshot): ProfileCompletion {
   const items: ProfileCompletionItem[] = [

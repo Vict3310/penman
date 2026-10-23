@@ -73,8 +73,9 @@ function asStringSet(value: unknown): Set<string> {
  * buttons still work, and nothing about the page's usefulness depends on this
  * having succeeded.
  */
-function ensureLoaded(): void {
-  if (state.loaded || inflight) return;
+function ensureLoaded(force = false): void {
+  if (inflight) return;
+  if (state.loaded && !force) return;
 
   inflight = fetch("/api/account/state", { credentials: "same-origin" })
     .then((response) => (response.ok ? response.json() : null))
@@ -109,6 +110,23 @@ export function subscribeToAccount(listener: () => void): () => void {
   return () => {
     listeners.delete(listener);
   };
+}
+
+/**
+ * Re-read the session summary from the server.
+ *
+ * The store is module-level, so it survives client-side navigation — including
+ * the redirect a sign-in, sign-up or sign-out performs. Without a refresh the
+ * first snapshot (usually "signed out") would stay in place for the rest of the
+ * tab, so the sidebar would still offer "Sign in" to a customer who just
+ * created an account, and would keep showing a name after signing out.
+ *
+ * Called when the site chrome mounts. Concurrent calls share the in-flight
+ * request, so mounting the desktop rail and the mobile bar together costs one
+ * request, and the previous snapshot stays visible until the new one arrives.
+ */
+export function refreshAccountState(): void {
+  ensureLoaded(true);
 }
 
 export function getAccountSnapshot(): AccountState {

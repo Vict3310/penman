@@ -166,6 +166,42 @@ export const passwordChangeSchema = z
 
 export type PasswordChangeInput = z.input<typeof passwordChangeSchema>;
 
+/* ── password reset ──────────────────────────────────────────────────── */
+
+/**
+ * The address a reset link is requested for.
+ *
+ * Only shape is validated here. Whether an account exists is deliberately not
+ * something this schema (or the action) can reveal.
+ */
+export const passwordResetRequestSchema = z.object({
+  email: z.string().trim().max(254).email("Enter a valid email address"),
+});
+
+/**
+ * A reset link submission.
+ *
+ * `token` is opaque to the client and is re-hashed on the server; the length
+ * bound is only there to keep absurd input out of the query path. There is no
+ * `currentPassword`: the single-use token is the proof of identity, which is
+ * what makes this the one route an account with no credential can recover by.
+ */
+export const passwordResetSchema = z
+  .object({
+    token: z.string().trim().min(20, "That reset link is not valid.").max(200),
+    password: z
+      .string()
+      .min(MIN_PASSWORD_LENGTH, `Use at least ${MIN_PASSWORD_LENGTH} characters`)
+      .max(MAX_PASSWORD_LENGTH, "That password is too long"),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
+
+export type PasswordResetInput = z.input<typeof passwordResetSchema>;
+
 /* ── admin: vehicles ─────────────────────────────────────────────────── */
 
 export const vehicleSchema = z.object({

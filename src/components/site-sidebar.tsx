@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import {
+  Bookmark,
   BookOpen,
   Building2,
   CarFront,
@@ -28,6 +29,7 @@ import { signOut } from "@/app/actions/auth";
 import {
   getAccountServerSnapshot,
   getAccountSnapshot,
+  refreshAccountState,
   subscribeToAccount,
 } from "@/components/account/account-state";
 import { Logo, LogoMark } from "@/components/logo";
@@ -277,6 +279,29 @@ function RailAccount({ collapsed }: { collapsed: boolean }) {
         </span>
       </Link>
 
+      {/*
+       * Direct routes into the two account pages people reach for most. The
+       * overview is one click away through the name above, but "where do I
+       * change my details?" should not require finding the account area first
+       * and then its own navigation.
+       */}
+      <div className="mt-3 grid grid-cols-2 gap-1.5">
+        <Link
+          href="/account/profile"
+          className="flex items-center justify-center gap-1.5 rounded-lg border border-black/10 px-2 py-1.5 text-xs text-black/60 transition-colors hover:border-black/15 hover:bg-black/[0.03] hover:text-ink"
+        >
+          <UserRound className="h-3.5 w-3.5" strokeWidth={1.5} />
+          Profile
+        </Link>
+        <Link
+          href="/account/saved"
+          className="flex items-center justify-center gap-1.5 rounded-lg border border-black/10 px-2 py-1.5 text-xs text-black/60 transition-colors hover:border-black/15 hover:bg-black/[0.03] hover:text-ink"
+        >
+          <Bookmark className="h-3.5 w-3.5" strokeWidth={1.5} />
+          Saved
+        </Link>
+      </div>
+
       {user.isAdmin && (
         <Link
           href="/admin"
@@ -510,6 +535,15 @@ export function SiteSidebar({ businessName }: { businessName: string }) {
     document.documentElement.dataset.rail = collapsed ? "collapsed" : "expanded";
     storeCollapsed(collapsed);
   }, [collapsed]);
+
+  // The account store is module-level and survives client navigation, so the
+  // first snapshot (often "signed out") would otherwise outlive a sign-in or
+  // sign-up and leave the footer offering "Sign in" to a signed-in customer.
+  // The rail mounts when the site chrome is entered — including the redirect
+  // after authentication — which is exactly when a fresh answer is needed.
+  useEffect(() => {
+    refreshAccountState();
+  }, []);
 
   // A route change closes the menu; leaving it open over a new page is how a
   // navigation ends up needing a second tap.

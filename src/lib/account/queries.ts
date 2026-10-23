@@ -30,7 +30,13 @@ import type { MediaRef, Product, Property, Vehicle } from "@/lib/types";
 export async function getAccountProfile(userId: string): Promise<UserRecord | null> {
   try {
     return await findUserById(getPool(), userId);
-  } catch {
+  } catch (error) {
+    // Still returns null so the page can render, but a swallowed connection
+    // failure used to look like a profile with no password. Leave a trace.
+    console.error(
+      "Profile lookup failed:",
+      error instanceof Error ? error.message : "unknown error",
+    );
     return null;
   }
 }

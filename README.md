@@ -21,6 +21,7 @@ administration dashboard at `/admin`.
 | Components | Hand-rolled primitives (Radix UI underneath where a component needs it) |
 | Database | PostgreSQL (Supabase, Neon or any Postgres) |
 | Auth | Application-owned: Argon2id passwords, server-managed sessions |
+| Email | Resend (password resets only) |
 | Storage | Supabase Storage (public `media` bucket) |
 | Server logic | Server Actions and Server Components only |
 | Validation | Zod, shared by public forms and admin CRUD |
@@ -194,6 +195,8 @@ core from v13 onward, which every current Supabase project runs.
 Customers register at `/signup` and sign in at `/login`; they land in `/account`.
 Registration is open, but it cannot create an administrator: the INSERT that
 registers a customer never names `role`, so the database default (`viewer`) applies.
+A forgotten password is recovered at `/forgot-password`: the link is emailed through
+Resend, works once, expires after 60 minutes and revokes every existing session.
 
 An administrator is created deliberately, once, with the operator-run bootstrap
 script (it talks to `DATABASE_URL` directly and is not reachable from a request):
