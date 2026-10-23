@@ -45,7 +45,7 @@ import { Client } from "pg";
 import { createClient } from "@supabase/supabase-js";
 import { asyncBufferFromFile, asyncBufferFromUrl, parquetMetadataAsync, parquetReadObjects } from "hyparquet";
 
-import { resolveSslConfig } from "./database-ssl.mjs";
+import { connectionOptions } from "./database-ssl.mjs";
 import {
   DATASET_SOURCE,
   DATASET_URL,
@@ -343,8 +343,7 @@ async function storeImage(supabase, { slug, bytes, mime, cache }) {
  */
 function openClient(databaseUrl) {
   const client = new Client({
-    connectionString: databaseUrl,
-    ssl: resolveSslConfig(env),
+    ...connectionOptions({ ...env, DATABASE_URL: databaseUrl }),
     connectionTimeoutMillis: 20_000,
     keepAlive: true,
     keepAliveInitialDelayMillis: 10_000,

@@ -128,11 +128,17 @@ export async function signIn(_prev: ActionResult, formData: FormData): Promise<A
     userId = user.id;
     role = user.role;
   } catch (error) {
+    // A database or configuration failure is NOT a bad password, and saying so
+    // matters: a deployment whose DATABASE_URL could not be reached reported
+    // "wrong credentials" for a correct password, which sends people looking at
+    // the account instead of the connection. Nothing sensitive is revealed —
+    // the account-enumeration guarantee above only concerns rejected
+    // credentials, and this branch is never reached for a wrong password.
     console.error(
       "Sign-in failed:",
       error instanceof Error ? error.message : "unknown error",
     );
-    return fail(CREDENTIALS_REJECTED);
+    return fail("Sign-in is temporarily unavailable. Please try again in a moment.");
   }
 
   // Creating the session is deliberately outside the block above: a database

@@ -72,3 +72,46 @@ export function resolveSslConfig(env) {
 
   return { rejectUnauthorized: verifyStrictly };
 }
+
+/**
+ * TLS parameters that must not reach `pg`.
+ *
+ * `pg` parses the connection string itself and spreads the result over the
+ * options object, so `sslmode` in the URL overrides the explicit `ssl` object —
+ * and `pg` treats `sslmode=require` as verify-full, which fails against
+ * Supabase's pooler with "self-signed certificate in certificate chain".
+ * Stripping the parameter lets the policy above decide, after it has read it.
+ * Mirrors SSL_URL_PARAMETERS in src/lib/auth/db.ts.
+ */
+const SSL_URL_PARAMETERS = [
+  "sslmode",
+  "ssl",
+  "sslpassword",
+  "sslcert",
+  "sslkey",
+  "sslrootcert",
+  "sslcrl",
+  "uselibpqcompat",
+];
+
+/** Remove TLS parameters from a Postgres URL; other query parameters survive. */
+export function sanitizeConnectionString(url) {
+  try {
+    const parsed = new URL(url);
+    for (const parameter of SSL_URL_PARAMETERS) parsed.searchParams.delete(parameter);
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
+/**
+ * The `{ connectionString, ssl }` pair to hand to `pg`, with TLS params removed
+ * from the URL so the explicit `ssl` setting is the one that takes effect.
+ *
+ * @param {Record<string, string | undefined>} env
+ */
+export function connectionOptions(env) {
+  const url = String(env.DATABASE_URL ?? "").trim();
+  return { connectionString: sanitizeConnectionString(url), ssl: resolveSslConfig(env) };
+}

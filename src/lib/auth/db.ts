@@ -127,10 +127,54 @@ export function resolveSslConfig(): { rejectUnauthorized: boolean } | undefined 
   return { rejectUnauthorized: verifyStrictly };
 }
 
+/**
+ * libpq TLS parameters that must not reach `pg` when we supply `ssl`.
+ *
+ * `pg` parses the connection string itself and SPREADS its result over the
+ * options object, so a `sslmode` in the URL silently replaces the `ssl` object
+ * computed by `resolveSslConfig()`. Worse, modern `pg` treats `sslmode=require`
+ * as `verify-full`, which fails against Supabase's pooler with "self-signed
+ * certificate in certificate chain". A deployment whose DATABASE_URL came from
+ * the Supabase dashboard therefore could not connect at all — and because the
+ * sign-in action catches connection errors and reports them as bad
+ * credentials, it looked like a wrong password.
+ *
+ * The URL is still read for its sslmode before this runs; only the parameter is
+ * removed, so our policy decides whether to encrypt and whether to verify.
+ */
+const SSL_URL_PARAMETERS = [
+  "sslmode",
+  "ssl",
+  "sslpassword",
+  "sslcert",
+  "sslkey",
+  "sslrootcert",
+  "sslcrl",
+  "uselibpqcompat",
+];
+
+/**
+ * Remove TLS parameters from a Postgres URL so the explicit `ssl` option wins.
+ *
+ * Other query parameters are preserved. An unparseable URL is returned
+ * unchanged — the connection will report that far more usefully than this.
+ */
+export function sanitizeConnectionString(url: string): string {
+  try {
+    const parsed = new URL(url);
+    for (const parameter of SSL_URL_PARAMETERS) {
+      parsed.searchParams.delete(parameter);
+    }
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
 export function getPool(): Pool {
   if (!pool) {
     pool = new Pool({
-      connectionString: getDatabaseUrl(),
+      connectionString: sanitizeConnectionString(getDatabaseUrl()),
       // Serverless deployments create many short-lived instances; a small
       // per-instance pool avoids exhausting the database's connection limit.
       max: 5,

@@ -1,3 +1,4 @@
+import { Client } from "pg";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
@@ -342,6 +343,52 @@ describe("configuration and fail-closed behaviour", () => {
 
       process.env.DATABASE_URL = "not a url";
       expect(resolveSslConfig()).toBeUndefined();
+    });
+
+    /**
+     * Regression: `pg` spreads its own parse of the connection string over the
+     * options, so `sslmode` in the URL overwrote the explicit `ssl` object.
+     * With `sslmode=require` (what the Supabase dashboard hands out) `pg`
+     * treats it as verify-full and refuses the pooler's chain. Production then
+     * looked like "wrong password" because the sign-in action reports any
+     * connection failure as rejected credentials.
+     */
+    it("strips TLS parameters from the URL before `pg` can override the policy", async () => {
+      const { sanitizeConnectionString } = await loadDb();
+
+      expect(
+        sanitizeConnectionString(
+          "postgresql://u:p@db.example.com:5432/postgres?sslmode=require&pgbouncer=true",
+        ),
+      ).toBe("postgresql://u:p@db.example.com:5432/postgres?pgbouncer=true");
+
+      expect(
+        sanitizeConnectionString(
+          "postgresql://u:p@db.example.com/postgres?sslmode=verify-full&ssl=true",
+        ),
+      ).toBe("postgresql://u:p@db.example.com/postgres");
+
+      // An unparseable URL is left alone for the connection error to explain.
+      expect(sanitizeConnectionString("not a url")).toBe("not a url");
+    });
+
+    it("gives `pg` the explicit ssl object even when the URL says sslmode=require", async () => {
+      const { sanitizeConnectionString } = await loadDb();
+
+      const client = new Client({
+        connectionString: sanitizeConnectionString(
+          "postgresql://u:p@db.example.com:5432/postgres?sslmode=require",
+        ),
+        ssl: { rejectUnauthorized: false },
+      });
+
+      // What `pg` will actually connect with. `connectionParameters` is not in
+      // @types/pg, hence the cast; before the fix this was `true` (verify-full),
+      // which the Supabase pooler's chain cannot satisfy.
+      const parameters = (
+        client as unknown as { connectionParameters: { ssl: unknown } }
+      ).connectionParameters;
+      expect(parameters.ssl).toEqual({ rejectUnauthorized: false });
     });
   });
 

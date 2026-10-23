@@ -33,7 +33,7 @@ import { randomBytes } from "node:crypto";
 import { createRequire } from "node:module";
 import { Client } from "pg";
 
-import { resolveSslConfig } from "./database-ssl.mjs";
+import { connectionOptions } from "./database-ssl.mjs";
 
 const require = createRequire(import.meta.url);
 const { hash } = require("@node-rs/argon2");
@@ -123,10 +123,9 @@ if (suppliedPassword && args.has("password")) {
 
 const fullName = args.get("name") ?? null;
 
-const client = new Client({
-  connectionString: databaseUrl,
-  ssl: resolveSslConfig({ ...env, DATABASE_URL: databaseUrl }),
-});
+// TLS parameters in DATABASE_URL are stripped so the explicit `ssl` policy is
+// the one `pg` uses — see database-ssl.mjs.
+const client = new Client(connectionOptions({ ...env, DATABASE_URL: databaseUrl }));
 
 await client.connect();
 
