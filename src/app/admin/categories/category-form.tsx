@@ -22,6 +22,8 @@ export function ProductCategoryForm({ category }: { category?: ProductCategory }
     if (state.ok) {
       toast.success(state.message);
       if (!category) {
+        // A successful server action resets the create form for the next item.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setName("");
         setSlug("");
         setDescription("");

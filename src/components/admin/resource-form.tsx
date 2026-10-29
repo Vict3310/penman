@@ -13,7 +13,7 @@ import { cn, slugify } from "@/lib/utils";
 export type FieldDef =
   | { kind: "text"; name: string; label: string; placeholder?: string; half?: boolean; help?: string; slugFrom?: boolean }
   | { kind: "number"; name: string; label: string; placeholder?: string; half?: boolean; step?: string; help?: string }
-  | { kind: "money"; name: string; label: string; half?: boolean; help?: string }
+  | { kind: "money"; name: string; label: string; placeholder?: string; half?: boolean; help?: string }
   | { kind: "textarea"; name: string; label: string; rows?: number; placeholder?: string; help?: string; half?: boolean }
   | {
       kind: "select";
@@ -204,11 +204,12 @@ export function ResourceForm({
             inputMode={field.kind === "number" || field.kind === "money" ? "decimal" : undefined}
             step={field.kind === "money" ? "0.01" : field.kind === "number" ? field.step ?? "1" : undefined}
             value={value === null || value === undefined ? "" : String(value)}
-            placeholder={field.kind === "text" ? field.placeholder : undefined}
+            placeholder={field.placeholder}
             onChange={(event) => {
               const raw = event.target.value;
               if (field.kind === "text") {
                 set(field.name, raw);
+                if (field.name === "slug") setSlugTouched(true);
                 if (field.slugFrom && !slugTouched) {
                   set("slug", slugify(raw));
                 }

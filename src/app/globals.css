@@ -56,44 +56,28 @@
 }
 
 @layer components {
-  /* ── Scroll reveal (ported from design.html) ───────────────── */
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(48px);
-    filter: blur(10px);
-    transition:
-      opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
-      filter 0.9s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  [data-reveal].is-in {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
+  .store-nav-icon {
+    @apply grid h-10 w-10 place-items-center rounded-full text-[#17231d] transition-colors hover:bg-black/5;
   }
 
-  [data-panel-img] {
-    transform: translateY(12%) scale(1.06);
-    transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  [data-panel-img].is-in {
-    transform: translateY(0) scale(1);
+  .store-eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.24em] text-[#9b7847];
   }
 
-  .word-reveal {
-    display: inline-block;
-    opacity: 0;
-    filter: blur(8px);
-    transform: translateY(24px);
-    transition:
-      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-      filter 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  .store-heading {
+    @apply font-display text-3xl font-semibold tracking-tight text-[#17231d] sm:text-4xl;
   }
-  .is-in .word-reveal {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
+
+  .store-text-link {
+    @apply inline-flex items-center gap-2 border-b border-[#a48351] pb-1 text-sm font-semibold text-[#17231d] transition hover:gap-3;
+  }
+
+  .store-filter-label {
+    @apply mb-1.5 block text-[10px] font-semibold uppercase tracking-[0.15em] text-black/50;
+  }
+
+  .store-filter-input {
+    @apply h-11 w-full rounded-xl border border-black/15 bg-white px-3 text-sm text-[#17231d] outline-none placeholder:text-black/35 focus:border-[#a48351] focus:ring-0;
   }
 
   /* ── Shared component classes ──────────────────────────────── */
@@ -175,7 +159,7 @@
     text-wrap: balance;
   }
   .wordmark-cropped {
-    font-family: var(--font-geist), sans-serif;
+    font-family: var(--font-display), sans-serif;
     letter-spacing: -0.04em;
     line-height: 0.85;
   }

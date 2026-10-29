@@ -1,0 +1,1236 @@
+{
+  "notes": "Real photographs used as clearly labelled model and home references. No sale or rental inventory, price, address, condition or availability is asserted.",
+  "cars": [
+    {
+      "slug": "reference-mercedes-c-300",
+      "name": "Mercedes-Benz C 300 AMG Line",
+      "make": "Mercedes-Benz",
+      "model": "C 300 AMG Line",
+      "body_style": "Luxury sedan",
+      "description": "The photographs show a real Mercedes-Benz C 300 AMG Line example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-c-300-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/2020_Mercedes-Benz_C300_AMG_Line_Night_Edition_Premium_2.0_Front.jpg/1280px-2020_Mercedes-Benz_C300_AMG_Line_Night_Edition_Premium_2.0_Front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-Benz C 300 AMG Line front view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2020_Mercedes-Benz_C300_AMG_Line_Night_Edition_Premium_2.0_Front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-c-300-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/2020_Mercedes-Benz_C300_AMG_Line_Night_Edition_Premium_2.0_Rear.jpg/1280px-2020_Mercedes-Benz_C300_AMG_Line_Night_Edition_Premium_2.0_Rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-Benz C 300 AMG Line rear view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2020_Mercedes-Benz_C300_AMG_Line_Night_Edition_Premium_2.0_Rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-dodge-charger-srt-hellcat",
+      "name": "Dodge Charger SRT Hellcat Widebody",
+      "make": "Dodge",
+      "model": "Charger SRT Hellcat Widebody",
+      "body_style": "Performance sedan",
+      "description": "The photographs show a real Dodge Charger SRT Hellcat Widebody example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/dodge-charger-srt-hellcat-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f2/2023_Dodge_Charger_SRT_Hellcat_Widebody_Jailbreak_in_Granite_Crystal_Metallic%2C_Front_Right%2C_08-15-2023.jpg/1280px-2023_Dodge_Charger_SRT_Hellcat_Widebody_Jailbreak_in_Granite_Crystal_Metallic%2C_Front_Right%2C_08-15-2023.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Dodge Charger SRT Hellcat Widebody front view",
+          "credit": "Elise240SX",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2023_Dodge_Charger_SRT_Hellcat_Widebody_Jailbreak_in_Granite_Crystal_Metallic,_Front_Right,_08-15-2023.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-amg-gle-63-s",
+      "name": "Mercedes-AMG GLE 63 S 4MATIC",
+      "make": "Mercedes-Benz",
+      "model": "AMG GLE 63 S 4MATIC",
+      "body_style": "Performance SUV",
+      "description": "The photographs show a real Mercedes-AMG GLE 63 S 4MATIC example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-amg-gle-63-s-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Mercedes-AMG_GLE63_S_4MATIC_%28W166%29_front.JPG/1280px-Mercedes-AMG_GLE63_S_4MATIC_%28W166%29_front.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG GLE 63 S 4MATIC front view",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_GLE63_S_4MATIC_(W166)_front.JPG",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-amg-gle-63-s-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/23/Mercedes-AMG_GLE63_S_4MATIC_%28W166%29_rear.JPG/1280px-Mercedes-AMG_GLE63_S_4MATIC_%28W166%29_rear.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG GLE 63 S 4MATIC rear view",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_GLE63_S_4MATIC_(W166)_rear.JPG",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-amg-c-43",
+      "name": "Mercedes-AMG C 43 4MATIC",
+      "make": "Mercedes-Benz",
+      "model": "AMG C 43 4MATIC",
+      "body_style": "Performance sedan",
+      "description": "The photographs show a real Mercedes-AMG C 43 4MATIC example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-amg-c-43-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Mercedes-AMG_C_43_4MATIC_%28W206%29_front.jpg/1280px-Mercedes-AMG_C_43_4MATIC_%28W206%29_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG C 43 4MATIC front view",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_C_43_4MATIC_(W206)_front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-amg-c-43-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/13/Mercedes-AMG_C_43_4MATIC_%28W206%29_rear.jpg/1280px-Mercedes-AMG_C_43_4MATIC_%28W206%29_rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG C 43 4MATIC rear view",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_C_43_4MATIC_(W206)_rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-amg-c-63",
+      "name": "Mercedes-AMG C 63 S E PERFORMANCE",
+      "make": "Mercedes-Benz",
+      "model": "AMG C 63 S E PERFORMANCE",
+      "body_style": "Performance sedan",
+      "description": "The photographs show a real Mercedes-AMG C 63 S E PERFORMANCE example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-amg-c-63-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Mercedes-AMG_C_63_S_E_PERFORMANCE_%28W206%29_front.jpg/1280px-Mercedes-AMG_C_63_S_E_PERFORMANCE_%28W206%29_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG C 63 S E PERFORMANCE front view",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_C_63_S_E_PERFORMANCE_(W206)_front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-amg-c-63-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Mercedes-AMG_C_63_S_E_PERFORMANCE_%28W206%29_rear.jpg/1280px-Mercedes-AMG_C_63_S_E_PERFORMANCE_%28W206%29_rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG C 63 S E PERFORMANCE rear view",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_C_63_S_E_PERFORMANCE_(W206)_rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-e-300-l",
+      "name": "Mercedes-Benz E 300 L",
+      "make": "Mercedes-Benz",
+      "model": "E 300 L",
+      "body_style": "Luxury sedan",
+      "description": "The photographs show a real Mercedes-Benz E 300 L example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-e-300-l-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Mercedes-Benz_E_300_L_China_%28front%29%2C_November_5%2C_2024.jpg/1280px-Mercedes-Benz_E_300_L_China_%28front%29%2C_November_5%2C_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-Benz E 300 L front view",
+          "credit": "メイド理世",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-Benz_E_300_L_China_(front),_November_5,_2024.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-e-300-l-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Mercedes-Benz_E_300_L_China_%28rear%29%2C_November_5%2C_2024.jpg/1280px-Mercedes-Benz_E_300_L_China_%28rear%29%2C_November_5%2C_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-Benz E 300 L rear view",
+          "credit": "メイド理世",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-Benz_E_300_L_China_(rear),_November_5,_2024.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-amg-e-63-s",
+      "name": "Mercedes-AMG E 63 S 4MATIC+",
+      "make": "Mercedes-Benz",
+      "model": "AMG E 63 S 4MATIC+",
+      "body_style": "Performance sedan",
+      "description": "The photographs show a real Mercedes-AMG E 63 S 4MATIC+ example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-amg-e-63-s-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/77/2018_Mercedes-AMG_E_63_S_Premium_4MATIC_4.0_Front.jpg/1280px-2018_Mercedes-AMG_E_63_S_Premium_4MATIC_4.0_Front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG E 63 S 4MATIC+ front view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2018_Mercedes-AMG_E_63_S_Premium_4MATIC_4.0_Front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-amg-e-63-s-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/2018_Mercedes-AMG_E_63_S_Premium_4MATIC_4.0_Rear.jpg/1280px-2018_Mercedes-AMG_E_63_S_Premium_4MATIC_4.0_Rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG E 63 S 4MATIC+ rear view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2018_Mercedes-AMG_E_63_S_Premium_4MATIC_4.0_Rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-s-500",
+      "name": "Mercedes-Benz S 500",
+      "make": "Mercedes-Benz",
+      "model": "S 500",
+      "body_style": "Flagship luxury sedan",
+      "description": "The photographs show a real Mercedes-Benz S 500 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-s-500-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Mercedes-Benz_S_500_%28W222%29_front_view.jpg/1280px-Mercedes-Benz_S_500_%28W222%29_front_view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-Benz S 500 front view",
+          "credit": "Борис Ульзибат",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-Benz_S_500_(W222)_front_view.jpg",
+          "license": "CC BY 3.0",
+          "license_url": "https://creativecommons.org/licenses/by/3.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-maybach-s-580",
+      "name": "Mercedes-Maybach S 580",
+      "make": "Mercedes-Benz",
+      "model": "Maybach S 580",
+      "body_style": "Ultra luxury sedan",
+      "description": "The photographs show a real Mercedes-Maybach S 580 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-maybach-s-580-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Mercedes-Maybach_S_580_Z223_black_%286%29.jpg/1280px-Mercedes-Maybach_S_580_Z223_black_%286%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-Maybach S 580 front view",
+          "credit": "Damian B Oh",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-Maybach_S_580_Z223_black_(6).jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-glc-300",
+      "name": "Mercedes-Benz GLC 300 4MATIC",
+      "make": "Mercedes-Benz",
+      "model": "GLC 300 4MATIC",
+      "body_style": "Luxury SUV",
+      "description": "The photographs show a real Mercedes-Benz GLC 300 4MATIC example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-glc-300-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/2023_Mercedes-Benz_GLC_300_4MATIC_front.jpg/1280px-2023_Mercedes-Benz_GLC_300_4MATIC_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-Benz GLC 300 4MATIC front view",
+          "credit": "LuvsMG481",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2023_Mercedes-Benz_GLC_300_4MATIC_front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-amg-glc-63-s",
+      "name": "Mercedes-AMG GLC 63 S",
+      "make": "Mercedes-Benz",
+      "model": "AMG GLC 63 S",
+      "body_style": "Performance SUV",
+      "description": "The photographs show a real Mercedes-AMG GLC 63 S example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-amg-glc-63-s-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Mercedes-AMG_GLC_63_S_%2850901282981%29.jpg/1280px-Mercedes-AMG_GLC_63_S_%2850901282981%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG GLC 63 S front view",
+          "credit": "Alexandre Prevot",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_GLC_63_S_(50901282981).jpg",
+          "license": "CC BY-SA 2.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-gle-450",
+      "name": "Mercedes-Benz GLE 450 4MATIC",
+      "make": "Mercedes-Benz",
+      "model": "GLE 450 4MATIC",
+      "body_style": "Luxury SUV",
+      "description": "The photographs show a real Mercedes-Benz GLE 450 4MATIC example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-gle-450-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dd/2019_Mercedes-Benz_GLE_450_AMG_Line_Premium%2B_4MATIC_3.0_Front.jpg/1280px-2019_Mercedes-Benz_GLE_450_AMG_Line_Premium%2B_4MATIC_3.0_Front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-Benz GLE 450 4MATIC front view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2019_Mercedes-Benz_GLE_450_AMG_Line_Premium%2B_4MATIC_3.0_Front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-gle-450-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e4/2019_Mercedes-Benz_GLE_450_AMG_Line_Premium%2B_4MATIC_3.0_Rear.jpg/1280px-2019_Mercedes-Benz_GLE_450_AMG_Line_Premium%2B_4MATIC_3.0_Rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-Benz GLE 450 4MATIC rear view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2019_Mercedes-Benz_GLE_450_AMG_Line_Premium%2B_4MATIC_3.0_Rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-maybach-gls-600",
+      "name": "Mercedes-Maybach GLS 600 4MATIC",
+      "make": "Mercedes-Benz",
+      "model": "Maybach GLS 600 4MATIC",
+      "body_style": "Ultra luxury SUV",
+      "description": "The photographs show a real Mercedes-Maybach GLS 600 4MATIC example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-maybach-gls-600-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Mercedes-Maybach_GLS_600_4MATIC_%28X167%29_front.jpg/1280px-Mercedes-Maybach_GLS_600_4MATIC_%28X167%29_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-Maybach GLS 600 4MATIC front view",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-Maybach_GLS_600_4MATIC_(X167)_front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-maybach-gls-600-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/The_rearview_of_Mercedes-Maybach_GLS_600_4MATIC_%28X167%29.jpg/1280px-The_rearview_of_Mercedes-Maybach_GLS_600_4MATIC_%28X167%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-Maybach GLS 600 4MATIC rear view",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:The_rearview_of_Mercedes-Maybach_GLS_600_4MATIC_(X167).jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-dodge-challenger-srt-hellcat",
+      "name": "Dodge Challenger SRT Hellcat",
+      "make": "Dodge",
+      "model": "Challenger SRT Hellcat",
+      "body_style": "Muscle coupe",
+      "description": "The photographs show a real Dodge Challenger SRT Hellcat example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/dodge-challenger-srt-hellcat-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/Dodge_Challenger_SRT_Hellcat_front_%2820418607854%29.jpg/1280px-Dodge_Challenger_SRT_Hellcat_front_%2820418607854%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Dodge Challenger SRT Hellcat front view",
+          "credit": "Zytonits",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Dodge_Challenger_SRT_Hellcat_front_(20418607854).jpg",
+          "license": "CC BY-SA 2.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-dodge-challenger-srt-demon",
+      "name": "Dodge Challenger SRT Demon",
+      "make": "Dodge",
+      "model": "Challenger SRT Demon",
+      "body_style": "Performance coupe",
+      "description": "The photographs show a real Dodge Challenger SRT Demon example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/dodge-challenger-srt-demon-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/dc/2018_Dodge_Challenger_SRT_Demon.jpg/1280px-2018_Dodge_Challenger_SRT_Demon.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Dodge Challenger SRT Demon front view",
+          "credit": "Calreyn88",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2018_Dodge_Challenger_SRT_Demon.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-dodge-durango-srt-hellcat",
+      "name": "Dodge Durango SRT Hellcat",
+      "make": "Dodge",
+      "model": "Durango SRT Hellcat",
+      "body_style": "Performance SUV",
+      "description": "The photographs show a real Dodge Durango SRT Hellcat example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/dodge-durango-srt-hellcat-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Dodge_Durango_SRT_Hellcat.jpg/1280px-Dodge_Durango_SRT_Hellcat.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Dodge Durango SRT Hellcat front view",
+          "credit": "Calreyn88",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Dodge_Durango_SRT_Hellcat.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-dodge-charger-daytona-scat-pack",
+      "name": "Dodge Charger Daytona Scat Pack",
+      "make": "Dodge",
+      "model": "Charger Daytona Scat Pack",
+      "body_style": "Electric performance coupe",
+      "description": "The photographs show a real Dodge Charger Daytona Scat Pack example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/dodge-charger-daytona-scat-pack-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/2025_Dodge_Charger_Daytona_Scat_Pack.jpg/1280px-2025_Dodge_Charger_Daytona_Scat_Pack.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Dodge Charger Daytona Scat Pack front view",
+          "credit": "Oleg Yunakov",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2025_Dodge_Charger_Daytona_Scat_Pack.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-dodge-challenger-rt-scat-pack",
+      "name": "Dodge Challenger R/T Scat Pack",
+      "make": "Dodge",
+      "model": "Challenger R/T Scat Pack",
+      "body_style": "Muscle coupe",
+      "description": "The photographs show a real Dodge Challenger R/T Scat Pack example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/dodge-challenger-rt-scat-pack-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/2015_Dodge_Challenger_RT_Scat_Pack_in_Pitch_Black%2C_Front_Right%2C_05-13-2022.jpg/1280px-2015_Dodge_Challenger_RT_Scat_Pack_in_Pitch_Black%2C_Front_Right%2C_05-13-2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Dodge Challenger R/T Scat Pack front view",
+          "credit": "Elise240SX",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2015_Dodge_Challenger_RT_Scat_Pack_in_Pitch_Black,_Front_Right,_05-13-2022.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/dodge-challenger-rt-scat-pack-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ae/2015_Dodge_Challenger_RT_Scat_Pack_in_Pitch_Black%2C_Rear_Right%2C_05-13-2022.jpg/1280px-2015_Dodge_Challenger_RT_Scat_Pack_in_Pitch_Black%2C_Rear_Right%2C_05-13-2022.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Dodge Challenger R/T Scat Pack rear view",
+          "credit": "Elise240SX",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2015_Dodge_Challenger_RT_Scat_Pack_in_Pitch_Black,_Rear_Right,_05-13-2022.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-dodge-charger-hellcat-redeye",
+      "name": "Dodge Charger SRT Hellcat Redeye",
+      "make": "Dodge",
+      "model": "Charger SRT Hellcat Redeye",
+      "body_style": "Performance sedan",
+      "description": "The photographs show a real Dodge Charger SRT Hellcat Redeye example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/dodge-charger-hellcat-redeye-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/22_Dodge_Charger_SRT_Hellcat_Redeye_Jailbreak_Widebody.jpg/1280px-22_Dodge_Charger_SRT_Hellcat_Redeye_Jailbreak_Widebody.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Dodge Charger SRT Hellcat Redeye front view",
+          "credit": "HJUdall",
+          "source_url": "https://commons.wikimedia.org/wiki/File:22_Dodge_Charger_SRT_Hellcat_Redeye_Jailbreak_Widebody.jpg",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+        }
+      ]
+    },
+    {
+      "slug": "reference-bmw-m3-competition",
+      "name": "BMW M3 Competition M xDrive",
+      "make": "BMW",
+      "model": "M3 Competition M xDrive",
+      "body_style": "Performance sedan",
+      "description": "The photographs show a real BMW M3 Competition M xDrive example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/bmw-m3-competition-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/The_frontview_of_BMW_M3_Competition_M_xDrive_%28G80%29.jpg/1280px-The_frontview_of_BMW_M3_Competition_M_xDrive_%28G80%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "BMW M3 Competition M xDrive front view",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:The_frontview_of_BMW_M3_Competition_M_xDrive_(G80).jpg",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+        }
+      ]
+    },
+    {
+      "slug": "reference-bmw-m4",
+      "name": "BMW M4",
+      "make": "BMW",
+      "model": "M4",
+      "body_style": "Performance coupe",
+      "description": "The photographs show a real BMW M4 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/bmw-m4-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9f/2015_BMW_M4_%28UK%29_front_view.jpg/1280px-2015_BMW_M4_%28UK%29_front_view.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "BMW M4 front view",
+          "credit": "Hugh Llewelyn",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2015_BMW_M4_(UK)_front_view.jpg",
+          "license": "CC BY-SA 2.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/2.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-bmw-m5",
+      "name": "BMW M5",
+      "make": "BMW",
+      "model": "M5",
+      "body_style": "Performance sedan",
+      "description": "The photographs show a real BMW M5 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/bmw-m5-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a8/BMW_M5_%28F90%29_-_front_three-quarter_view_-_Netherlands.jpg/1280px-BMW_M5_%28F90%29_-_front_three-quarter_view_-_Netherlands.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "BMW M5 front view",
+          "credit": "Sebastiaan Broekhoven",
+          "source_url": "https://commons.wikimedia.org/wiki/File:BMW_M5_(F90)_-_front_three-quarter_view_-_Netherlands.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-bmw-x6-m",
+      "name": "BMW X6 M",
+      "make": "BMW",
+      "model": "X6 M",
+      "body_style": "Performance SUV",
+      "description": "The photographs show a real BMW X6 M example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/bmw-x6-m-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bd/BMW_X6_M_%28E71%29_%E2%80%93_Frontansicht%2C_26._Juni_2011%2C_D%C3%BCsseldorf.jpg/1280px-BMW_X6_M_%28E71%29_%E2%80%93_Frontansicht%2C_26._Juni_2011%2C_D%C3%BCsseldorf.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "BMW X6 M front view",
+          "credit": "M 93",
+          "source_url": "https://commons.wikimedia.org/wiki/File:BMW_X6_M_(E71)_%E2%80%93_Frontansicht,_26._Juni_2011,_D%C3%BCsseldorf.jpg",
+          "license": "CC BY-SA 3.0 de",
+          "license_url": "https://creativecommons.org/licenses/by-sa/3.0/de/deed.en"
+        }
+      ]
+    },
+    {
+      "slug": "reference-porsche-911-carrera",
+      "name": "Porsche 911 Carrera",
+      "make": "Porsche",
+      "model": "911 Carrera",
+      "body_style": "Sports coupe",
+      "description": "The photographs show a real Porsche 911 Carrera example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/porsche-911-carrera-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/2019_Porsche_911_Carrera.jpg/1280px-2019_Porsche_911_Carrera.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Porsche 911 Carrera front view",
+          "credit": "Calreyn88",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2019_Porsche_911_Carrera.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-porsche-cayenne-s",
+      "name": "Porsche Cayenne S",
+      "make": "Porsche",
+      "model": "Cayenne S",
+      "body_style": "Luxury SUV",
+      "description": "The photographs show a real Porsche Cayenne S example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/porsche-cayenne-s-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/2018_Porsche_Cayenne_S_Front.jpg/1280px-2018_Porsche_Cayenne_S_Front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Porsche Cayenne S front view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2018_Porsche_Cayenne_S_Front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/porsche-cayenne-s-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d7/2018_Porsche_Cayenne_S_Rear.jpg/1280px-2018_Porsche_Cayenne_S_Rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Porsche Cayenne S rear view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2018_Porsche_Cayenne_S_Rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-porsche-panamera",
+      "name": "Porsche Panamera",
+      "make": "Porsche",
+      "model": "Panamera",
+      "body_style": "Luxury sports sedan",
+      "description": "The photographs show a real Porsche Panamera example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/porsche-panamera-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/04/Porsche_Panamera_%28970%29_front.JPG/1280px-Porsche_Panamera_%28970%29_front.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Porsche Panamera front view",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Porsche_Panamera_(970)_front.JPG",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+        }
+      ]
+    },
+    {
+      "slug": "reference-range-rover-sport",
+      "name": "Range Rover Sport",
+      "make": "Land Rover",
+      "model": "Range Rover Sport",
+      "body_style": "Luxury SUV",
+      "description": "The photographs show a real Range Rover Sport example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/range-rover-sport-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6a/2022_Land_Rover_Range_Rover_Sport.jpg/1280px-2022_Land_Rover_Range_Rover_Sport.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Range Rover Sport front view",
+          "credit": "MrWalkr",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2022_Land_Rover_Range_Rover_Sport.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-range-rover-velar",
+      "name": "Range Rover Velar First Edition",
+      "make": "Land Rover",
+      "model": "Range Rover Velar First Edition",
+      "body_style": "Luxury SUV",
+      "description": "The photographs show a real Range Rover Velar First Edition example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/range-rover-velar-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/2017_Land_Rover_Range_Rover_Velar_First_Edition_D3_3.0_Front.jpg/1280px-2017_Land_Rover_Range_Rover_Velar_First_Edition_D3_3.0_Front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Range Rover Velar First Edition front view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2017_Land_Rover_Range_Rover_Velar_First_Edition_D3_3.0_Front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/range-rover-velar-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/2017_Land_Rover_Range_Rover_Velar_First_Edition_D3_3.0_Rear.jpg/1280px-2017_Land_Rover_Range_Rover_Velar_First_Edition_D3_3.0_Rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Range Rover Velar First Edition rear view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2017_Land_Rover_Range_Rover_Velar_First_Edition_D3_3.0_Rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-audi-rs-q8",
+      "name": "Audi RS Q8",
+      "make": "Audi",
+      "model": "RS Q8",
+      "body_style": "Performance SUV",
+      "description": "The photographs show a real Audi RS Q8 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/audi-rs-q8-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b9/2020_Audi_RS_Q8_Front.jpg/1280px-2020_Audi_RS_Q8_Front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Audi RS Q8 front view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2020_Audi_RS_Q8_Front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/audi-rs-q8-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/2020_Audi_RS_Q8_Rear.jpg/1280px-2020_Audi_RS_Q8_Rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Audi RS Q8 rear view",
+          "credit": "Vauxford",
+          "source_url": "https://commons.wikimedia.org/wiki/File:2020_Audi_RS_Q8_Rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-lexus-lc-500",
+      "name": "Lexus LC 500",
+      "make": "Lexus",
+      "model": "LC 500",
+      "body_style": "Luxury grand tourer",
+      "description": "The photographs show a real Lexus LC 500 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/lexus-lc-500-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Lexus_LC500_%28DBA-URZ100-ACUBH%29_front.jpg/1280px-Lexus_LC500_%28DBA-URZ100-ACUBH%29_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Lexus LC 500 front view",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Lexus_LC500_(DBA-URZ100-ACUBH)_front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-toyota-highlander",
+      "name": "Toyota Highlander",
+      "make": "Toyota",
+      "model": "Highlander",
+      "body_style": "Three-row SUV",
+      "description": "A larger crossover with space for family and group journeys. The photograph depicts a real Toyota Highlander example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2020-toyota-highlander-le-awd-front-12-12-20-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/2020_Toyota_Highlander_LE_AWD%2C_front_12.12.20.jpg/1280px-2020_Toyota_Highlander_LE_AWD%2C_front_12.12.20.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2020 Toyota Highlander LE AWD, front 12.12.20",
+        "credit": "Kevauto",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2020_Toyota_Highlander_LE_AWD,_front_12.12.20.jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-toyota-land-cruiser",
+      "name": "Toyota Land Cruiser",
+      "make": "Toyota",
+      "model": "Land Cruiser",
+      "body_style": "Four-wheel-drive SUV",
+      "description": "A full-size four-wheel-drive vehicle built for long-distance travel. The photograph depicts a real Toyota Land Cruiser example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2023-toyota-land-cruiser-70-front-left-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/2023_Toyota_Land_Cruiser_70_front_left.jpg/1280px-2023_Toyota_Land_Cruiser_70_front_left.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2023 Toyota Land Cruiser 70 front left",
+        "credit": "TTTNIS",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2023_Toyota_Land_Cruiser_70_front_left.jpg",
+        "license": "CC0",
+        "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+      }
+    },
+    {
+      "slug": "reference-lexus-rx-350",
+      "name": "Lexus RX 350",
+      "make": "Lexus",
+      "model": "RX 350",
+      "body_style": "Luxury SUV",
+      "description": "A premium midsize crossover with a comfort-focused cabin. The photograph depicts a real Lexus RX 350 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2023-lexus-rx-350-front-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/2023_Lexus_RX_350_%28front%29.jpg/1280px-2023_Lexus_RX_350_%28front%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2023 Lexus RX 350 (front)",
+        "credit": "Carlito714",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2023_Lexus_RX_350_(front).jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-lexus-es-350",
+      "name": "Lexus ES 350",
+      "make": "Lexus",
+      "model": "ES 350",
+      "body_style": "Luxury sedan",
+      "description": "A premium saloon designed around a quiet, comfortable ride. The photograph depicts a real Lexus ES 350 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2022-lexus-es-350-premier-gsz10-in-sonic-titanium-front-right-06-15-2024-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/2022_Lexus_ES_350_Premier_GSZ10_in_Sonic_Titanium%2C_front_right%2C_06-15-2024.jpg/1280px-2022_Lexus_ES_350_Premier_GSZ10_in_Sonic_Titanium%2C_front_right%2C_06-15-2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2022 Lexus ES 350 Premier GSZ10 in Sonic Titanium, front right, 06-15-2024",
+        "credit": "Ethan Llamas",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2022_Lexus_ES_350_Premier_GSZ10_in_Sonic_Titanium,_front_right,_06-15-2024.jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-lexus-gx-460",
+      "name": "Lexus GX 460",
+      "make": "Lexus",
+      "model": "GX 460",
+      "body_style": "Luxury SUV",
+      "description": "A body-on-frame SUV aimed at comfort and off-road capability. The photograph depicts a real Lexus GX 460 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2020-lexus-gx-460-in-sonic-titanium-front-right-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8c/2020_Lexus_GX_460_in_Sonic_Titanium%2C_front_right.jpg/1280px-2020_Lexus_GX_460_in_Sonic_Titanium%2C_front_right.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2020 Lexus GX 460 in Sonic Titanium, front right",
+        "credit": "Ethan Llamas",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2020_Lexus_GX_460_in_Sonic_Titanium,_front_right.jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-lexus-lx-570",
+      "name": "Lexus LX 570",
+      "make": "Lexus",
+      "model": "LX 570",
+      "body_style": "Full-size luxury SUV",
+      "description": "A large luxury SUV with four-wheel-drive capability. The photograph depicts a real Lexus LX 570 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2018-lexus-lx-570-facelift-front-3-24-23-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/34/2018_Lexus_LX_570_%28facelift%29%2C_front_3.24.23.jpg/1280px-2018_Lexus_LX_570_%28facelift%29%2C_front_3.24.23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2018 Lexus LX 570 (facelift), front 3.24.23",
+        "credit": "Kevauto",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2018_Lexus_LX_570_(facelift),_front_3.24.23.jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-mercedes-benz-c-class",
+      "name": "Mercedes-Benz C-Class",
+      "make": "Mercedes-Benz",
+      "model": "C-Class",
+      "body_style": "Executive sedan",
+      "description": "A compact executive car with a refined cabin. The photograph depicts a real Mercedes-Benz C-Class example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2016-mercedes-benz-c-class-c220d-se-executive-w205-2-2-170ps-diesel-automatic-2025-05-05-front-right-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/2016_Mercedes-Benz_C-Class_C220d_SE_Executive_%28W205%29_-_2.2_%28170PS%29_diesel_automatic_-_2025-05-05%2C_front_right.jpg/1280px-2016_Mercedes-Benz_C-Class_C220d_SE_Executive_%28W205%29_-_2.2_%28170PS%29_diesel_automatic_-_2025-05-05%2C_front_right.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2016 Mercedes-Benz C-Class C220d SE Executive (W205) - 2.2 (170PS) diesel automatic - 2025-05-05, front right",
+        "credit": "DieselFordMondeo",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2016_Mercedes-Benz_C-Class_C220d_SE_Executive_(W205)_-_2.2_(170PS)_diesel_automatic_-_2025-05-05,_front_right.jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-mercedes-benz-e-class",
+      "name": "Mercedes-Benz E-Class",
+      "make": "Mercedes-Benz",
+      "model": "E-Class",
+      "body_style": "Executive car",
+      "description": "An executive model offered in several body styles. The photograph depicts a real Mercedes-Benz E-Class example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/mercedes-benz-e-class-v213-001-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cc/Mercedes-Benz_E-Class_V213_001.jpg/1280px-Mercedes-Benz_E-Class_V213_001.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "Mercedes-Benz E-Class V213 001",
+        "credit": "Jengtingchen",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-Benz_E-Class_V213_001.jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-mercedes-benz-glc",
+      "name": "Mercedes-Benz GLC",
+      "make": "Mercedes-Benz",
+      "model": "GLC",
+      "body_style": "Luxury SUV",
+      "description": "A compact luxury crossover for city and highway use. The photograph depicts a real Mercedes-Benz GLC example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2023-mercedes-benz-glc-front-11-11-23-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4e/2023_Mercedes-Benz_GLC%2C_front_11.11.23.jpg/1280px-2023_Mercedes-Benz_GLC%2C_front_11.11.23.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2023 Mercedes-Benz GLC, front 11.11.23",
+        "credit": "Kevauto",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2023_Mercedes-Benz_GLC,_front_11.11.23.jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-mercedes-benz-gle",
+      "name": "Mercedes-Benz GLE",
+      "make": "Mercedes-Benz",
+      "model": "GLE",
+      "body_style": "Luxury SUV",
+      "description": "A midsize luxury SUV with a spacious cabin. The photograph depicts a real Mercedes-Benz GLE example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2023-mercedes-benz-gle-400d-3-0-front-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/2023_Mercedes-Benz_GLE_400d_3.0_front.jpg/1280px-2023_Mercedes-Benz_GLE_400d_3.0_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2023 Mercedes-Benz GLE 400d 3.0 front",
+        "credit": "LuvsMG481",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2023_Mercedes-Benz_GLE_400d_3.0_front.jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-bmw-3-series",
+      "name": "BMW 3 Series",
+      "make": "BMW",
+      "model": "3 Series",
+      "body_style": "Executive sedan",
+      "description": "A compact executive car with a sporty driving character. The photograph depicts a real BMW 3 Series example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2016-bmw-3-series-sedan-in-mineral-grey-metallic-front-view-parked-on-residential-street-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/2016_BMW_3_Series_sedan_in_Mineral_Grey_Metallic%2C_front_view_parked_on_residential_street.jpg/1280px-2016_BMW_3_Series_sedan_in_Mineral_Grey_Metallic%2C_front_view_parked_on_residential_street.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2016 BMW 3 Series sedan in Mineral Grey Metallic, front view parked on residential street",
+        "credit": "OathOn",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2016_BMW_3_Series_sedan_in_Mineral_Grey_Metallic,_front_view_parked_on_residential_street.jpg",
+        "license": "CC0",
+        "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+      }
+    },
+    {
+      "slug": "reference-bmw-5-series",
+      "name": "BMW 5 Series",
+      "make": "BMW",
+      "model": "5 Series",
+      "body_style": "Executive sedan",
+      "description": "A larger executive car balancing comfort and performance. The photograph depicts a real BMW 5 Series example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/bmw-5-series-g30-530d-xdrive-2023-53327095695-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/BMW_5-Series_%28G30%29_530d_xDrive_%282023%29_%2853327095695%29.jpg/1280px-BMW_5-Series_%28G30%29_530d_xDrive_%282023%29_%2853327095695%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "BMW 5-Series (G30) 530d xDrive (2023) (53327095695)",
+        "credit": "Charles from Port Chester, New York",
+        "source_url": "https://commons.wikimedia.org/wiki/File:BMW_5-Series_(G30)_530d_xDrive_(2023)_(53327095695).jpg",
+        "license": "CC BY 2.0",
+        "license_url": "https://creativecommons.org/licenses/by/2.0"
+      }
+    },
+    {
+      "slug": "reference-bmw-x3",
+      "name": "BMW X3",
+      "make": "BMW",
+      "model": "X3",
+      "body_style": "Luxury SUV",
+      "description": "A compact luxury SUV with everyday versatility. The photograph depicts a real BMW X3 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2023-bmw-x3-xdrive30i-m-sport-front-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d9/2023_BMW_X3_xDrive30i_M-Sport_front.jpg/1280px-2023_BMW_X3_xDrive30i_M-Sport_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2023 BMW X3 xDrive30i M-Sport front",
+        "credit": "LuvsMG481",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2023_BMW_X3_xDrive30i_M-Sport_front.jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-bmw-x5",
+      "name": "BMW X5",
+      "make": "BMW",
+      "model": "X5",
+      "body_style": "Luxury SUV",
+      "description": "A midsize luxury SUV with a broad passenger cabin. The photograph depicts a real BMW X5 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2019-bmw-x5-m50d-3-0-front-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/2019_BMW_X5_M50d_3.0_Front.jpg/1280px-2019_BMW_X5_M50d_3.0_Front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2019 BMW X5 M50d 3.0 Front",
+        "credit": "Vauxford",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2019_BMW_X5_M50d_3.0_Front.jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-ford-explorer",
+      "name": "Ford Explorer",
+      "make": "Ford",
+      "model": "Explorer",
+      "body_style": "Three-row SUV",
+      "description": "A larger SUV designed for passengers and luggage. The photograph depicts a real Ford Explorer example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "image": {
+        "path": "external/commons/2023-ford-explorer-limited-in-star-white-metallic-tri-coat-front-left-2024-06-04-jpg",
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/62/2023_Ford_Explorer_Limited_in_Star_White_Metallic_Tri-Coat%2C_front_left%2C_2024-06-04.jpg/1280px-2023_Ford_Explorer_Limited_in_Star_White_Metallic_Tri-Coat%2C_front_left%2C_2024-06-04.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "alt": "2023 Ford Explorer Limited in Star White Metallic Tri-Coat, front left, 2024-06-04",
+        "credit": "Elise240SX",
+        "source_url": "https://commons.wikimedia.org/wiki/File:2023_Ford_Explorer_Limited_in_Star_White_Metallic_Tri-Coat,_front_left,_2024-06-04.jpg",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+      }
+    },
+    {
+      "slug": "reference-mercedes-amg-glc-43",
+      "name": "Mercedes-AMG GLC 43",
+      "make": "Mercedes-Benz",
+      "model": "AMG GLC 43",
+      "body_style": "Performance compact SUV",
+      "description": "The photographs show a real Mercedes-AMG GLC 43 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-amg-glc-43-4matic-x253-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Mercedes-AMG_GLC_43_4MATIC_%28X253%29_front.jpg/1280px-Mercedes-AMG_GLC_43_4MATIC_%28X253%29_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG GLC 43 4MATIC (X253) front",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_GLC_43_4MATIC_(X253)_front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-amg-glc-43-4matic-x253-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Mercedes-AMG_GLC_43_4MATIC_%28X253%29_rear.jpg/1280px-Mercedes-AMG_GLC_43_4MATIC_%28X253%29_rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG GLC 43 4MATIC (X253) rear",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_GLC_43_4MATIC_(X253)_rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-amg-gle-53",
+      "name": "Mercedes-AMG GLE 53 4MATIC+",
+      "make": "Mercedes-Benz",
+      "model": "AMG GLE 53 4MATIC+",
+      "body_style": "Performance midsize SUV",
+      "description": "The photographs show a real Mercedes-AMG GLE 53 4MATIC+ example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-amg-gle-53-4matic-w167-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/Mercedes-AMG_GLE_53_4MATIC%2B_%28W167%29_front.jpg/1280px-Mercedes-AMG_GLE_53_4MATIC%2B_%28W167%29_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG GLE 53 4MATIC+ (W167) front",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_GLE_53_4MATIC%2B_(W167)_front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-amg-gle-53-4matic-w167-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Mercedes-AMG_GLE_53_4MATIC%2B_%28W167%29_rear.jpg/1280px-Mercedes-AMG_GLE_53_4MATIC%2B_%28W167%29_rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG GLE 53 4MATIC+ (W167) rear",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_GLE_53_4MATIC%2B_(W167)_rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-amg-g-63",
+      "name": "Mercedes-AMG G 63",
+      "make": "Mercedes-Benz",
+      "model": "AMG G 63",
+      "body_style": "Performance off-road SUV",
+      "description": "The photographs show a real Mercedes-AMG G 63 example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-amg-g-63-w464-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/Mercedes-AMG_G_63_%28W464%29_front.jpg/1280px-Mercedes-AMG_G_63_%28W464%29_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG G 63 (W464) front",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_G_63_(W464)_front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-amg-g-63-w464-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/48/Mercedes-AMG_G_63_%28W464%29_rear.jpg/1280px-Mercedes-AMG_G_63_%28W464%29_rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG G 63 (W464) rear",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_G_63_(W464)_rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-amg-gt-63-s",
+      "name": "Mercedes-AMG GT 63 S 4MATIC+",
+      "make": "Mercedes-Benz",
+      "model": "AMG GT 63 S 4MATIC+",
+      "body_style": "Performance four-door coupe",
+      "description": "The photographs show a real Mercedes-AMG GT 63 S 4MATIC+ example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/the-frontview-of-mercedes-amg-gt-63-s-4matic-x290-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/The_frontview_of_Mercedes-AMG_GT_63_S_4MATIC%2B_%28X290%29.jpg/1280px-The_frontview_of_Mercedes-AMG_GT_63_S_4MATIC%2B_%28X290%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "The frontview of Mercedes-AMG GT 63 S 4MATIC+ (X290)",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:The_frontview_of_Mercedes-AMG_GT_63_S_4MATIC%2B_(X290).jpg",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+        },
+        {
+          "path": "external/commons/the-rearview-of-mercedes-amg-gt-63-s-4matic-x290-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/The_rearview_of_Mercedes-AMG_GT_63_S_4MATIC%2B_%28X290%29.jpg/1280px-The_rearview_of_Mercedes-AMG_GT_63_S_4MATIC%2B_%28X290%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "The rearview of Mercedes-AMG GT 63 S 4MATIC+ (X290)",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:The_rearview_of_Mercedes-AMG_GT_63_S_4MATIC%2B_(X290).jpg",
+          "license": "CC0",
+          "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+        }
+      ]
+    },
+    {
+      "slug": "reference-mercedes-amg-s-63",
+      "name": "Mercedes-AMG S 63 E PERFORMANCE",
+      "make": "Mercedes-Benz",
+      "model": "AMG S 63 E PERFORMANCE",
+      "body_style": "Performance luxury sedan",
+      "description": "The photographs show a real Mercedes-AMG S 63 E PERFORMANCE example. This is a model reference, not a verified vehicle for sale. Ask the team to confirm a specific car, its year, condition, mileage, price and availability.",
+      "images": [
+        {
+          "path": "external/commons/mercedes-amg-s-63-e-performance-w223-front-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e7/Mercedes-AMG_S_63_E_PERFORMANCE_%28W223%29_front.jpg/1280px-Mercedes-AMG_S_63_E_PERFORMANCE_%28W223%29_front.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG S 63 E PERFORMANCE (W223) front",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_S_63_E_PERFORMANCE_(W223)_front.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        },
+        {
+          "path": "external/commons/mercedes-amg-s-63-e-performance-w223-rear-jpg",
+          "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a4/Mercedes-AMG_S_63_E_PERFORMANCE_%28W223%29_rear.jpg/1280px-Mercedes-AMG_S_63_E_PERFORMANCE_%28W223%29_rear.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+          "alt": "Mercedes-AMG S 63 E PERFORMANCE (W223) rear",
+          "credit": "Tokumeigakarinoaoshima",
+          "source_url": "https://commons.wikimedia.org/wiki/File:Mercedes-AMG_S_63_E_PERFORMANCE_(W223)_rear.jpg",
+          "license": "CC BY-SA 4.0",
+          "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+        }
+      ]
+    }
+  ],
+  "houses": [
+    {
+      "slug": "reference-modern-pool-and-lawn",
+      "title": "Modern home with pool and lawn",
+      "description": "A contemporary two-storey home beside a pool and lawn. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/ylzGfY-xzBY",
+        "url": "https://images.unsplash.com/photo-1783125127199-860da9744dcc?w=1200&q=80&fit=crop",
+        "alt": "A contemporary two-storey home beside a pool and lawn.",
+        "source_url": "https://unsplash.com/photos/ylzGfY-xzBY",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    },
+    {
+      "slug": "reference-illuminated-contemporary-home",
+      "title": "Illuminated contemporary home",
+      "description": "A modern house photographed with exterior lights at dusk. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/4vioYQ9Nn9Y",
+        "url": "https://images.unsplash.com/photo-1748063578185-3d68121b11ff?w=1200&q=80&fit=crop",
+        "alt": "A modern house photographed with exterior lights at dusk.",
+        "source_url": "https://unsplash.com/photos/4vioYQ9Nn9Y",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    },
+    {
+      "slug": "reference-poolside-modern-home",
+      "title": "Poolside modern home",
+      "description": "A contemporary home with a pool and outdoor lounge area. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/WaC-JFfF21M",
+        "url": "https://images.unsplash.com/photo-1706808849780-7a04fbac83ef?w=1200&q=80&fit=crop",
+        "alt": "A contemporary home with a pool and outdoor lounge area.",
+        "source_url": "https://unsplash.com/photos/WaC-JFfF21M",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    },
+    {
+      "slug": "reference-white-and-timber-home",
+      "title": "White and timber home",
+      "description": "A white-and-timber contemporary house under a blue sky. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/_TPTXZd9mOo",
+        "url": "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=1200&q=80&fit=crop",
+        "alt": "A white-and-timber contemporary house under a blue sky.",
+        "source_url": "https://unsplash.com/photos/_TPTXZd9mOo",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    },
+    {
+      "slug": "reference-white-home-glass-garage",
+      "title": "White home with glass garage",
+      "description": "A white modern home with glass garage doors and planting. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/MUiv6OcHoto",
+        "url": "https://images.unsplash.com/photo-1771366260867-7e07094579d7?w=1200&q=80&fit=crop",
+        "alt": "A white modern home with glass garage doors and planting.",
+        "source_url": "https://unsplash.com/photos/MUiv6OcHoto",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    },
+    {
+      "slug": "reference-two-storey-balcony-home",
+      "title": "Two-storey balcony home",
+      "description": "A two-storey house with large windows and balconies. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/3ddHcjHmiGw",
+        "url": "https://images.unsplash.com/photo-1721815693498-cc28507c0ba2?w=1200&q=80&fit=crop",
+        "alt": "A two-storey house with large windows and balconies.",
+        "source_url": "https://unsplash.com/photos/3ddHcjHmiGw",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    },
+    {
+      "slug": "reference-white-contemporary-residence",
+      "title": "White contemporary residence",
+      "description": "A white contemporary residence photographed in daylight. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/mR1CIDduGLc",
+        "url": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80&fit=crop",
+        "alt": "A white contemporary residence photographed in daylight.",
+        "source_url": "https://unsplash.com/photos/mR1CIDduGLc",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    },
+    {
+      "slug": "reference-glass-fronted-home-at-dusk",
+      "title": "Glass-fronted home at dusk",
+      "description": "A modern house with large windows photographed at dusk. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/cUoXTLVFQ9M",
+        "url": "https://images.unsplash.com/photo-1757524492552-d47a66a2b63e?w=1200&q=80&fit=crop",
+        "alt": "A modern house with large windows photographed at dusk.",
+        "source_url": "https://unsplash.com/photos/cUoXTLVFQ9M",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    },
+    {
+      "slug": "reference-white-home-twin-garages",
+      "title": "White home with twin garages",
+      "description": "A modern white house with two garage doors and a paved drive. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/mledaZ8XtVM",
+        "url": "https://images.unsplash.com/photo-1783125127341-81112b795c23?w=1200&q=80&fit=crop",
+        "alt": "A modern white house with two garage doors and a paved drive.",
+        "source_url": "https://unsplash.com/photos/mledaZ8XtVM",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    },
+    {
+      "slug": "reference-black-clad-urban-home",
+      "title": "Black-clad urban home",
+      "description": "A contemporary black-clad house beside a traditional home. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/08uIUe2a9XY",
+        "url": "https://images.unsplash.com/photo-1627141234469-24711efb373c?w=1200&q=80&fit=crop",
+        "alt": "A contemporary black-clad house beside a traditional home.",
+        "source_url": "https://unsplash.com/photos/08uIUe2a9XY",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    },
+    {
+      "slug": "reference-white-poolside-villa",
+      "title": "White poolside villa",
+      "description": "A modern white villa with a pool and outdoor seating. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/Id7u0EkTjBE",
+        "url": "https://images.unsplash.com/photo-1613977257363-707ba9348227?w=1200&q=80&fit=crop",
+        "alt": "A modern white villa with a pool and outdoor seating.",
+        "source_url": "https://unsplash.com/photos/Id7u0EkTjBE",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    },
+    {
+      "slug": "reference-modern-home-front-lawn",
+      "title": "Modern home with front lawn",
+      "description": "A modern house with a broad front lawn. Real architectural photograph shown as a home style reference.",
+      "image": {
+        "path": "external/unsplash/URD4NdWyd60",
+        "url": "https://images.unsplash.com/photo-1706808849777-96e0d7be3bb7?w=1200&q=80&fit=crop",
+        "alt": "A modern house with a broad front lawn.",
+        "source_url": "https://unsplash.com/photos/URD4NdWyd60",
+        "license": "Unsplash License",
+        "license_url": "https://unsplash.com/license"
+      }
+    }
+  ]
+}

@@ -68,6 +68,7 @@ function failWith(error: { message: string } | null): ActionResult {
 function revalidatePublic(section: "rental" | "real-estate" | "shop") {
   revalidatePath("/");
   revalidatePath(`/${section}`);
+  revalidatePath(section === "rental" ? "/rental/cars" : section === "real-estate" ? "/real-estate/properties" : "/shop/cars");
   revalidatePath("/admin", "layout");
 }
 
@@ -211,13 +212,28 @@ export async function saveProduct(_prev: ActionResult, formData: FormData): Prom
   }
 
   const id = formData.get("id");
-  const values = {
-    ...parsed.data,
-    published_at: parsed.data.status === "published" ? new Date().toISOString() : null,
-  };
+  const {
+    spec_make, spec_model, spec_body_style, spec_year, spec_mileage_km,
+    spec_colour, spec_region, spec_condition_label, ...productFields
+  } = parsed.data;
 
   try {
     const supabase = getAdminClient();
+    let existingSpecs: Record<string, unknown> = {};
+    if (isUuid(id)) {
+      const { data } = await supabase.from("products").select("specs").eq("id", id).maybeSingle();
+      existingSpecs = (data?.specs as Record<string, unknown> | null) ?? {};
+    }
+    const values = {
+      ...productFields,
+      specs: {
+        ...existingSpecs,
+        make: spec_make, model: spec_model, body_style: spec_body_style,
+        year: spec_year, mileage_km: spec_mileage_km,
+        colour: spec_colour, region: spec_region, condition_label: spec_condition_label,
+      },
+      published_at: productFields.status === "published" ? new Date().toISOString() : null,
+    };
     if (isUuid(id)) {
       const { error } = await supabase.from("products").update(values).eq("id", id);
       if (error) return failWith(error);
@@ -355,10 +371,17 @@ export async function saveSettingsSection(
   const parsed = settingsSectionSchema.safeParse(parsePayload(formData));
   if (!parsed.success) return fail("Those settings could not be read. Please try again.");
 
+  // The hidden payload names the fields in this section. Read their submitted
+  // values from FormData; the payload's initial values are only a snapshot of
+  // what was on the page before the admin edited the inputs.
+  const value = Object.fromEntries(
+    Object.keys(parsed.data.value).map((name) => [name, String(formData.get(name) ?? "")]),
+  );
+
   try {
     const { error } = await getAdminClient()
       .from("site_settings")
-      .upsert({ key: parsed.data.key, value: parsed.data.value }, { onConflict: "key" });
+      .upsert({ key: parsed.data.key, value }, { onConflict: "key" });
 
     if (error) return fail("The settings could not be saved.");
 

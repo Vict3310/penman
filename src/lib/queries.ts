@@ -69,6 +69,14 @@ export interface PropertyFilters {
 export interface ProductFilters {
   q?: string;
   category?: string;
+  make?: string;
+  body?: string;
+  minYear?: number;
+  maxYear?: number;
+  maxMileage?: number;
+  minPrice?: number;
+  maxPrice?: number;
+  listing?: "all" | "stock" | "models";
   sort?: "newest" | "price_asc" | "price_desc";
   page?: number;
   perPage?: number;
@@ -208,7 +216,7 @@ export async function listProperties(filters: PropertyFilters = {}): Promise<Pag
       query = query.or(`title.ilike.%${filters.q}%,description.ilike.%${filters.q}%,location.ilike.%${filters.q}%`);
     if (filters.location) query = query.ilike("location", `%${filters.location}%`);
     if (filters.propertyType) query = query.eq("property_type", filters.propertyType);
-    if (filters.listingType) query = query.eq("listing_type", filters.listingType);
+    if (filters.listingType) query = query.eq("listing_type", filters.listingType).eq("is_reference", false);
     if (filters.bedrooms !== undefined) query = query.gte("bedrooms", filters.bedrooms);
     if (filters.minPrice !== undefined) query = query.gte("price", filters.minPrice);
     if (filters.maxPrice !== undefined) query = query.lte("price", filters.maxPrice);
@@ -221,7 +229,7 @@ export async function listProperties(filters: PropertyFilters = {}): Promise<Pag
         query = query.order("price", { ascending: false, nullsFirst: false });
         break;
       default:
-        query = query.order("is_featured", { ascending: false }).order("created_at", { ascending: false });
+        query = query.order("created_at", { ascending: false }).order("is_featured", { ascending: false });
     }
 
     const from = (page - 1) * perPage;
@@ -299,12 +307,22 @@ export async function listProducts(filters: ProductFilters = {}): Promise<Pagina
       .select("*, category:product_categories(id, slug, name)", { count: "exact" })
       .eq("status", "published");
 
-    if (filters.q) query = query.or(`name.ilike.%${filters.q}%,description.ilike.%${filters.q}%`);
+    if (filters.q) query = query.or(`name.ilike.%${filters.q.replace(/[(),.%]/g, "")}%,description.ilike.%${filters.q.replace(/[(),.%]/g, "")}%`);
     if (filters.category) {
       const categories = await listCategories();
       const match = categories.find((c) => c.slug === filters.category);
-      if (match) query = query.eq("category_id", match.id);
+      if (!match) return empty<Product>(page, perPage);
+      query = query.eq("category_id", match.id);
     }
+    if (filters.make) query = query.eq("specs->>make", filters.make);
+    if (filters.body) query = query.ilike("specs->>body_style", `%${filters.body}%`);
+    if (filters.minYear) query = query.gte("specs->>year", String(filters.minYear));
+    if (filters.maxYear) query = query.lte("specs->>year", String(filters.maxYear));
+    if (filters.maxMileage) query = query.lte("specs->mileage_km", filters.maxMileage);
+    if (filters.minPrice) query = query.gte("price", filters.minPrice);
+    if (filters.maxPrice) query = query.lte("price", filters.maxPrice);
+    if (filters.listing === "stock") query = query.eq("is_reference", false);
+    if (filters.listing === "models") query = query.eq("is_reference", true);
 
     switch (filters.sort) {
       case "price_asc":

@@ -527,6 +527,7 @@ export function SiteSidebar({ businessName }: { businessName: string }) {
   // mismatch the server's HTML, since the server cannot read the visitor's
   // localStorage.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCollapsed(readCollapsed());
   }, []);
 
@@ -548,6 +549,7 @@ export function SiteSidebar({ businessName }: { businessName: string }) {
   // A route change closes the menu; leaving it open over a new page is how a
   // navigation ends up needing a second tap.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMenuOpen(false);
   }, [pathname]);
 

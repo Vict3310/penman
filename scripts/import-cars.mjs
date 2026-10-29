@@ -43,7 +43,7 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { Client } from "pg";
 import { createClient } from "@supabase/supabase-js";
-import { asyncBufferFromFile, asyncBufferFromUrl, parquetMetadataAsync, parquetReadObjects } from "hyparquet";
+import { asyncBufferFromFile, parquetMetadataAsync, parquetReadObjects } from "hyparquet";
 
 import { connectionOptions } from "./database-ssl.mjs";
 import {

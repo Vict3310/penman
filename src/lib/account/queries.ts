@@ -104,7 +104,7 @@ function hrefFor(kind: AccountEnquiryKind, embedded: ListingEmbed | null): strin
 function firstImage(embedded: ListingEmbed | null): MediaRef | null {
   const images = embedded?.images;
   if (!Array.isArray(images) || images.length === 0) return null;
-  return images[0] ?? null;
+  return images.find((image) => image.type !== "video") ?? null;
 }
 
 /**

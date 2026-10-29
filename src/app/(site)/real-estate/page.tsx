@@ -1,214 +1,34 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowRight, Building2, CheckCircle2, MapPinned, ShieldCheck } from "lucide-react";
+import { ArrowRight, BedDouble, House, Search, ShieldCheck } from "lucide-react";
 import { Figure, PropertyCard } from "@/components/cards";
 import { DataModeNotice } from "@/components/data-mode-notice";
-import { SectionHeading } from "@/components/section-heading";
-import { getFeaturedProperties } from "@/lib/queries";
-import { getSiteSettings } from "@/lib/site";
+import { getFeaturedProperties, listProperties } from "@/lib/queries";
 import { isSupabaseConfigured } from "@/lib/env";
-import { whatsappLink } from "@/lib/utils";
 
 export const revalidate = 60;
-
 export const metadata: Metadata = {
-  title: "Real Estate",
-  description: "Explore homes, land and commercial property opportunities across Penman Empire Real Estate.",
+  title: "Homes & Property",
+  description: "Explore real property photography, shortlist home styles and enquire with Penman Real Estate.",
   alternates: { canonical: "/real-estate" },
 };
 
-const reasons = [
-  { icon: ShieldCheck, title: "Verified listings", body: "We keep property information accurate and presented clearly so it is easier to shortlist with confidence." },
-  { icon: MapPinned, title: "Location-led search", body: "Narrow by area, property type and price so the search reflects the real market you need." },
-  { icon: Building2, title: "Practical guidance", body: "Our team helps confirm the best property path for sales, rentals and viewing arrangements." },
-] as const;
-
 export default async function RealEstateHomePage() {
-  const [featuredProperties, settings] = await Promise.all([getFeaturedProperties(3), getSiteSettings()]);
-  const { brand, contact } = settings;
-  const wa = whatsappLink(contact.whatsapp, `Hello ${brand.business_name}, I'd like to enquire about a property.`);
-  const configured = isSupabaseConfigured();
-
-  const heroProperty = featuredProperties[0];
-
-  return (
-    <>
-      <section className="shell pb-12 pt-32 sm:pb-16 sm:pt-40">
-        <div className="overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-[0_24px_80px_rgba(17,24,39,0.08)]">
-          <div className="grid gap-0 lg:grid-cols-[1.08fr_0.92fr]">
-            <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-14">
-              <p className="eyebrow mb-5">Real estate</p>
-              <h1 className="max-w-xl font-display text-4xl font-light leading-[0.95] tracking-tighter text-ink sm:text-5xl lg:text-6xl">
-                Find a place that moves
-                <span className="font-serif italic text-forest"> you forward.</span>
-              </h1>
-              <p className="mt-5 max-w-lg text-base leading-relaxed text-black/65 sm:text-lg">
-                Explore property opportunities and talk with our team about the next move that fits your location, budget, and lifestyle.
-              </p>
-
-              <div className="mt-8 flex flex-wrap gap-4">
-                <Link href="/real-estate/properties" className="btn-primary group">
-                  Explore properties
-                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
-                </Link>
-                <Link href="/real-estate/contact" className="rounded-full border border-black/10 bg-white px-5 py-3 text-sm font-medium text-black/70 transition-colors hover:border-black hover:text-black">
-                  Discuss your needs
-                </Link>
-              </div>
-
-              <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-black/60">
-                <span className="inline-flex items-center gap-2 rounded-full bg-sage px-3 py-1.5 text-forest">
-                  <MapPinned className="h-4 w-4" strokeWidth={1.5} />
-                  Location-aware guidance
-                </span>
-                <span>Clear property information and direct team support</span>
-              </div>
-            </div>
-
-            <div className="relative min-h-[360px] bg-sage/50 lg:min-h-[520px]">
-              {heroProperty ? (
-                <>
-                  <Figure images={heroProperty.images} alt={heroProperty.title} className="h-full min-h-[360px] lg:min-h-[520px]" sizes="(max-width: 1024px) 100vw, 52vw" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-                    <div className="max-w-sm rounded-2xl border border-white/20 bg-white/12 p-4 text-white backdrop-blur-sm">
-                      <p className="text-xs uppercase tracking-[0.25em] text-white/70">Featured property</p>
-                      <div className="mt-2 flex items-end justify-between gap-4">
-                        <div>
-                          <h2 className="font-display text-2xl font-light tracking-tight">{heroProperty.title}</h2>
-                          <p className="mt-1 text-sm text-white/80">{heroProperty.location}</p>
-                        </div>
-                        <Link href={`/real-estate/${heroProperty.slug}`} className="rounded-full bg-white/15 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/25">
-                          View
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <div className="grid h-full place-items-center bg-gradient-to-br from-sage to-cream p-8 text-center">
-                  <div>
-                    <p className="eyebrow mb-3">Property guidance</p>
-                    <h2 className="font-display text-3xl font-light tracking-tight text-ink">A clearer way to find the right property.</h2>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="shell pb-12 sm:pb-16">
-        <div className="grid gap-6 lg:grid-cols-3">
-          <Link href="/real-estate/properties" className="card-surface flex h-full flex-col p-7 transition-shadow hover:shadow-xl hover:shadow-black/10">
-            <div className="mb-5 grid h-12 w-12 place-items-center rounded-full bg-sage text-forest">
-              <Building2 className="h-5 w-5" strokeWidth={1.5} />
-            </div>
-            <h2 className="font-display text-2xl font-light tracking-tight">Browse properties</h2>
-            <p className="mt-3 flex-1 text-sm leading-relaxed text-black/60">Filter by property type, location, budget and bedroom count to narrow the shortlist.</p>
-            <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-forest">Explore listings <ArrowRight className="h-4 w-4" strokeWidth={1.5} /></span>
-          </Link>
-
-          <Link href="/real-estate/services" className="card-surface flex h-full flex-col p-7 transition-shadow hover:shadow-xl hover:shadow-black/10">
-            <div className="mb-5 grid h-12 w-12 place-items-center rounded-full bg-sage text-forest">
-              <CheckCircle2 className="h-5 w-5" strokeWidth={1.5} />
-            </div>
-            <h2 className="font-display text-2xl font-light tracking-tight">Property services</h2>
-            <p className="mt-3 flex-1 text-sm leading-relaxed text-black/60">Learn how we guide buyers and tenants toward the right property solution and next steps.</p>
-            <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-forest">View services <ArrowRight className="h-4 w-4" strokeWidth={1.5} /></span>
-          </Link>
-
-          <Link href="/real-estate/contact" className="card-surface flex h-full flex-col p-7 transition-shadow hover:shadow-xl hover:shadow-black/10">
-            <div className="mb-5 grid h-12 w-12 place-items-center rounded-full bg-sage text-forest">
-              <MapPinned className="h-5 w-5" strokeWidth={1.5} />
-            </div>
-            <h2 className="font-display text-2xl font-light tracking-tight">Talk to the team</h2>
-            <p className="mt-3 flex-1 text-sm leading-relaxed text-black/60">Send your requirements and we will help narrow the right property options and viewing process.</p>
-            <span className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-forest">Contact us <ArrowRight className="h-4 w-4" strokeWidth={1.5} /></span>
-          </Link>
-        </div>
-      </section>
-
-      {!configured && (
-        <section className="shell pb-8">
-          <DataModeNotice context="Featured property listings are read from your database." />
-        </section>
-      )}
-
-      <section className="bg-sage py-24 sm:py-28">
-        <div className="shell">
-          <SectionHeading
-            eyebrow="Why clients choose us"
-            title="Practical property"
-            emphasis="guidance."
-            description="We focus on transparent recommendations, clear property information and a direct path to the next step."
-            className="mb-12"
-          />
-          <div className="grid gap-6 md:grid-cols-3">
-            {reasons.map((reason, index) => (
-              <div key={reason.title} data-reveal style={{ transitionDelay: `${index * 100}ms` }} className="card-surface p-7">
-                <div className="grid h-12 w-12 place-items-center rounded-full bg-white text-forest shadow-sm">
-                  <reason.icon className="h-5 w-5" strokeWidth={1.5} />
-                </div>
-                <h3 className="mt-5 font-display text-2xl font-light tracking-tight">{reason.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-black/60">{reason.body}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="shell py-24 sm:py-28">
-        <SectionHeading
-          eyebrow="Featured properties"
-          title="Current highlights"
-          emphasis="from the market."
-          action={{ href: "/real-estate/properties", label: "Browse all properties" }}
-          description="A small selection of active listings to help buyers and tenants understand current opportunities."
-          className="mb-12"
-        />
-
-        {featuredProperties.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {featuredProperties.map((property, index) => (
-              <div key={property.id} data-reveal style={{ transitionDelay: `${index * 100}ms` }}>
-                <PropertyCard property={property} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="card-surface p-8 text-sm text-black/60">
-            No featured properties are currently listed. Check the full property catalogue or speak to the team for the latest opportunities.
-          </div>
-        )}
-      </section>
-
-      <section className="pb-24 sm:pb-32">
-        <div className="shell">
-          <div className="card-surface p-8 sm:p-10">
-            <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <p className="eyebrow mb-4">Need assistance finding the right property?</p>
-                <h2 className="font-display text-4xl font-light tracking-tighter sm:text-5xl">
-                  Tell us your goal,
-                  <span className="font-serif italic"> we’ll guide the next step.</span>
-                </h2>
-              </div>
-              <div className="flex flex-wrap gap-4">
-                <Link href="/real-estate/contact" className="btn-primary group">
-                  Contact the property team
-                  <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" strokeWidth={1.5} />
-                </Link>
-                {wa && (
-                  <a href={wa} target="_blank" rel="noopener noreferrer" className="rounded-full border border-black/10 px-5 py-3 text-sm text-black/70 transition-colors hover:border-black hover:text-black">
-                    WhatsApp us
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
-  );
+  const [featured, catalogue] = await Promise.all([
+    getFeaturedProperties(6), listProperties({ perPage: 6 }),
+  ]);
+  const properties = [...new Map([...featured, ...catalogue.items].map((item) => [item.id, item])).values()].slice(0, 6);
+  const hero = properties[0];
+  return <>
+    <section className="relative isolate mx-3 mt-3 min-h-[500px] overflow-hidden rounded-[2rem] bg-[#17231d] text-white shadow-[0_20px_60px_rgba(18,32,26,0.18)] sm:mx-5 sm:min-h-[570px] sm:rounded-[2.5rem]">
+      {hero && <Figure images={hero.images} alt={hero.title} className="absolute inset-0 h-full w-full opacity-65" sizes="100vw" priority hoverZoom={false} />}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#101913]/95 via-[#101913]/70 to-[#101913]/10" />
+      <div className="shell relative z-10 flex min-h-[500px] flex-col justify-center py-14 sm:min-h-[570px]"><p className="mb-5 text-xs font-semibold uppercase tracking-[0.3em] text-[#d9bb8a]">Penman Real Estate</p><h1 className="max-w-3xl font-display text-5xl font-semibold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">Find a place to <span className="font-serif font-normal italic text-[#d9bb8a]">call yours.</span></h1><p className="mt-6 max-w-xl text-base leading-7 text-white/75 sm:text-lg">Explore homes and property ideas through real photography. Tell us what you need and let the team confirm current opportunities.</p><div className="mt-9 flex flex-wrap gap-3"><Link href="/real-estate/properties" className="inline-flex items-center gap-2 rounded-full bg-[#d9bb8a] px-6 py-3.5 text-sm font-semibold text-[#17231d] hover:bg-white">Explore properties <ArrowRight className="h-4 w-4" /></Link><Link href="/real-estate/contact" className="rounded-full border border-white/45 px-6 py-3.5 text-sm font-semibold text-white hover:bg-white/10">Talk to our team</Link></div>{hero && <Link href={`/real-estate/${hero.slug}`} className="absolute bottom-5 right-5 hidden max-w-xs rounded-2xl border-l-2 border-[#d9bb8a] bg-black/35 px-4 py-2 text-sm backdrop-blur sm:block"><span className="block text-[10px] uppercase tracking-[0.2em] text-white/60">Home inspiration</span><span className="font-semibold">{hero.title}</span></Link>}</div>
+    </section>
+    <section className="shell relative z-10 py-7 lg:-mt-10 lg:pb-14"><form action="/real-estate/properties" className="grid gap-3 rounded-[1.5rem] border border-black/10 bg-white p-4 shadow-[0_15px_40px_rgba(0,0,0,0.09)] md:grid-cols-[1fr_220px_auto] md:items-end md:p-5" role="search"><label><span className="store-filter-label">Search homes</span><input name="q" type="search" placeholder="Search title or style…" className="store-filter-input" /></label><label><span className="store-filter-label">Property type</span><select name="property_type" className="store-filter-input"><option value="">All types</option><option value="house">House</option><option value="apartment">Apartment</option><option value="duplex">Duplex</option><option value="land">Land</option></select></label><button type="submit" className="flex h-11 items-center justify-center gap-2 rounded-xl bg-[#17231d] px-6 text-sm font-semibold text-white hover:bg-[#2b4734]"><Search className="h-4 w-4" /> Find properties</button></form></section>
+    {!isSupabaseConfigured() && <div className="shell pb-8"><DataModeNotice context="Properties are read from your database." /></div>}
+    <section className="shell pb-16 pt-4 sm:pb-20"><div className="mb-8 flex flex-wrap items-end justify-between gap-4"><div><p className="store-eyebrow">Explore the collection</p><h2 className="store-heading mt-2">Spaces to explore</h2></div><Link href="/real-estate/properties" className="store-text-link">All properties <ArrowRight className="h-4 w-4" /></Link></div>{properties.length ? <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{properties.map((property) => <PropertyCard key={property.id} property={property} />)}</div> : <div className="rounded-2xl border border-black/10 bg-white p-8 text-sm text-black/55">Properties will appear here when published.</div>}</section>
+    <section className="bg-[#f1eee7] py-14"><div className="shell grid gap-6 md:grid-cols-3"><div className="rounded-2xl bg-white p-6"><House className="h-6 w-6 text-[#a48351]" /><h3 className="mt-4 font-display text-lg font-semibold">Browse the styles</h3><p className="mt-2 text-sm leading-6 text-black/55">Explore the kind of home, space and setting you want.</p></div><div className="rounded-2xl bg-white p-6"><BedDouble className="h-6 w-6 text-[#a48351]" /><h3 className="mt-4 font-display text-lg font-semibold">Tell us your needs</h3><p className="mt-2 text-sm leading-6 text-black/55">Share your preferred size, area, budget and timing.</p></div><div className="rounded-2xl bg-white p-6"><ShieldCheck className="h-6 w-6 text-[#a48351]" /><h3 className="mt-4 font-display text-lg font-semibold">Confirm the details</h3><p className="mt-2 text-sm leading-6 text-black/55">The team checks current listings and arranges the next step.</p></div></div></section>
+    <section className="bg-[#17231d] py-14 text-white"><div className="shell flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-xs uppercase tracking-[0.2em] text-[#d9bb8a]">Your next move</p><h2 className="mt-2 font-display text-3xl font-semibold">Tell us what home feels right.</h2></div><Link href="/real-estate/contact" className="inline-flex items-center gap-2 rounded-full bg-[#d9bb8a] px-6 py-3 text-sm font-semibold text-[#17231d]">Contact Penman <ArrowRight className="h-4 w-4" /></Link></div></section>
+  </>;
 }

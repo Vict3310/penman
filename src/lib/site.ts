@@ -25,6 +25,7 @@ export interface ContactSettings {
 
 export interface SocialSettings {
   instagram: string;
+  tiktok: string;
   facebook: string;
   x: string;
   linkedin: string | null;
@@ -82,7 +83,13 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     address: "",
     hours: "",
   },
-  social: { instagram: "", facebook: "", x: "", linkedin: null },
+  social: {
+    instagram: "https://www.instagram.com/penman_autos/",
+    tiktok: "https://www.tiktok.com/@penman_autos",
+    facebook: "",
+    x: "",
+    linkedin: null,
+  },
   hero: {
     eyebrow: "Penman Empire — one brand, three businesses",
     heading: "Cars, property and rental",

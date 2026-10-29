@@ -23,10 +23,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!vehicle) return { title: "Vehicle not found" };
 
   const title = vehicle.seo_title || vehicle.name;
-  const description =
-    vehicle.seo_description ||
-    vehicle.description?.slice(0, 155) ||
-    `${vehicle.name} available for hire from Penman Empire.`;
+  const shareImage = vehicle.images?.find((item) => item.type !== "video");
+  const description = vehicle.seo_description || vehicle.description?.slice(0, 155) ||
+    (vehicle.is_reference ? `${vehicle.name} model reference; rental availability and rate require confirmation.` : `${vehicle.name} rental details from Penman Empire.`);
 
   return {
     title,
@@ -35,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      images: vehicle.images?.[0]?.url ? [{ url: vehicle.images[0].url }] : undefined,
+      images: shareImage?.url ? [{ url: shareImage.url }] : undefined,
     },
   };
 }
@@ -65,10 +64,10 @@ export default async function VehicleDetailPage({ params }: PageProps) {
 
   const wa = whatsappLink(
     settings.contact.whatsapp,
-    `Hello ${settings.brand.business_name}, I'd like to enquire about hiring the ${vehicle.name}.`,
+    vehicle.is_reference ? `Hello ${settings.brand.business_name}, I'd like to ask about hiring a ${vehicle.name} or a similar car.` : `Hello ${settings.brand.business_name}, I'd like to enquire about hiring the ${vehicle.name}.`,
   );
 
-  const priceLabel = vehicle.rate
+  const priceLabel = vehicle.is_reference ? "Rate to be confirmed" : vehicle.rate
     ? `${formatCurrency(vehicle.rate, vehicle.currency)} / ${vehicle.rate_period}`
     : "Rate on request";
 
@@ -78,7 +77,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
     name: vehicle.name,
     description: vehicle.description ?? undefined,
     category: vehicle.category,
-    image: vehicle.images?.map((i) => i.url),
+    image: vehicle.images?.filter((item) => item.type !== "video").map((item) => item.url),
     offers: vehicle.rate
       ? {
           "@type": "Offer",
@@ -93,8 +92,8 @@ export default async function VehicleDetailPage({ params }: PageProps) {
   };
 
   return (
-    <article className="pb-24 pt-36 sm:pb-32 sm:pt-44">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+    <article className="pb-24 pt-10 sm:pb-24 sm:pt-14">
+      {!vehicle.is_reference && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
 
       <div className="shell">
         <Link
@@ -105,6 +104,8 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           Back to all vehicles
         </Link>
 
+        <div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className="store-eyebrow">Penman Rentals · {vehicle.category}</p><h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-[#17231d] sm:text-5xl">{vehicle.name}</h1></div><SaveButton kind="vehicle" listingId={vehicle.id} title={vehicle.name} variant="inline" /></div>
+
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-12">
           {/* ── Left: gallery + detail ── */}
           <div className="lg:col-span-7">
@@ -113,21 +114,11 @@ export default async function VehicleDetailPage({ params }: PageProps) {
             <div className="mt-10">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge tone="neutral">{vehicle.category}</Badge>
-                <StatusBadge status={vehicle.availability} />
+                {vehicle.is_reference ? <Badge tone="amber">Model reference</Badge> : <StatusBadge status={vehicle.availability} />}
                 {vehicle.is_featured && <Badge tone="green">Featured</Badge>}
               </div>
-              <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-                <h1 className="font-display text-3xl font-light tracking-tighter sm:text-4xl">
-                  {vehicle.name}
-                </h1>
-                <SaveButton
-                  kind="vehicle"
-                  listingId={vehicle.id}
-                  title={vehicle.name}
-                  variant="inline"
-                />
-              </div>
-              <p className="mt-4 text-2xl font-medium text-forest">{priceLabel}</p>
+              <h2 className="mt-6 font-display text-2xl font-semibold tracking-tight">Rental details</h2>
+              {vehicle.is_reference && <p className="mt-3 text-sm text-black/55">The photograph shows a real vehicle model. This is not a confirmed Penman Empire rental unit; ask the team about current fleet options.</p>}
 
               {specs.length > 0 && (
                 <dl className="mt-8 grid grid-cols-2 gap-6 border-y border-black/10 py-8 sm:grid-cols-4">
@@ -166,11 +157,12 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           {/* ── Right: enquiry ── */}
           <aside className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
-              <div className="card-surface p-7">
-                <h2 className="font-display text-2xl font-light tracking-tight">Enquire about this vehicle</h2>
+              <div className="rounded-[1.6rem] border border-black/10 bg-white p-7 shadow-[0_12px_36px_rgba(18,32,26,0.06)]">
+                <p className="store-eyebrow">Rental enquiry</p><p className="mt-2 font-display text-3xl font-semibold text-[#17231d]">{priceLabel}</p><a href="#rental-enquiry" className="mt-5 inline-flex rounded-full bg-[#17231d] px-5 py-3 text-sm font-semibold text-white">Check availability</a>
+                <div id="rental-enquiry" className="mt-6 scroll-mt-32 border-t border-black/10 pt-6">
+                <h2 className="font-display text-2xl font-light tracking-tight">{vehicle.is_reference ? "Ask about a rental like this" : "Enquire about this vehicle"}</h2>
                 <p className="mt-2 text-sm text-black/50">
-                  Send your dates and we will confirm availability. Submitting this form does not reserve the
-                  vehicle — our team confirms every request first.
+                  {vehicle.is_reference ? "Send your dates and preferred vehicle style. The team will confirm whether a suitable rental is available." : "Send your dates and we will confirm availability. Submitting this form does not reserve the vehicle — our team confirms every request first."}
                 </p>
                 <div className="mt-7">
                   <EnquiryForm
@@ -180,6 +172,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
                     submitLabel="Send rental enquiry"
                     whatsappHref={wa}
                   />
+                </div>
                 </div>
               </div>
             </div>

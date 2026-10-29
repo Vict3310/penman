@@ -22,6 +22,8 @@ const nextConfig: NextConfig = {
       // Development-only demonstration imagery (see supabase/seed.sql)
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "picsum.photos" },
+      { protocol: "https", hostname: "thumb.wikimedia.org" },
+      { protocol: "https", hostname: "upload.wikimedia.org" },
     ],
     formats: ["image/avif", "image/webp"],
   },

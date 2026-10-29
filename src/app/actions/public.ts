@@ -213,7 +213,7 @@ export async function submitShopEnquiry(
       phone: input.phone,
       email: input.email,
       quantity: input.quantity,
-      message: input.message,
+      message: input.intent === "question" ? input.message : `${input.intent === "viewing" ? "Viewing request" : "Sourcing request"}${input.message ? `: ${input.message}` : "."}`,
       channel: input.channel,
     });
 

@@ -17,7 +17,16 @@ export const SHOP_ENQUIRY_STATUSES: ShopEnquiryStatus[] = ["new", "contacted", "
 export interface MediaRef {
   path: string;
   url: string;
+  type?: "image" | "video";
   alt?: string;
+  credit?: string;
+  source_url?: string;
+  license?: string;
+  license_url?: string;
+}
+
+export function isVideoMedia(media: MediaRef): boolean {
+  return media.type === "video";
 }
 
 export type VehicleAvailability = "available" | "unavailable" | "maintenance" | "reserved";
@@ -43,6 +52,7 @@ export interface Vehicle {
   rental_terms: string | null;
   images: MediaRef[];
   is_featured: boolean;
+  is_reference?: boolean;
   status: PublishStatus;
   seo_title: string | null;
   seo_description: string | null;
@@ -89,7 +99,7 @@ export type PropertyType =
   | "commercial"
   | "other";
 export type PriceType = "fixed" | "negotiable" | "on_request";
-export type PropertyAvailability = "available" | "reserved" | "sold" | "let";
+export type PropertyAvailability = "available" | "reserved" | "sold" | "let" | "unverified";
 
 export interface Property {
   id: string;
@@ -113,6 +123,7 @@ export interface Property {
   contact_email: string | null;
   images: MediaRef[];
   is_featured: boolean;
+  is_reference?: boolean;
   status: PublishStatus;
   seo_title: string | null;
   seo_description: string | null;
@@ -154,6 +165,7 @@ export interface ProductCategory {
  * importer never infers a year, a mileage or a condition to fill a gap.
  */
 export interface ProductSpecs {
+  body_style?: string | null;
   year?: number | null;
   mileage_km?: number | null;
   condition?: string | null;
@@ -195,6 +207,7 @@ export interface Product {
   availability: "available" | "unavailable" | "reserved";
   images: MediaRef[];
   is_featured: boolean;
+  is_reference?: boolean;
   status: PublishStatus;
   seo_title: string | null;
   seo_description: string | null;

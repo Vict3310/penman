@@ -1,30 +1,30 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { LogoMark } from "@/components/logo";
 import type { SiteSettings } from "@/lib/site";
 import { whatsappLink } from "@/lib/utils";
 
 const SECTIONS = [
   {
-    title: "Automobiles",
+    title: "Shop Cars",
     links: [
-      { href: "/rental", label: "Rental catalogue" },
-      { href: "/rental?availability=available", label: "Available now" },
+      { href: "/shop/cars", label: "All cars" },
+      { href: "/shop/cars?make=Mercedes-Benz", label: "Mercedes-Benz" },
+      { href: "/shop/cars?make=Dodge", label: "Dodge" },
+      { href: "/shop/compare", label: "Compare cars" },
     ],
   },
   {
-    title: "Real Estate",
+    title: "Rentals",
     links: [
-      { href: "/real-estate", label: "All listings" },
-      { href: "/real-estate?listing_type=sale", label: "For sale" },
-      { href: "/real-estate?listing_type=rent", label: "To let" },
+      { href: "/rental/cars", label: "Browse rental models" },
+      { href: "/rental/contact", label: "Ask about a rental" },
     ],
   },
   {
-    title: "Cars for Sale",
+    title: "Property",
     links: [
-      { href: "/shop", label: "Vehicle marketplace" },
-      { href: "/contact", label: "Buy a car" },
+      { href: "/real-estate/properties", label: "Explore properties" },
+      { href: "/real-estate/contact", label: "Talk to our team" },
     ],
   },
   {
@@ -44,6 +44,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
 
   const socials = [
     { label: "Instagram", href: social.instagram },
+    { label: "TikTok", href: social.tiktok },
     { label: "Facebook", href: social.facebook },
     { label: "X", href: social.x },
     { label: "LinkedIn", href: social.linkedin ?? "" },
@@ -56,10 +57,7 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
       <div className="shell py-16">
         <div className="grid gap-12 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <div className="flex items-center gap-2.5">
-              <LogoMark />
-              <span className="font-display text-sm font-semibold tracking-tight">{brand.business_name}</span>
-            </div>
+            <Link href="/shop" className="font-display text-2xl font-black uppercase tracking-[-0.08em] text-[#17231d]">PENMAN<span className="text-[#a48351]">.</span></Link>
             <p className="mt-4 max-w-xs text-sm text-black/50">{brand.tagline}</p>
 
             <ul className="mt-6 space-y-3 text-sm">

@@ -23,10 +23,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!property) return { title: "Property not found" };
 
   const title = property.seo_title || property.title;
-  const description =
-    property.seo_description ||
-    property.description?.slice(0, 155) ||
-    `${property.title} in ${property.location} — available through Penman Empire.`;
+  const shareImage = property.images?.find((item) => item.type !== "video");
+  const description = property.seo_description || property.description?.slice(0, 155) ||
+    (property.is_reference
+      ? `Real architectural photograph and home style reference. Location, price and availability require confirmation.`
+      : `${property.title} in ${property.location} — details from Penman Empire.`);
 
   return {
     title,
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      images: property.images?.[0]?.url ? [{ url: property.images[0].url }] : undefined,
+      images: shareImage?.url ? [{ url: shareImage.url }] : undefined,
     },
   };
 }
@@ -47,6 +48,12 @@ const FIELDS: EnquiryField[] = [
   { name: "message", label: "Your message", type: "textarea", rows: 4, placeholder: "I'd like to arrange a viewing…" },
 ];
 
+const REFERENCE_FIELDS: EnquiryField[] = FIELDS.map((field) =>
+  field.name === "message"
+    ? { ...field, placeholder: "Tell us what you like about this home and where you want to live…" }
+    : field,
+);
+
 export default async function PropertyDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const property = await getPropertyBySlug(slug);
@@ -55,7 +62,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   const settings = await getSiteSettings();
 
   const priceLabel =
-    property.price_type === "on_request" || property.price === null
+    property.is_reference
+      ? "Details to be confirmed"
+      : property.price_type === "on_request" || property.price === null
       ? "Price on request"
       : `${formatCurrency(property.price, property.currency)}${property.listing_type === "rent" ? " / year" : ""}`;
 
@@ -67,7 +76,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
   const wa = whatsappLink(
     settings.contact.whatsapp,
-    `Hello ${settings.brand.business_name}, I'd like to enquire about the property: ${property.title}.`,
+    property.is_reference
+      ? `Hello ${settings.brand.business_name}, I'd like to discuss a home like ${property.title}.`
+      : `Hello ${settings.brand.business_name}, I'd like to enquire about the property: ${property.title}.`,
   );
 
   const jsonLd = {
@@ -76,13 +87,13 @@ export default async function PropertyDetailPage({ params }: PageProps) {
     name: property.title,
     description: property.description ?? undefined,
     address: property.address ?? property.location,
-    image: property.images?.map((i) => i.url),
+    image: property.images?.filter((item) => item.type !== "video").map((item) => item.url),
     numberOfRooms: property.bedrooms ?? undefined,
   };
 
   return (
-    <article className="pb-24 pt-36 sm:pb-32 sm:pt-44">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+    <article className="pb-24 pt-10 sm:pb-24 sm:pt-14">
+      {!property.is_reference && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
 
       <div className="shell">
         <Link
@@ -93,33 +104,25 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           Back to all listings
         </Link>
 
+        <div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className="store-eyebrow">Penman Real Estate · {property.property_type}</p><h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-[#17231d] sm:text-5xl">{property.title}</h1></div><SaveButton kind="property" listingId={property.id} title={property.title} variant="inline" /></div>
+
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-12">
           <div className="lg:col-span-7">
             <Gallery images={property.images ?? []} alt={property.title} />
 
             <div className="mt-10">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge tone="green">{property.listing_type === "sale" ? "For sale" : "To let"}</Badge>
+                <Badge tone={property.is_reference ? "amber" : "green"}>{property.is_reference ? "Home inspiration" : property.listing_type === "sale" ? "For sale" : "To let"}</Badge>
                 <Badge tone="neutral">{property.property_type}</Badge>
-                <StatusBadge status={property.availability} />
+                {!property.is_reference && <StatusBadge status={property.availability} />}
               </div>
 
-              <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-                <h1 className="font-display text-3xl font-light tracking-tighter sm:text-4xl">
-                  {property.title}
-                </h1>
-                <SaveButton
-                  kind="property"
-                  listingId={property.id}
-                  title={property.title}
-                  variant="inline"
-                />
-              </div>
+              <h2 className="mt-6 font-display text-2xl font-semibold tracking-tight">Property overview</h2>
               <p className="mt-3 flex items-center gap-2 text-base text-black/50">
                 <MapPin className="h-4 w-4 text-forest" strokeWidth={1.5} />
                 {property.location}
               </p>
-              <p className="mt-5 text-2xl font-medium text-forest">{priceLabel}</p>
+              {property.is_reference && <p className="mt-3 text-sm text-black/55">This is a real architectural photograph for inspiration. It is not a verified Penman Empire property listing; address, room count, price and availability have not been supplied.</p>}
 
               {facts.length > 0 && (
                 <dl className="mt-8 grid grid-cols-3 gap-6 border-y border-black/10 py-8">
@@ -169,10 +172,12 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           <aside className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
-              <div className="card-surface p-7">
-                <h2 className="font-display text-2xl font-light tracking-tight">Enquire about this property</h2>
+              <div className="rounded-[1.6rem] border border-black/10 bg-white p-7 shadow-[0_12px_36px_rgba(18,32,26,0.06)]">
+                <p className="store-eyebrow">Property enquiry</p><p className="mt-2 font-display text-3xl font-semibold text-[#17231d]">{priceLabel}</p><a href="#property-enquiry" className="mt-5 inline-flex rounded-full bg-[#17231d] px-5 py-3 text-sm font-semibold text-white">{property.is_reference ? "Ask about similar homes" : "Arrange a viewing"}</a>
+                <div id="property-enquiry" className="mt-6 scroll-mt-32 border-t border-black/10 pt-6">
+                <h2 className="font-display text-2xl font-light tracking-tight">{property.is_reference ? "Find a home like this" : "Enquire about this property"}</h2>
                 <p className="mt-2 text-sm text-black/50">
-                  Send us a message and we will arrange a viewing or answer your questions.
+                  {property.is_reference ? "Tell us what you like about this home and the team can discuss real options with you." : "Send us a message and we will arrange a viewing or answer your questions."}
                 </p>
 
                 {(property.contact_name || property.contact_phone || property.contact_email) && (
@@ -194,11 +199,12 @@ export default async function PropertyDetailPage({ params }: PageProps) {
                 <div className="mt-7">
                   <EnquiryForm
                     action={submitPropertyEnquiry}
-                    fields={FIELDS}
+                    fields={property.is_reference ? REFERENCE_FIELDS : FIELDS}
                     hidden={{ property_id: property.id }}
-                    submitLabel="Send property enquiry"
+                    submitLabel={property.is_reference ? "Ask about a home like this" : "Send property enquiry"}
                     whatsappHref={wa}
                   />
+                </div>
                 </div>
               </div>
             </div>

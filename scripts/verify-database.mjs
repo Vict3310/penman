@@ -235,10 +235,12 @@ await expectConstraintViolation(
   `insert into public.rental_enquiries (name, phone, pickup_date, return_date)
    values ('A', '0801', '2026-05-10', '2026-05-01')`,
 );
+await db.exec(`insert into public.vehicles (slug, name, category) values ('duplicate-probe', 'Probe', 'Sedan')`);
 await expectConstraintViolation(
   "duplicate vehicle slug is rejected",
-  `insert into public.vehicles (slug, name, category) values ('demo-toyota-corolla-2022', 'dup', 'Sedan')`,
+  `insert into public.vehicles (slug, name, category) values ('duplicate-probe', 'dup', 'Sedan')`,
 );
+await db.exec(`delete from public.vehicles where slug = 'duplicate-probe'`);
 await expectConstraintViolation(
   "product with negative stock is rejected",
   `insert into public.products (slug, name, stock_quantity) values ('neg', 'x', -5)`,
@@ -265,13 +267,21 @@ const { rows: updated } = await db.query(
   `select updated_at > created_at as advanced from public.vehicles where slug = 'trigger-probe'`,
 );
 check("set_updated_at trigger advances updated_at on change", updated[0]?.advanced === true);
+await db.exec(`delete from public.vehicles where slug = 'trigger-probe'`);
 
 console.log("\nSeed data");
 
+for (const [table, expected] of [
+  ["vehicles", 0],
+  ["properties", 0],
+  ["products", 0],
+]) {
+  const { rows } = await db.query(`select count(*)::int as n from public.${table}`);
+  const count = rows[0]?.n ?? 0;
+  check(`seeded ${table} (${count} rows)`, count === expected, `expected ${expected}`);
+}
+
 for (const [table, minimum] of [
-  ["vehicles", 3],
-  ["properties", 3],
-  ["products", 3],
   ["product_categories", 3],
   ["site_settings", 7],
 ]) {
@@ -279,11 +289,6 @@ for (const [table, minimum] of [
   const count = rows[0]?.n ?? 0;
   check(`seeded ${table} (${count} rows)`, count >= minimum, `expected at least ${minimum}`);
 }
-
-const { rows: demoRows } = await db.query(
-  `select count(*)::int as n from public.vehicles where name like '[DEMO]%'`,
-);
-check("seed records are clearly labelled [DEMO]", (demoRows[0]?.n ?? 0) >= 3);
 
 console.log("\nDashboard metrics query");
 const { rows: metrics } = await db.query(
@@ -293,8 +298,8 @@ const { rows: metrics } = await db.query(
      (select count(*) from public.products where status = 'published')::int as products`,
 );
 check(
-  "published counts are computable and non-zero",
-  metrics[0].vehicles > 0 && metrics[0].properties > 0 && metrics[0].products > 0,
+  "published counts are computable for an empty catalogue",
+  metrics[0].vehicles === 0 && metrics[0].properties === 0 && metrics[0].products === 0,
   JSON.stringify(metrics[0]),
 );
 

@@ -1,10 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight, BadgeCheck, Building2, CarFront, Clock3, Headphones, ShieldCheck } from "lucide-react";
-import { Figure, VehicleCard } from "@/components/cards";
+import { Figure, ProductCard } from "@/components/cards";
 import { DataModeNotice } from "@/components/data-mode-notice";
 import { SectionHeading } from "@/components/section-heading";
-import { getFeaturedVehicles } from "@/lib/queries";
+import { listProducts } from "@/lib/queries";
 import { getSiteSettings } from "@/lib/site";
 import { isSupabaseConfigured } from "@/lib/env";
 import { whatsappLink } from "@/lib/utils";
@@ -18,28 +18,29 @@ export const metadata: Metadata = {
 };
 
 const reasons = [
-  { icon: ShieldCheck, title: "Verified stock", body: "We publish vehicles that are checked carefully before they are shown." },
-  { icon: Clock3, title: "Fast responses", body: "Tell us your need and we will confirm the next step without unnecessary delays." },
+  { icon: ShieldCheck, title: "Clear listing status", body: "Reference model photos are labelled, so you know what still needs confirmation." },
+  { icon: Clock3, title: "Direct enquiries", body: "Ask about a specific car and the team can confirm its current stock, price and details." },
   { icon: Headphones, title: "One team", body: "Rental, sales and guidance all run through the same direct support line." },
 ] as const;
 
 const services = [
-  { href: "/shop", label: "Cars for sale", description: "Browse the current inventory and ask about pricing and availability." },
+  { href: "/shop", label: "Cars for sale", description: "Browse real car model photos and ask the team to confirm stock and prices." },
   { href: "/rental", label: "Car rental", description: "Choose daily, weekly or longer vehicle hire with a clear booking process." },
   { href: "/autos/about", label: "About Autos", description: "Learn how Penman Empire supports vehicle buyers and drivers." },
 ] as const;
 
 export default async function AutosHomePage() {
-  const [featuredVehicles, settings] = await Promise.all([getFeaturedVehicles(3), getSiteSettings()]);
+  const [cars, settings] = await Promise.all([listProducts({ category: "cars", perPage: 3 }), getSiteSettings()]);
+  const featuredCars = cars.items;
   const { brand, contact } = settings;
   const wa = whatsappLink(contact.whatsapp, `Hello ${brand.business_name}, I'd like to enquire about a vehicle.`);
   const configured = isSupabaseConfigured();
 
-  const heroVehicle = featuredVehicles[0];
+  const heroCar = featuredCars[0];
 
   return (
     <>
-      <section className="shell pb-12 pt-32 sm:pb-16 sm:pt-40">
+      <section className="shell pb-12 pt-10 sm:pb-16 sm:pt-14">
         <div className="overflow-hidden rounded-[2rem] border border-black/10 bg-white shadow-[0_24px_80px_rgba(17,24,39,0.08)]">
           <div className="grid gap-0 lg:grid-cols-[1.08fr_0.92fr]">
             <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-14">
@@ -72,19 +73,19 @@ export default async function AutosHomePage() {
             </div>
 
             <div className="relative min-h-[360px] bg-sage/50 lg:min-h-[520px]">
-              {heroVehicle ? (
+              {heroCar ? (
                 <>
-                  <Figure images={heroVehicle.images} alt={heroVehicle.name} className="h-full min-h-[360px] lg:min-h-[520px]" sizes="(max-width: 1024px) 100vw, 52vw" />
+                  <Figure images={heroCar.images} alt={heroCar.name} className="h-full min-h-[360px] lg:min-h-[520px]" sizes="(max-width: 1024px) 100vw, 52vw" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                   <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
                     <div className="max-w-sm rounded-2xl border border-white/20 bg-white/12 p-4 text-white backdrop-blur-sm">
-                      <p className="text-xs uppercase tracking-[0.25em] text-white/70">Featured option</p>
+                      <p className="text-xs uppercase tracking-[0.25em] text-white/70">Explore this car</p>
                       <div className="mt-2 flex items-end justify-between gap-4">
                         <div>
-                          <h2 className="font-display text-2xl font-light tracking-tight">{heroVehicle.name}</h2>
-                          <p className="mt-1 text-sm text-white/80">{heroVehicle.category}</p>
+                          <h2 className="font-display text-2xl font-light tracking-tight">{heroCar.name}</h2>
+                          <p className="mt-1 text-sm text-white/80">{heroCar.category?.name ?? "Car model"}</p>
                         </div>
-                        <Link href={heroVehicle.slug ? `/autos/cars/${heroVehicle.slug}` : "/autos/cars"} className="rounded-full bg-white/15 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/25">
+                        <Link href={`/shop/${heroCar.slug}`} className="rounded-full bg-white/15 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/25">
                           View
                         </Link>
                       </div>
@@ -152,25 +153,25 @@ export default async function AutosHomePage() {
 
       <section className="shell py-24 sm:py-28">
         <SectionHeading
-          eyebrow="Featured vehicles"
-          title="Popular picks from"
-          emphasis="our fleet."
-          action={{ href: "/autos/cars", label: "Browse all cars" }}
-          description="A small selection of current vehicles to help you quickly narrow your next move."
+          eyebrow="Explore cars"
+          title="Find a model that"
+          emphasis="fits your plans."
+          action={{ href: "/shop/cars", label: "Browse all car models" }}
+          description="Explore real car photography and ask the team to confirm a specific vehicle's stock, condition and price."
           className="mb-12"
         />
 
-        {featuredVehicles.length > 0 ? (
+        {featuredCars.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {featuredVehicles.map((vehicle, index) => (
-              <div key={vehicle.id} data-reveal style={{ transitionDelay: `${index * 100}ms` }}>
-                <VehicleCard vehicle={vehicle} />
+            {featuredCars.map((car, index) => (
+              <div key={car.id} data-reveal style={{ transitionDelay: `${index * 100}ms` }}>
+                <ProductCard product={car} />
               </div>
             ))}
           </div>
         ) : (
           <div className="card-surface p-8 text-sm text-black/60">
-            No featured vehicles are available right now. Check back soon or speak to the team for the latest options.
+            No car posts are available right now. Contact the team to ask about current options.
           </div>
         )}
       </section>

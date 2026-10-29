@@ -829,7 +829,8 @@ export const DEMO_SETTINGS: SiteSettings = {
     hours: "[DEMO] Mon–Sat, 9am–6pm",
   },
   social: {
-    instagram: "https://instagram.com/example",
+    instagram: "https://www.instagram.com/penman_autos/",
+    tiktok: "https://www.tiktok.com/@penman_autos",
     facebook: "",
     x: "",
     linkedin: null,
@@ -998,6 +999,15 @@ export function demoListProducts(filters: ProductFilters = {}): Paginated<Produc
     const match = DEMO_CATEGORIES.find((c) => c.slug === filters.category);
     items = match ? items.filter((p) => p.category_id === match.id) : [];
   }
+  if (filters.make) items = items.filter((p) => p.specs?.make === filters.make);
+  if (filters.body) items = items.filter((p) => p.specs?.body_style?.toLowerCase().includes(filters.body!.toLowerCase()));
+  if (filters.minYear) items = items.filter((p) => (p.specs?.year ?? 0) >= filters.minYear!);
+  if (filters.maxYear) items = items.filter((p) => Boolean(p.specs?.year) && p.specs!.year! <= filters.maxYear!);
+  if (filters.maxMileage) items = items.filter((p) => p.specs?.mileage_km != null && p.specs.mileage_km <= filters.maxMileage!);
+  if (filters.minPrice) items = items.filter((p) => p.price != null && p.price >= filters.minPrice!);
+  if (filters.maxPrice) items = items.filter((p) => p.price != null && p.price <= filters.maxPrice!);
+  if (filters.listing === "stock") items = items.filter((p) => !p.is_reference);
+  if (filters.listing === "models") items = items.filter((p) => Boolean(p.is_reference));
 
   items =
     filters.sort === "price_asc"

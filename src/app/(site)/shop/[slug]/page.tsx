@@ -5,9 +5,11 @@ import { ArrowLeft, ExternalLink, Info, Package, ShoppingBag } from "lucide-reac
 import { submitShopEnquiry } from "@/app/actions/public";
 import { EnquiryForm, type EnquiryField } from "@/components/enquiry-form";
 import { Gallery } from "@/components/gallery";
+import { ProductCard } from "@/components/cards";
+import { CompareButton } from "@/components/shop/compare";
 import { Badge, StatusBadge } from "@/components/ui/misc";
 import { SaveButton } from "@/components/account/save-button";
-import { getProductBySlug } from "@/lib/queries";
+import { getProductBySlug, listProducts } from "@/lib/queries";
 import { getSiteSettings } from "@/lib/site";
 import { isImported } from "@/lib/types";
 import { formatCurrency, formatDate, formatMileage, whatsappLink } from "@/lib/utils";
@@ -24,10 +26,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!product) return { title: "Product not found" };
 
   const title = product.seo_title || product.name;
-  const description =
-    product.seo_description ||
-    product.description?.slice(0, 155) ||
-    `${product.name} available from the Penman Empire vehicle marketplace.`;
+  const shareImage = product.images?.find((item) => item.type !== "video");
+  const description = product.seo_description || product.description?.slice(0, 155) ||
+    (product.is_reference
+      ? `${product.name} model reference with real photography. Price and stock are not verified.`
+      : `${product.name} at Penman Autos. Ask about price and availability.`);
 
   return {
     title,
@@ -36,25 +39,36 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title,
       description,
-      images: product.images?.[0]?.url ? [{ url: product.images[0].url }] : undefined,
+      images: shareImage?.url ? [{ url: shareImage.url }] : undefined,
     },
   };
 }
 
 const FIELDS: EnquiryField[] = [
+  { name: "intent", label: "I would like to", type: "select", options: [{ value: "question", label: "Ask about this car" }, { value: "viewing", label: "Book a viewing" }, { value: "sourcing", label: "Discuss sourcing" }] },
   { name: "name", label: "Your name", type: "text", required: true, half: true, placeholder: "Full name" },
   { name: "phone", label: "Phone number", type: "tel", required: true, half: true, placeholder: "+234…" },
   { name: "email", label: "Email (optional)", type: "email", half: true, placeholder: "you@example.com" },
-  { name: "quantity", label: "Quantity", type: "number", required: true, half: true, min: "1", defaultValue: "1" },
-  { name: "message", label: "Order notes", type: "textarea", rows: 4, placeholder: "Delivery location, preferred timing…" },
+  { name: "message", label: "Your message", type: "textarea", rows: 4, placeholder: "Preferred year, specification, budget or viewing time…" },
 ];
+
+const REFERENCE_FIELDS: EnquiryField[] = FIELDS.map((field) =>
+  field.name === "intent" ? { ...field, options: [{ value: "question", label: "Ask about this model" }, { value: "sourcing", label: "Discuss sourcing" }] } :
+  field.name === "message"
+    ? { ...field, label: "Preferred year, budget or questions", placeholder: "Tell us what you are looking for…" }
+    : field,
+);
 
 export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
   if (!product) notFound();
 
-  const settings = await getSiteSettings();
+  const [settings, relatedResult] = await Promise.all([
+    getSiteSettings(),
+    listProducts({ category: "cars", make: product.specs?.make || undefined, perPage: 6 }),
+  ]);
+  const related = relatedResult.items.filter((item) => item.id !== product.id).slice(0, 3);
   const outOfStock = product.track_stock && product.stock_quantity <= 0;
   const imported = isImported(product);
   const specs = product.specs ?? {};
@@ -63,8 +77,9 @@ export default async function ProductDetailPage({ params }: PageProps) {
   // is omitted, never filled with a guess.
   const vehicleFacts = [
     specs.make || specs.model ? { label: "Make & model", value: [specs.make, specs.model].filter(Boolean).join(" ") } : null,
+    specs.body_style ? { label: "Body style", value: specs.body_style } : null,
     specs.year ? { label: "Year", value: String(specs.year) } : null,
-    formatMileage(specs.mileage_km) ? { label: "Mileage", value: formatMileage(specs.mileage_km) as string } : null,
+    !product.is_reference && formatMileage(specs.mileage_km) ? { label: "Mileage", value: formatMileage(specs.mileage_km) as string } : null,
     specs.condition_label ? { label: "Condition", value: specs.condition_label } : null,
     specs.colour ? { label: "Colour", value: specs.colour } : null,
     specs.region ? { label: "Location", value: specs.region } : null,
@@ -72,7 +87,9 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
   const wa = whatsappLink(
     settings.contact.whatsapp,
-    `Hello ${settings.brand.business_name}, I'd like to enquire about buying: ${product.name}.`,
+    product.is_reference
+      ? `Hello ${settings.brand.business_name}, I'd like to ask about sourcing a ${product.name}.`
+      : `Hello ${settings.brand.business_name}, I'd like to enquire about buying: ${product.name}.`,
   );
 
   const jsonLd = {
@@ -81,14 +98,14 @@ export default async function ProductDetailPage({ params }: PageProps) {
     name: product.name,
     description: product.description ?? undefined,
     sku: product.sku ?? undefined,
-    image: product.images?.map((i) => i.url),
+    image: product.images?.filter((item) => item.type !== "video").map((item) => item.url),
     category: product.category?.name ?? undefined,
     // No `offers` block for an imported listing: the price is the source
     // marketplace's asking price and the vehicle's availability has not been
     // verified, so publishing either as structured data would be a claim this
     // business cannot stand behind.
     offers:
-      !imported && product.price
+      !imported && !product.is_reference && product.price
         ? {
             "@type": "Offer",
             price: product.price,
@@ -99,7 +116,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
   };
 
   return (
-    <article className="pb-24 pt-36 sm:pb-32 sm:pt-44">
+    <article className="pb-24 pt-10 sm:pb-24 sm:pt-14">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <div className="shell">
@@ -108,8 +125,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
           className="mb-10 inline-flex items-center gap-2 text-sm text-black/50 transition-colors hover:text-ink"
         >
           <ArrowLeft className="h-4 w-4" strokeWidth={1.5} />
-          Back to the marketplace
+          Back to cars
         </Link>
+
+        <div className="mb-7"><p className="store-eyebrow">{specs.make || "Penman Autos"} · {specs.body_style || "Car details"}</p><h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-[#17231d] sm:text-5xl">{product.name}</h1></div>
 
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-12">
           <div className="lg:col-span-7">
@@ -119,29 +138,18 @@ export default async function ProductDetailPage({ params }: PageProps) {
               <div className="flex flex-wrap items-center gap-2">
                 {product.category?.name && <Badge tone="neutral">{product.category.name}</Badge>}
                 {imported && <Badge tone="amber">Imported listing</Badge>}
+                {product.is_reference && <Badge tone="amber">Model reference</Badge>}
                 {product.is_featured && <Badge tone="green">Featured</Badge>}
                 {product.track_stock && (
                   <StatusBadge status={outOfStock ? "unavailable" : "available"} />
                 )}
               </div>
 
-              <div className="mt-5 flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-                <h1 className="font-display text-3xl font-light tracking-tighter sm:text-4xl">
-                  {product.name}
-                </h1>
-                <SaveButton
-                  kind="product"
-                  listingId={product.id}
-                  title={product.name}
-                  variant="inline"
-                />
-              </div>
-              <p className="mt-4 text-2xl font-medium text-forest">
-                {formatCurrency(product.price, product.currency)}
-              </p>
+              <h2 className="mt-6 font-display text-2xl font-semibold tracking-tight">Vehicle overview</h2>
+              {product.is_reference && <p className="mt-3 text-sm text-black/55">This photograph shows a real {product.name} model. It does not identify a vehicle currently held or offered for sale by Penman Empire.</p>}
 
               <dl className="mt-8 grid grid-cols-2 gap-6 border-y border-black/10 py-8">
-                {product.sku && (
+                {product.sku && !product.is_reference && (
                   <div>
                     <dt className="flex items-center gap-2 text-xs uppercase tracking-widest text-black/40">
                       <Package className="h-3.5 w-3.5 text-forest" strokeWidth={1.5} />
@@ -156,13 +164,15 @@ export default async function ProductDetailPage({ params }: PageProps) {
                     Availability
                   </dt>
                   <dd className="mt-2 text-base">
-                    {imported
+                    {product.is_reference
+                      ? "Stock and price not verified — ask us to source this model"
+                      : imported
                       ? // Never "available" for an imported listing: nobody here
                         // has seen the car, so the honest answer is that it is
                         // not verified.
                         "Not verified — imported listing"
                       : !product.track_stock
-                        ? "Available to order"
+                        ? "Ask us to confirm availability"
                         : product.stock_quantity > 0
                           ? `${product.stock_quantity} in stock`
                           : "Currently out of stock"}
@@ -227,7 +237,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
               {product.description && (
                 <section className="mt-8">
                   <h2 className="font-display text-xl font-light tracking-tight">
-                    {imported ? "What the source listing said" : "Product details"}
+                    {imported ? "What the source listing said" : product.is_reference ? "About this model" : "Product details"}
                   </h2>
                   <p className="mt-4 whitespace-pre-line text-base leading-relaxed text-black/60">
                     {product.description}
@@ -239,25 +249,32 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
           <aside className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
-              <div className="card-surface p-7">
-                <h2 className="font-display text-2xl font-light tracking-tight">Enquire about this vehicle</h2>
+              <div className="rounded-[1.6rem] border border-black/10 bg-white p-6 shadow-[0_12px_36px_rgba(18,32,26,0.06)] sm:p-7">
+                <p className="store-eyebrow">{product.is_reference ? "Model reference" : "Vehicle listing"}</p>
+                <p className="mt-2 font-display text-3xl font-semibold text-[#17231d]">{product.is_reference || !product.price ? "Ask for price" : formatCurrency(product.price, product.currency)}</p>
+                <p className="mt-2 text-sm text-black/55">{product.is_reference ? "Tell us the year and specification you want. We’ll discuss sourcing options." : "Ask us to confirm this car’s availability and next steps."}</p>
+                <div className="mt-5 flex flex-wrap gap-3"><a href="#enquire" className="inline-flex items-center justify-center rounded-full bg-[#17231d] px-5 py-3 text-sm font-semibold text-white">{product.is_reference ? "Ask about this model" : "Book a viewing"}</a><CompareButton product={product} large /><SaveButton kind="product" listingId={product.id} title={product.name} variant="inline" /></div>
+                <div id="enquire" className="scroll-mt-32 border-t border-black/10 pt-6 mt-6">
+                <h2 className="font-display text-2xl font-semibold tracking-tight">{product.is_reference ? "Ask about this model" : "Enquire or book a viewing"}</h2>
                 <p className="mt-2 text-sm text-black/50">
-                  Send a purchase enquiry and we will confirm pricing, condition and the next steps with you.
+                  {product.is_reference ? "Tell us your preferred year, condition and budget. We can discuss sourcing options." : "Send a purchase enquiry and we will confirm pricing, condition and the next steps with you."}
                 </p>
                 <div className="mt-7">
                   <EnquiryForm
                     action={submitShopEnquiry}
-                    fields={FIELDS}
-                    hidden={{ product_id: product.id, channel: "form" }}
-                    submitLabel="Send purchase enquiry"
+                    fields={product.is_reference ? REFERENCE_FIELDS : FIELDS}
+                    hidden={{ product_id: product.id, channel: "form", quantity: "1" }}
+                    submitLabel={product.is_reference ? "Ask about this model" : "Send purchase enquiry"}
                     whatsappHref={wa}
                     whatsappLabel="Or enquire on WhatsApp"
                   />
+                </div>
                 </div>
               </div>
             </div>
           </aside>
         </div>
+        {related.length > 0 && <section className="mt-20 border-t border-black/10 pt-12"><div className="mb-7 flex items-end justify-between gap-4"><div><p className="store-eyebrow">Keep exploring</p><h2 className="store-heading mt-2">You may also like</h2></div><Link href="/shop/cars" className="store-text-link">All cars <ArrowLeft className="h-4 w-4 rotate-180" /></Link></div><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ProductCard key={item.id} product={item} />)}</div></section>}
       </div>
     </article>
   );

@@ -1,169 +1,133 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
-const REVEAL_SELECTOR = "[data-reveal], [data-panel-img]";
+const REVEAL_SELECTOR = "[data-reveal], [data-panel-img], [data-reveal-words]";
 
 /**
- * React port of the motion layer in design.html:
- *   * `[data-reveal]` and `[data-panel-img]` scroll-reveal via IntersectionObserver
- *   * `[data-reveal-words]` progressive word reveal
- *   * `[data-parallax]` scroll parallax
- *
- * IMPORTANT: this component is mounted in the root layout, which Next.js keeps
- * alive across client-side navigations. Anything that only runs once on mount
- * therefore only ever sees the elements from the first page.
- *
- * A previous revision re-created the IntersectionObserver on every route change
- * *and* flagged each element with `data-reveal-bound`. That combination is
- * subtly broken: the cleanup calls `disconnect()`, which drops every pending
- * observation, while the next scan skips those same elements because they are
- * already flagged as "bound". The elements end up observed by nobody, so they
- * stay at `opacity: 0` until a hard refresh — exactly the "text and listings
- * only appear when I reload" symptom.
- *
- * The fix: there is exactly ONE observer for the lifetime of the app and it is
- * never disconnected while navigating. A WeakSet mirrors what it is currently
- * watching, so scans are still idempotent (never double-observe) but an element
- * can always be re-observed if it was missed.
+ * Animate without changing classes, styles or text nodes on server-rendered
+ * elements. A streamed Suspense boundary can hydrate after this effect runs;
+ * DOM mutations here would cause a hydration mismatch.
  */
 export function MotionProvider() {
   const pathname = usePathname();
-  const scanRef = useRef<((scope: ParentNode) => void) | null>(null);
 
-  // ── one-shot setup: observer, word wrapping, parallax ──────────────────
   useEffect(() => {
-    const observed = new WeakSet<Element>();
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reducedMotion || typeof IntersectionObserver === "undefined" ||
+        typeof Element.prototype.animate !== "function") return;
 
-    const revealAll = () => {
-      document.querySelectorAll<HTMLElement>(REVEAL_SELECTOR).forEach((el) => el.classList.add("is-in"));
-    };
-
-    // Without IntersectionObserver (or with reduced motion) show everything.
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced || typeof IntersectionObserver === "undefined") {
-      revealAll();
-      scanRef.current = revealAll;
-      return () => {
-        scanRef.current = null;
-      };
-    }
+    const seen = new WeakSet<Element>();
+    const parallax = new Map<HTMLElement, Animation>();
 
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
-          (entry.target as HTMLElement).classList.add("is-in");
-          observer.unobserve(entry.target);
-          observed.delete(entry.target);
+          const element = entry.target as HTMLElement;
+          observer.unobserve(element);
+
+          const panel = element.hasAttribute("data-panel-img");
+          const rawDelay = element.style.transitionDelay.trim();
+          const delay = rawDelay.endsWith("ms")
+            ? Number.parseFloat(rawDelay)
+            : rawDelay.endsWith("s")
+              ? Number.parseFloat(rawDelay) * 1000
+              : 0;
+
+          element.animate(
+            panel
+              ? [
+                  { transform: "translateY(6%) scale(1.035)" },
+                  { transform: "translateY(0) scale(1)" },
+                ]
+              : [
+                  { opacity: 0.5, transform: "translateY(20px)", filter: "blur(4px)" },
+                  { opacity: 1, transform: "translateY(0)", filter: "blur(0)" },
+                ],
+            {
+              duration: panel ? 900 : 650,
+              delay: Number.isFinite(delay) ? Math.max(0, delay) : 0,
+              easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+              fill: "both",
+            },
+          );
         }
       },
-      { threshold: 0.15 },
+      { threshold: 0.12 },
     );
 
-    /** Split an element's text into per-word spans — exactly once. */
-    const wrapWords = (root: HTMLElement) => {
-      if (root.dataset.wordsWrapped === "true") return;
-      root.dataset.wordsWrapped = "true";
+    const scan = (root: ParentNode) => {
+      const reveal = (element: Element) => {
+        if (seen.has(element)) return;
+        seen.add(element);
+        observer.observe(element);
+      };
+      const addParallax = (element: Element) => {
+        const layer = element as HTMLElement;
+        if (parallax.has(layer)) return;
+        const animation = layer.animate(
+          [{ transform: "translateY(-600px)" }, { transform: "translateY(600px)" }],
+          { duration: 1200, fill: "both" },
+        );
+        animation.pause();
+        animation.currentTime = 600;
+        parallax.set(layer, animation);
+      };
 
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-      const textNodes: Text[] = [];
-      let node = walker.nextNode();
-      while (node) {
-        if (node.textContent && node.textContent.trim() !== "") textNodes.push(node as Text);
-        node = walker.nextNode();
+      if (root instanceof Element) {
+        if (root.matches(REVEAL_SELECTOR)) reveal(root);
+        if (root.matches("[data-parallax]")) addParallax(root);
       }
-
-      let index = 0;
-      textNodes.forEach((textNode) => {
-        const parts = (textNode.textContent ?? "").split(/(\s+)/);
-        const fragment = document.createDocumentFragment();
-        parts.forEach((part) => {
-          if (part.trim() === "") {
-            fragment.appendChild(document.createTextNode(part));
-            return;
-          }
-          const span = document.createElement("span");
-          span.className = "word-reveal";
-          span.style.transitionDelay = `${index * 45}ms`;
-          span.textContent = part;
-          fragment.appendChild(span);
-          index += 1;
-        });
-        textNode.parentNode?.replaceChild(fragment, textNode);
-      });
+      root.querySelectorAll(REVEAL_SELECTOR).forEach(reveal);
+      root.querySelectorAll("[data-parallax]").forEach(addParallax);
     };
 
-    const observeIfNeeded = (el: Element) => {
-      if (observed.has(el)) return;
-      observed.add(el);
-      observer.observe(el as HTMLElement);
-    };
-
-    let parallaxLayers: HTMLElement[] = [];
-
-    /** Observe every not-yet-seen reveal element in the given subtree. */
-    const scan = (scope: ParentNode) => {
-      if (scope instanceof Element) {
-        if (scope.matches("[data-reveal-words]")) wrapWords(scope as HTMLElement);
-        if (scope.matches(REVEAL_SELECTOR)) observeIfNeeded(scope);
-      }
-      scope.querySelectorAll<HTMLElement>("[data-reveal-words]").forEach(wrapWords);
-      scope.querySelectorAll(REVEAL_SELECTOR).forEach(observeIfNeeded);
-      parallaxLayers = Array.from(document.querySelectorAll<HTMLElement>("[data-parallax]"));
-    };
-
-    scanRef.current = scan;
-    scan(document);
-
-    // Catches late-arriving content within a page: Suspense boundaries, streamed
-    // server components, filter results.
-    const mutation = new MutationObserver((records) => {
-      for (const record of records) {
-        record.addedNodes.forEach((added) => {
-          if (added.nodeType === Node.ELEMENT_NODE) scan(added as Element);
-        });
-      }
-    });
-    mutation.observe(document.body, { childList: true, subtree: true });
-
-    // ── parallax ────────────────────────────────────────────────────────
     let ticking = false;
     const onScroll = () => {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(() => {
-        parallaxLayers.forEach((el) => {
-          const rect = el.getBoundingClientRect();
-          if (rect.bottom > 0 && rect.top < window.innerHeight) {
-            const speed = Number.parseFloat(el.dataset.parallax ?? "0");
-            const sign = el.closest("[data-parallax-invert]") ? -0.3 : 1;
-            const offset = ((window.scrollY * speed * sign) % 600).toFixed(1);
-            el.style.transform = `translateY(${offset}px)`;
+        for (const [layer, animation] of parallax) {
+          if (!layer.isConnected) {
+            animation.cancel();
+            parallax.delete(layer);
+            continue;
           }
-        });
+          const rect = layer.getBoundingClientRect();
+          if (rect.bottom <= 0 || rect.top >= window.innerHeight) continue;
+          const speed = Number.parseFloat(layer.dataset.parallax ?? "0");
+          const sign = layer.closest("[data-parallax-invert]") ? -0.3 : 1;
+          const offset = (window.scrollY * speed * sign) % 600;
+          animation.currentTime = 600 + (Number.isFinite(offset) ? offset : 0);
+        }
         ticking = false;
       });
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
+
+    scan(document);
     onScroll();
 
-    // Only runs on a real unmount (i.e. essentially never for a root-layout
-    // provider) — route changes must NOT tear the observer down.
+    // Suspense and client navigation can add content after the first scan.
+    // WAAPI leaves attributes and text untouched while React hydrates it.
+    const mutation = new MutationObserver((records) => {
+      for (const record of records) {
+        for (const node of record.addedNodes) {
+          if (node.nodeType === Node.ELEMENT_NODE) scan(node as Element);
+        }
+      }
+      onScroll();
+    });
+    mutation.observe(document.body, { childList: true, subtree: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => {
       observer.disconnect();
       mutation.disconnect();
       window.removeEventListener("scroll", onScroll);
-      scanRef.current = null;
+      for (const animation of parallax.values()) animation.cancel();
     };
-  }, []);
-
-  // ── rescan after every route change ────────────────────────────────────
-  // The layout survives navigation, so the setup effect above never re-runs.
-  // The new page's DOM is committed by the time this effect fires.
-  useEffect(() => {
-    scanRef.current?.(document);
   }, [pathname]);
 
   return null;

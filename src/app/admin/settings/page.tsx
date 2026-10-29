@@ -20,6 +20,7 @@ const CONTACT: SettingsField[] = [
 
 const SOCIAL: SettingsField[] = [
   { name: "instagram", label: "Instagram URL", type: "url", half: true },
+  { name: "tiktok", label: "TikTok URL", type: "url", half: true },
   { name: "facebook", label: "Facebook URL", type: "url", half: true },
   { name: "x", label: "X (Twitter) URL", type: "url", half: true },
   { name: "linkedin", label: "LinkedIn URL", type: "url", half: true },

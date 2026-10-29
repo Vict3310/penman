@@ -71,7 +71,7 @@ src/
     supabase/               public / server / admin / browser clients
 supabase/
   migrations/               schema, RLS, storage
-  seed.sql                  development demonstration data
+  seed.sql                  development settings and empty categories
 tests/                      unit tests
 ```
 
@@ -110,6 +110,7 @@ npm run dev         # development server
 npm run build       # production build
 npm start           # serve the production build
 npm run typecheck   # tsc --noEmit
+npm run lint        # ESLint
 npm test            # Vitest unit tests
 npm run db:verify   # apply migrations + seed to an embedded Postgres
 ```
@@ -158,14 +159,15 @@ domain and a non-dialable number, and images come from an allow-listed placehold
    - `0003_own_auth.sql` — application-owned accounts, sessions and reset tokens
    - `0004_account_area.sql` — per-customer enquiry ownership and saved listings
    - `0005_imported_inventory.sql` — imported inventory provenance and audit runs
+   - `0006_reference_showcases.sql` — clearly labelled photo reference listings
 
-3. **Development only:** load the demonstration data.
+3. **Development only:** load placeholder site settings and empty categories.
 
    ```bash
    psql "$DATABASE_URL" -f supabase/seed.sql
    ```
 
-   `seed.sql` inserts clearly `[DEMO]`-labelled records with placeholder imagery.
+   `seed.sql` does not insert product, property or vehicle listings.
    **Never run it against production.**
 
 4. Set `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` and
@@ -239,7 +241,48 @@ Site content is stored in `site_settings`; featured homepage items are driven by
 
 ---
 
-## Imported inventory
+## Photo reference catalogue
+
+`data/reference-catalogue.json` records 50 model-matched car references with
+67 Wikimedia Commons photographs, focused on Mercedes-Benz and Mercedes-AMG,
+Dodge Hellcat and Scat Pack models, and other luxury and performance cars.
+Seventeen car posts have front/rear galleries. It also records 12 real house
+photographs from Unsplash, with source and licence links for each image. The
+app labels these as reference showcases and
+does not assert that a photographed car or home is Penman Empire stock. Prices,
+addresses, condition and availability must be confirmed before publishing an
+actual sale or rental listing. The photo source and licence appear on each
+detail page.
+
+To apply or refresh this catalogue against a configured database:
+
+```bash
+npm run catalogue:replace
+```
+
+This script deletes `products` rows marked
+`inventory_source = 'huggingface:Binaryy/cars-for-sale'` and the 15 named,
+previously published everyday-model references, then upserts the 50 car and 12
+home references in a transaction. It leaves other products, rental vehicles,
+import logs and previously uploaded image files in place. The `/shop/cars`
+route reads the `cars` category, so unrelated products do not appear in the car
+browser.
+
+In the admin listing form, upload several JPG, PNG, WebP or AVIF photos (up to
+5 MB each) and MP4 or WebM videos (up to 50 MB each). The first media item is
+the cover on cards; all items appear in order in the detail gallery. The upload
+is authorized through the app's admin session before a signed storage upload
+URL is issued.
+
+The one-time `scripts/cleanup-legacy-catalogue.mjs` removes the identified
+test/demo listings, Hugging Face import logs and old `media/cars/` import
+images. Run it only when retiring those legacy records; `seed.sql` no longer
+recreates the demo listings.
+
+## Legacy imported inventory
+
+The following importer is manual and can recreate the Hugging Face rows. Do
+not run it unless you intentionally want to restore that dataset.
 
 Cars for sale can be brought in from an external dataset instead of being typed in by
 hand. The importer writes into the same `products` catalogue the shop already uses —
@@ -273,7 +316,7 @@ price, mileage and condition). Other flags: `--images embedded|url|none`,
   dataset revision) and `.cache/cars-import/logs/` holds the per-record detail.
 
 **Images.** By default the JPEG bytes shipped inside the dataset are validated (magic
-bytes, not the extension), size-capped at the bucket's 5 MB limit and uploaded into the
+bytes, not the extension), size-capped at 5 MB per image and uploaded into the
 existing `media` storage bucket. `--images url` fetches the original URL instead, with a
 15-second timeout, bounded retries and `403`/`404` treated as permanent. `--images none`
 imports without pictures. Objects are keyed by content hash, so the same picture is
@@ -328,9 +371,9 @@ owner must supply:
 - Real contact details (phone, WhatsApp, email, address, opening hours)
 - Genuine listing content: vehicles, properties and products, with their own photographs
 - Final hero, about and footer copy
-- Social media URLs
+- Confirmed social links are configured for Instagram and TikTok; provide any other accounts to add
 - Legal review of `/privacy` and `/terms`
 - The production domain, if it differs from `penmanempire.com`
 
-Until these are entered, the site shows honest empty states and the development seed
-data is clearly marked `[DEMO]`.
+Until these are entered, the site shows honest empty states. Development mode
+without Supabase still uses clearly marked `[DEMO]` preview data.

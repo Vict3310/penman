@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { FilterForm, type FilterField } from "@/components/filter-form";
 import { ResultsSkeleton } from "@/components/catalogue-skeleton";
-import { PageHeader } from "@/components/page-header";
+import { CatalogueIntro } from "@/components/catalogue-intro";
 import { PropertyCard } from "@/components/cards";
 import { EmptyState, Pagination } from "@/components/ui/misc";
 import { DataModeNotice } from "@/components/data-mode-notice";
@@ -55,14 +55,9 @@ export default async function RealEstatePropertiesPage({ searchParams }: { searc
 
   return (
     <>
-      <PageHeader
-        eyebrow="Real estate properties"
-        title="Find the right"
-        emphasis="property."
-        description="Explore current listings by type, location, price and bedroom count."
-      />
+      <CatalogueIntro eyebrow="Properties" title="Explore places to live." description="Browse real home photography, narrow by property type and share what you need with Penman." parentHref="/real-estate" parentLabel="Real estate" />
 
-      <section className="shell pb-24 sm:pb-32">
+      <section className="shell py-8 sm:py-12">
         {!isSupabaseConfigured() && (
           <div className="mb-8">
             <DataModeNotice context="Listings are read from your database." />

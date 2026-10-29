@@ -40,7 +40,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
   const fullName = profile?.full_name?.trim() || user.fullName?.trim() || user.email;
 
   return (
-    <div className="pb-24 pt-32 sm:pb-32 sm:pt-40">
+    <div className="pb-24 pt-10 sm:pb-24 sm:pt-14">
       <div className="shell">
         {/*
          * `min-w-0` on both columns is load-bearing, not cosmetic. A grid item

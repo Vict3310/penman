@@ -1,30 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Inter, Instrument_Serif } from "next/font/google";
+import localFont from "next/font/local";
 import { Toaster } from "sonner";
 import { MotionProvider } from "@/components/motion-provider";
 import { getSiteSettings } from "@/lib/site";
 import { getSiteUrl } from "@/lib/env";
 import "./globals.css";
 
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const instrumentSerif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: "italic",
-  variable: "--font-instrument",
-  display: "swap",
-});
+const bodyFont = localFont({ src: [
+  { path: "../assets/fonts/Lato-Regular.ttf", weight: "400" },
+  { path: "../assets/fonts/Lato-Bold.ttf", weight: "700" },
+], variable: "--font-body", display: "swap" });
+const displayFont = localFont({ src: [
+  { path: "../assets/fonts/Lato-Regular.ttf", weight: "400" },
+  { path: "../assets/fonts/Lato-Bold.ttf", weight: "700" },
+  { path: "../assets/fonts/Lato-Black.ttf", weight: "900" },
+], variable: "--font-display", display: "swap" });
+const serifFont = localFont({ src: "../assets/fonts/LiberationSerif-Italic.ttf", weight: "400", style: "italic", variable: "--font-editorial", display: "swap" });
 
 export async function generateMetadata(): Promise<Metadata> {
   const { brand, seo } = await getSiteSettings();
@@ -66,11 +57,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const content = (
     <>
       {children}
-      {/* Reveal animations start elements at opacity 0, which would hide the
-          whole page from users without JavaScript. This restores it. */}
-      <noscript>
-        <style>{`[data-reveal],[data-panel-img],.word-reveal{opacity:1!important;transform:none!important;filter:none!important}`}</style>
-      </noscript>
       <MotionProvider />
       <Toaster
         position="bottom-center"
@@ -92,7 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       // `data-scroll-behavior` lets Next.js suspend smooth scrolling during
       // route transitions, which would otherwise animate the jump between pages.
       data-scroll-behavior="smooth"
-      className={`${geist.variable} ${inter.variable} ${instrumentSerif.variable} scroll-smooth`}
+      className={`${bodyFont.variable} ${displayFont.variable} ${serifFont.variable} scroll-smooth`}
     >
       <body>{content}</body>
     </html>

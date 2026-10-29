@@ -14,7 +14,7 @@ export function PageHeader({
   className?: string;
 }) {
   return (
-    <header className={cn("relative overflow-hidden pb-14 pt-40 sm:pt-44", className)}>
+    <header className={cn("relative overflow-hidden pb-14 pt-14 sm:pt-20", className)}>
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute -left-1/4 top-0 h-[50vh] w-[60vw] rounded-full bg-sage/70 blur-[100px]" />
       </div>

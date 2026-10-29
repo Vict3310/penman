@@ -15,7 +15,7 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Autos Cars",
-  description: "Browse available vehicles for purchase from Penman Empire Autos.",
+  description: "Browse car models and ask Penman Empire Autos to confirm current stock and prices.",
   alternates: { canonical: "/autos/cars" },
 };
 
@@ -32,7 +32,7 @@ export default async function AutosCarsPage({ searchParams }: { searchParams: Pr
     page: readPage(params),
   };
 
-  const categories = await listCategories();
+  const categories = (await listCategories()).filter((category) => category.description !== "[DEMO] Category");
 
   const fields: FilterField[] = [
     { name: "q", label: "Search", type: "text", placeholder: "Vehicle name" },
@@ -44,9 +44,9 @@ export default async function AutosCarsPage({ searchParams }: { searchParams: Pr
     <>
       <PageHeader
         eyebrow="Autos cars"
-        title="Browse vehicles"
-        emphasis="ready to drive."
-        description="Explore current vehicles available for purchase and ask us directly if you want specific guidance or a match to your requirements."
+        title="Explore car models"
+        emphasis="for your next move."
+        description="Browse real vehicle photography. These model references are not verified stock; ask the team to confirm a specific car's year, condition, price and availability."
       />
 
       <section className="shell pb-24 sm:pb-32">

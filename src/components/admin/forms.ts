@@ -36,8 +36,9 @@ export function vehicleSections(): FormSection[] {
     },
     {
       title: "Rental rate",
+      description: "The example in the empty field shows where to enter the confirmed rental rate.",
       fields: [
-        { kind: "money", name: "rate", label: "Rate", half: true, help: "Leave blank to show “Rate on request”." },
+        { kind: "money", name: "rate", label: "Rate", half: true, placeholder: "e.g. 180000", help: "Enter the confirmed rate for the period selected below. Turn off Reference model to show it publicly; leave blank for “Rate on request”." },
         {
           kind: "select",
           name: "rate_period",
@@ -108,15 +109,16 @@ export function vehicleSections(): FormSection[] {
       ],
     },
     {
-      title: "Photographs",
-      description: "The first image is used as the cover. Drag-free reordering with the arrow buttons.",
-      fields: [{ kind: "media", name: "images", label: "Vehicle images", section: "vehicles", slugField: "slug" }],
+      title: "Photos & video",
+      description: "Add several files. The first photo or video is the cover; the rest appear in the detail gallery. Use the arrows to reorder them.",
+      fields: [{ kind: "media", name: "images", label: "Vehicle media", section: "vehicles", slugField: "slug" }],
     },
     {
       title: "Publishing & SEO",
       fields: [
         { kind: "select", name: "status", label: "Status", half: true, options: STATUS_OPTIONS },
         { kind: "switch", name: "is_featured", label: "Feature on the homepage", help: "Featured vehicles are shown in the homepage carousel." },
+        { kind: "switch", name: "is_reference", label: "Reference model", help: "Use while this is only a model example. Turn off when the actual rental vehicle and its rate are confirmed." },
         { kind: "text", name: "seo_title", label: "SEO title", half: true, help: "Leave blank to use the vehicle name." },
         { kind: "textarea", name: "seo_description", label: "SEO description", rows: 3 },
       ],
@@ -142,6 +144,7 @@ export function vehicleValues(vehicle?: Vehicle | null): FormValues {
     availability: vehicle?.availability ?? "available",
     images: vehicle?.images ?? [],
     is_featured: vehicle?.is_featured ?? false,
+    is_reference: vehicle?.is_reference ?? false,
     status: vehicle?.status ?? "draft",
     seo_title: vehicle?.seo_title ?? "",
     seo_description: vehicle?.seo_description ?? "",
@@ -189,8 +192,9 @@ export function propertySections(): FormSection[] {
     },
     {
       title: "Pricing",
+      description: "The example in the empty field shows where to enter the verified asking price.",
       fields: [
-        { kind: "money", name: "price", label: "Price", half: true },
+        { kind: "money", name: "price", label: "Price", half: true, placeholder: "e.g. 150000000", help: "Enter the verified asking price. Turn off Reference showcase to show it publicly; leave blank for “Price on request”." },
         {
           kind: "select",
           name: "price_type",
@@ -213,6 +217,7 @@ export function propertySections(): FormSection[] {
             { value: "reserved", label: "Reserved" },
             { value: "sold", label: "Sold" },
             { value: "let", label: "Let" },
+            { value: "unverified", label: "Not verified" },
           ],
         },
       ],
@@ -233,8 +238,9 @@ export function propertySections(): FormSection[] {
       ],
     },
     {
-      title: "Photographs",
-      fields: [{ kind: "media", name: "images", label: "Property images", section: "properties", slugField: "slug" }],
+      title: "Photos & video",
+      description: "The first photo or video is the cover; the rest appear in the detail gallery.",
+      fields: [{ kind: "media", name: "images", label: "Property media", section: "properties", slugField: "slug" }],
     },
     {
       title: "Enquiry contact",
@@ -250,6 +256,7 @@ export function propertySections(): FormSection[] {
       fields: [
         { kind: "select", name: "status", label: "Status", half: true, options: STATUS_OPTIONS },
         { kind: "switch", name: "is_featured", label: "Feature on the homepage" },
+        { kind: "switch", name: "is_reference", label: "Reference showcase", help: "Use while this is only home inspiration. Turn off when the actual property and its asking price are confirmed." },
         { kind: "text", name: "seo_title", label: "SEO title", half: true },
         { kind: "textarea", name: "seo_description", label: "SEO description", rows: 3 },
       ],
@@ -280,6 +287,7 @@ export function propertyValues(property?: Property | null): FormValues {
     contact_email: property?.contact_email ?? "",
     status: property?.status ?? "draft",
     is_featured: property?.is_featured ?? false,
+    is_reference: property?.is_reference ?? false,
     seo_title: property?.seo_title ?? "",
     seo_description: property?.seo_description ?? "",
   };
@@ -309,9 +317,24 @@ export function productSections(
       ],
     },
     {
-      title: "Pricing & listing status",
+      title: "Vehicle specifications",
+      description: "Enter confirmed facts for this specific car. These details appear on the public listing and power catalogue filters.",
       fields: [
-        { kind: "money", name: "price", label: "Selling price", half: true },
+        { kind: "text", name: "spec_make", label: "Make", half: true, placeholder: "Mercedes-Benz" },
+        { kind: "text", name: "spec_model", label: "Model", half: true, placeholder: "C 300 AMG Line" },
+        { kind: "text", name: "spec_body_style", label: "Body style", half: true, placeholder: "Luxury sedan" },
+        { kind: "number", name: "spec_year", label: "Year", half: true, placeholder: "e.g. 2022" },
+        { kind: "number", name: "spec_mileage_km", label: "Mileage (km)", half: true, placeholder: "e.g. 42000" },
+        { kind: "text", name: "spec_colour", label: "Colour", half: true },
+        { kind: "text", name: "spec_region", label: "Location", half: true },
+        { kind: "text", name: "spec_condition_label", label: "Condition", half: true },
+      ],
+    },
+    {
+      title: "Pricing & listing status",
+      description: "The example in the empty field shows where to enter this car’s actual asking price.",
+      fields: [
+        { kind: "money", name: "price", label: "Selling price", half: true, placeholder: "e.g. 85000000", help: "Enter the confirmed price for this car. Turn off Reference model to show it publicly; leave blank for “Ask for price”." },
         { kind: "select", name: "currency", label: "Currency", half: true, options: CURRENCY_OPTIONS },
         {
           kind: "switch",
@@ -334,14 +357,16 @@ export function productSections(
       ],
     },
     {
-      title: "Photographs",
-      fields: [{ kind: "media", name: "images", label: "Vehicle images", section: "products", slugField: "slug" }],
+      title: "Photos & video",
+      description: "The first photo or video is the cover; the rest appear in the detail gallery.",
+      fields: [{ kind: "media", name: "images", label: "Product media", section: "products", slugField: "slug" }],
     },
     {
       title: "Publishing & SEO",
       fields: [
         { kind: "select", name: "status", label: "Status", half: true, options: STATUS_OPTIONS },
         { kind: "switch", name: "is_featured", label: "Feature on the homepage" },
+        { kind: "switch", name: "is_reference", label: "Reference model", help: "Use while this is only a model example. Turn off when the specific car and its asking price and mileage are confirmed." },
         { kind: "text", name: "seo_title", label: "SEO title", half: true },
         { kind: "textarea", name: "seo_description", label: "SEO description", rows: 3 },
       ],
@@ -364,7 +389,16 @@ export function productValues(product?: Product | null): FormValues {
     images: product?.images ?? [],
     status: product?.status ?? "draft",
     is_featured: product?.is_featured ?? false,
+    is_reference: product?.is_reference ?? false,
     seo_title: product?.seo_title ?? "",
     seo_description: product?.seo_description ?? "",
+    spec_make: product?.specs?.make ?? "",
+    spec_model: product?.specs?.model ?? "",
+    spec_body_style: product?.specs?.body_style ?? "",
+    spec_year: product?.specs?.year ?? "",
+    spec_mileage_km: product?.specs?.mileage_km ?? "",
+    spec_colour: product?.specs?.colour ?? "",
+    spec_region: product?.specs?.region ?? "",
+    spec_condition_label: product?.specs?.condition_label ?? "",
   };
 }

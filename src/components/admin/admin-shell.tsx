@@ -102,6 +102,8 @@ export function AdminShell({
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
 
+  // A route transition must dismiss the mobile drawer.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setOpen(false), [pathname]);
 
   const currentPage = useMemo<NavItem | undefined>(() => {

@@ -4,8 +4,8 @@ import { createBrowserClient } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
- * Browser client carrying the signed-in administrator's session. Used only
- * for direct-to-storage image uploads, which RLS permits for admins only.
+ * Public browser client used to consume a one-file signed upload URL issued
+ * after the application's own administrator session has been checked.
  * The anon key is safe here; the service-role key never is.
  */
 let cached: SupabaseClient | null = null;

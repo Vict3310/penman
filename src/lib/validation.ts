@@ -41,7 +41,12 @@ export const slugSchema = z
 const mediaRefSchema = z.object({
   path: z.string().trim().min(1),
   url: z.string().trim().url(),
+  type: z.enum(["image", "video"]).optional(),
   alt: z.string().trim().max(200).optional(),
+  credit: z.string().trim().max(300).optional(),
+  source_url: z.string().trim().url().optional(),
+  license: z.string().trim().max(80).optional(),
+  license_url: z.string().trim().url().optional(),
 });
 
 const optionalNumber = z
@@ -91,6 +96,7 @@ export const shopEnquirySchema = z.object({
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1").max(999),
   message: trimmed(2000).nullish().transform((v) => v || null),
   channel: z.enum(["form", "whatsapp"]).default("form"),
+  intent: z.enum(["question", "viewing", "sourcing"]).default("question"),
 });
 
 export type ShopEnquiryInput = z.input<typeof shopEnquirySchema>;
@@ -231,6 +237,7 @@ export const vehicleSchema = z.object({
   rental_terms: trimmed(4000).nullish().transform((v) => v || null),
   images: z.array(mediaRefSchema).default([]),
   is_featured: z.coerce.boolean().default(false),
+  is_reference: z.coerce.boolean().default(false),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
   seo_title: trimmed(160).nullish().transform((v) => v || null),
   seo_description: trimmed(320).nullish().transform((v) => v || null),
@@ -257,7 +264,7 @@ export const propertySchema = z.object({
   bathrooms: optionalInt,
   area_sqm: optionalNumber,
   amenities: z.array(trimmed(120)).default([]),
-  availability: z.enum(["available", "reserved", "sold", "let"]).default("available"),
+  availability: z.enum(["available", "reserved", "sold", "let", "unverified"]).default("available"),
   contact_name: trimmed(120).nullish().transform((v) => v || null),
   contact_phone: z
     .union([z.literal(""), phoneSchema])
@@ -266,6 +273,7 @@ export const propertySchema = z.object({
   contact_email: optionalEmailSchema,
   images: z.array(mediaRefSchema).default([]),
   is_featured: z.coerce.boolean().default(false),
+  is_reference: z.coerce.boolean().default(false),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
   seo_title: trimmed(160).nullish().transform((v) => v || null),
   seo_description: trimmed(320).nullish().transform((v) => v || null),
@@ -293,9 +301,18 @@ export const productSchema = z.object({
   availability: z.enum(["available", "unavailable", "reserved"]).default("available"),
   images: z.array(mediaRefSchema).default([]),
   is_featured: z.coerce.boolean().default(false),
+  is_reference: z.coerce.boolean().default(false),
   status: z.enum(["draft", "published", "archived"]).default("draft"),
   seo_title: trimmed(160).nullish().transform((v) => v || null),
   seo_description: trimmed(320).nullish().transform((v) => v || null),
+  spec_make: trimmed(80).nullish().transform((v) => v || null),
+  spec_model: trimmed(120).nullish().transform((v) => v || null),
+  spec_body_style: trimmed(80).nullish().transform((v) => v || null),
+  spec_year: optionalInt,
+  spec_mileage_km: optionalInt,
+  spec_colour: trimmed(80).nullish().transform((v) => v || null),
+  spec_region: trimmed(120).nullish().transform((v) => v || null),
+  spec_condition_label: trimmed(80).nullish().transform((v) => v || null),
 });
 
 export type ProductInput = z.input<typeof productSchema>;

@@ -9,7 +9,8 @@ import { cn } from "@/lib/utils";
 export interface EnquiryField {
   name: string;
   label: string;
-  type: "text" | "email" | "tel" | "date" | "number" | "textarea";
+  type: "text" | "email" | "tel" | "date" | "number" | "textarea" | "select";
+  options?: { value: string; label: string }[];
   required?: boolean;
   placeholder?: string;
   /** Render side-by-side with the previous field on wider screens. */
@@ -86,7 +87,11 @@ export function EnquiryForm({
                 {field.required && <span className="ml-1 text-forest">*</span>}
               </label>
 
-              {field.type === "textarea" ? (
+              {field.type === "select" ? (
+                <select id={id} name={field.name} defaultValue={field.defaultValue} required={field.required} aria-invalid={hasError} className={cn("field-line", hasError && "field-line-error")}>
+                  {field.options?.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                </select>
+              ) : field.type === "textarea" ? (
                 <textarea
                   id={id}
                   name={field.name}
