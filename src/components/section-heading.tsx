@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { MotionWords } from "@/components/motion-words";
 import { cn } from "@/lib/utils";
 
 export function SectionHeading({
@@ -34,11 +35,11 @@ export function SectionHeading({
           )}
           data-reveal
         >
-          {title}
+          <MotionWords text={title} />
           {emphasis && (
             <>
               {" "}
-              <em className="font-serif font-normal italic">{emphasis}</em>
+              <em className="font-serif font-normal italic"><MotionWords text={emphasis} /></em>
             </>
           )}
         </h2>

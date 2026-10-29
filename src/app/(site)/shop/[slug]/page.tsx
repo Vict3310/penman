@@ -5,6 +5,7 @@ import { ArrowLeft, ExternalLink, Info, Package, ShoppingBag } from "lucide-reac
 import { submitShopEnquiry } from "@/app/actions/public";
 import { EnquiryForm, type EnquiryField } from "@/components/enquiry-form";
 import { Gallery } from "@/components/gallery";
+import { MotionWords } from "@/components/motion-words";
 import { ProductCard } from "@/components/cards";
 import { CompareButton } from "@/components/shop/compare";
 import { Badge, StatusBadge } from "@/components/ui/misc";
@@ -128,11 +129,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
           Back to cars
         </Link>
 
-        <div className="mb-7"><p className="store-eyebrow">{specs.make || "Penman Autos"} · {specs.body_style || "Car details"}</p><h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-[#17231d] sm:text-5xl">{product.name}</h1></div>
+        <div className="mb-7"><p data-reveal className="store-eyebrow">{specs.make || "Penman Autos"} · {specs.body_style || "Car details"}</p><h1 data-reveal-words className="mt-2 font-display text-3xl font-semibold tracking-tight text-[#17231d] sm:text-5xl"><MotionWords text={product.name} /></h1></div>
 
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <Gallery images={product.images ?? []} alt={product.name} />
+            <div data-reveal><Gallery images={product.images ?? []} alt={product.name} /></div>
 
             <div className="mt-10">
               <div className="flex flex-wrap items-center gap-2">
@@ -249,7 +250,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
           <aside className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
-              <div className="rounded-[1.6rem] border border-black/10 bg-white p-6 shadow-[0_12px_36px_rgba(18,32,26,0.06)] sm:p-7">
+              <div data-reveal style={{ transitionDelay: "140ms" }} className="rounded-[1.6rem] border border-black/10 bg-white p-6 shadow-[0_12px_36px_rgba(18,32,26,0.06)] sm:p-7">
                 <p className="store-eyebrow">{product.is_reference ? "Model reference" : "Vehicle listing"}</p>
                 <p className="mt-2 font-display text-3xl font-semibold text-[#17231d]">{product.is_reference || !product.price ? "Ask for price" : formatCurrency(product.price, product.currency)}</p>
                 <p className="mt-2 text-sm text-black/55">{product.is_reference ? "Tell us the year and specification you want. We’ll discuss sourcing options." : "Ask us to confirm this car’s availability and next steps."}</p>
@@ -274,7 +275,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
             </div>
           </aside>
         </div>
-        {related.length > 0 && <section className="mt-20 border-t border-black/10 pt-12"><div className="mb-7 flex items-end justify-between gap-4"><div><p className="store-eyebrow">Keep exploring</p><h2 className="store-heading mt-2">You may also like</h2></div><Link href="/shop/cars" className="store-text-link">All cars <ArrowLeft className="h-4 w-4 rotate-180" /></Link></div><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{related.map((item) => <ProductCard key={item.id} product={item} />)}</div></section>}
+        {related.length > 0 && <section className="mt-20 border-t border-black/10 pt-12"><div className="mb-7 flex items-end justify-between gap-4"><div><p data-reveal className="store-eyebrow">Keep exploring</p><h2 data-reveal-words className="store-heading mt-2"><MotionWords text="You may also like" /></h2></div><Link href="/shop/cars" className="store-text-link">All cars <ArrowLeft className="h-4 w-4 rotate-180" /></Link></div><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{related.map((item, index) => <div key={item.id} data-reveal style={{ transitionDelay: `${index * 85}ms` }}><ProductCard product={item} /></div>)}</div></section>}
       </div>
     </article>
   );

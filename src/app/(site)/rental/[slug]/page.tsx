@@ -5,6 +5,7 @@ import { ArrowLeft, CalendarDays, Fuel, Settings2, Users } from "lucide-react";
 import { submitRentalEnquiry } from "@/app/actions/public";
 import { EnquiryForm, type EnquiryField } from "@/components/enquiry-form";
 import { Gallery } from "@/components/gallery";
+import { MotionWords } from "@/components/motion-words";
 import { Badge, StatusBadge } from "@/components/ui/misc";
 import { SaveButton } from "@/components/account/save-button";
 import { getVehicleBySlug } from "@/lib/queries";
@@ -104,12 +105,12 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           Back to all vehicles
         </Link>
 
-        <div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className="store-eyebrow">Penman Rentals · {vehicle.category}</p><h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-[#17231d] sm:text-5xl">{vehicle.name}</h1></div><SaveButton kind="vehicle" listingId={vehicle.id} title={vehicle.name} variant="inline" /></div>
+        <div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p data-reveal className="store-eyebrow">Penman Rentals · {vehicle.category}</p><h1 data-reveal-words className="mt-2 font-display text-3xl font-semibold tracking-tight text-[#17231d] sm:text-5xl"><MotionWords text={vehicle.name} /></h1></div><SaveButton kind="vehicle" listingId={vehicle.id} title={vehicle.name} variant="inline" /></div>
 
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-12">
           {/* ── Left: gallery + detail ── */}
           <div className="lg:col-span-7">
-            <Gallery images={vehicle.images ?? []} alt={vehicle.name} />
+            <div data-reveal><Gallery images={vehicle.images ?? []} alt={vehicle.name} /></div>
 
             <div className="mt-10">
               <div className="flex flex-wrap items-center gap-2">
@@ -157,7 +158,7 @@ export default async function VehicleDetailPage({ params }: PageProps) {
           {/* ── Right: enquiry ── */}
           <aside className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
-              <div className="rounded-[1.6rem] border border-black/10 bg-white p-7 shadow-[0_12px_36px_rgba(18,32,26,0.06)]">
+              <div data-reveal style={{ transitionDelay: "140ms" }} className="rounded-[1.6rem] border border-black/10 bg-white p-7 shadow-[0_12px_36px_rgba(18,32,26,0.06)]">
                 <p className="store-eyebrow">Rental enquiry</p><p className="mt-2 font-display text-3xl font-semibold text-[#17231d]">{priceLabel}</p><a href="#rental-enquiry" className="mt-5 inline-flex rounded-full bg-[#17231d] px-5 py-3 text-sm font-semibold text-white">Check availability</a>
                 <div id="rental-enquiry" className="mt-6 scroll-mt-32 border-t border-black/10 pt-6">
                 <h2 className="font-display text-2xl font-light tracking-tight">{vehicle.is_reference ? "Ask about a rental like this" : "Enquire about this vehicle"}</h2>

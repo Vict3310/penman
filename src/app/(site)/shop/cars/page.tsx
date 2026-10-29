@@ -6,6 +6,7 @@ import { ResultsSkeleton } from "@/components/catalogue-skeleton";
 import { ProductCard } from "@/components/cards";
 import { EmptyState, Pagination } from "@/components/ui/misc";
 import { DataModeNotice } from "@/components/data-mode-notice";
+import { MotionWords } from "@/components/motion-words";
 import { listProducts, type ProductFilters } from "@/lib/queries";
 import { isSupabaseConfigured } from "@/lib/env";
 import { buildQuery, readNumber, readPage, readSort, readString, type RawSearchParams } from "@/lib/search-params";
@@ -47,11 +48,11 @@ export default async function ShopCarsPage({ searchParams }: { searchParams: Pro
   return (
     <>
       <section className="mx-3 mt-3 rounded-[2rem] bg-[#17231d] sm:mx-5 py-10 text-white sm:py-14">
-        <div className="shell"><nav aria-label="Breadcrumb" className="mb-5 flex gap-2 text-xs text-white/55"><Link href="/shop" className="hover:text-white">Home</Link><span>/</span><span className="text-white">Shop cars</span></nav><p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#d9bb8a]">The catalogue</p><h1 className="mt-2 font-display text-4xl font-semibold tracking-tight sm:text-5xl">Find your next car.</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-white/70 sm:text-base">Browse performance, luxury and everyday favourites. Open a car to see its gallery and ask Penman about the exact vehicle you want.</p></div>
+        <div className="shell"><nav aria-label="Breadcrumb" className="mb-5 flex gap-2 text-xs text-white/55"><Link href="/shop" className="hover:text-white">Home</Link><span>/</span><span className="text-white">Shop cars</span></nav><p data-reveal className="text-xs font-semibold uppercase tracking-[0.24em] text-[#d9bb8a]">The catalogue</p><h1 data-reveal-words className="mt-2 font-display text-4xl font-semibold tracking-tight sm:text-5xl"><MotionWords text="Find your next car." /></h1><p data-reveal className="mt-3 max-w-2xl text-sm leading-6 text-white/70 sm:text-base" style={{ transitionDelay: "280ms" }}>Browse performance, luxury and everyday favourites. Open a car to see its gallery and ask Penman about the exact vehicle you want.</p></div>
       </section>
       <section className="shell py-8 sm:py-12">
         {!isSupabaseConfigured() && <div className="mb-6"><DataModeNotice context="The catalogue is read from your database." /></div>}
-        <form action="/shop/cars" className="rounded-[1.5rem] border border-black/10 bg-white p-4 shadow-[0_8px_30px_rgba(18,32,26,0.05)] sm:p-5" role="search">
+        <form data-reveal action="/shop/cars" className="rounded-[1.5rem] border border-black/10 bg-white p-4 shadow-[0_8px_30px_rgba(18,32,26,0.05)] sm:p-5" role="search" style={{ transitionDelay: "120ms" }}>
           <div className="grid gap-3 md:grid-cols-[1fr_200px_180px_auto] md:items-end">
             <label><span className="store-filter-label">Search by model</span><input type="search" name="q" defaultValue={filters.q ?? ""} placeholder="C300, GLE, Hellcat…" className="store-filter-input" /></label>
             <label><span className="store-filter-label">Make</span><select name="make" defaultValue={filters.make ?? ""} className="store-filter-input"><option value="">All makes</option>{MAKES.map((item) => <option key={item}>{item}</option>)}</select></label>
@@ -71,7 +72,7 @@ export default async function ShopCarsPage({ searchParams }: { searchParams: Pro
         </form>
         <Suspense fallback={<ResultsSkeleton columns={3} />}><ProductResults filters={filters} params={params} /></Suspense>
       </section>
-      <section className="border-t border-black/10 bg-[#f1eee7] py-12"><div className="shell flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"><div><p className="store-eyebrow">Need a specific car?</p><h2 className="mt-2 font-display text-2xl font-semibold">Tell us what to source.</h2></div><Link href="/shop/contact" className="store-text-link">Speak to Penman <ArrowRight className="h-4 w-4" /></Link></div></section>
+      <section className="border-t border-black/10 bg-[#f1eee7] py-12"><div className="shell flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"><div><p data-reveal className="store-eyebrow">Need a specific car?</p><h2 data-reveal-words className="mt-2 font-display text-2xl font-semibold"><MotionWords text="Tell us what to source." /></h2></div><Link data-reveal href="/shop/contact" className="store-text-link">Speak to Penman <ArrowRight className="h-4 w-4" /></Link></div></section>
     </>
   );
 }
@@ -79,5 +80,5 @@ export default async function ShopCarsPage({ searchParams }: { searchParams: Pro
 async function ProductResults({ filters, params }: { filters: ProductFilters; params: RawSearchParams }) {
   const result = await listProducts(filters);
   if (!result.items.length) return <div className="mt-8"><EmptyState title="No cars match those filters" description="Try a broader search or tell Penman what you are looking for." action={{ href: "/shop/contact", label: "Ask Penman" }} /></div>;
-  return <div className="mt-7"><div className="mb-5 flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-black/60"><strong className="text-[#17231d]">{result.total}</strong> car{result.total === 1 ? "" : "s"} found</p><p className="text-xs text-black/45">Browse details · Save favourites · Enquire directly</p></div><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{result.items.map((product) => <ProductCard key={product.id} product={product} />)}</div><Pagination page={result.page} pageCount={result.pageCount} buildHref={(page) => `/shop/cars${buildQuery(params, { page: String(page) })}`} /></div>;
+  return <div className="mt-7"><div className="mb-5 flex flex-wrap items-center justify-between gap-3"><p className="text-sm text-black/60"><strong className="text-[#17231d]">{result.total}</strong> car{result.total === 1 ? "" : "s"} found</p><p className="text-xs text-black/45">Browse details · Save favourites · Enquire directly</p></div><div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{result.items.map((product, index) => <div key={product.id} data-reveal style={{ transitionDelay: `${Math.min(index, 5) * 85}ms` }}><ProductCard product={product} /></div>)}</div><Pagination page={result.page} pageCount={result.pageCount} buildHref={(page) => `/shop/cars${buildQuery(params, { page: String(page) })}`} /></div>;
 }

@@ -36,20 +36,40 @@ export function MotionProvider() {
               ? Number.parseFloat(rawDelay) * 1000
               : 0;
 
+          const start = Number.isFinite(delay) ? Math.max(0, delay) : 0;
+          const words = element.querySelectorAll<HTMLElement>("[data-motion-word]");
+          if (words.length > 0) {
+            words.forEach((word, index) => {
+              word.animate(
+                [
+                  { opacity: 0, transform: "translateY(0.7em)", filter: "blur(7px)" },
+                  { opacity: 1, transform: "translateY(0)", filter: "blur(0)" },
+                ],
+                {
+                  duration: 720,
+                  delay: start + Math.min(index, 12) * 72,
+                  easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+                  fill: "both",
+                },
+              );
+            });
+            continue;
+          }
+
           element.animate(
             panel
               ? [
-                  { transform: "translateY(6%) scale(1.035)" },
-                  { transform: "translateY(0) scale(1)" },
+                  { opacity: 0.65, transform: "translateY(3%) scale(1.08)" },
+                  { opacity: 1, transform: "translateY(0) scale(1)" },
                 ]
               : [
-                  { opacity: 0.5, transform: "translateY(20px)", filter: "blur(4px)" },
+                  { opacity: 0.15, transform: "translateY(24px)", filter: "blur(5px)" },
                   { opacity: 1, transform: "translateY(0)", filter: "blur(0)" },
                 ],
             {
-              duration: panel ? 900 : 650,
-              delay: Number.isFinite(delay) ? Math.max(0, delay) : 0,
-              easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+              duration: panel ? 1200 : 720,
+              delay: start,
+              easing: "cubic-bezier(0.16, 1, 0.3, 1)",
               fill: "both",
             },
           );

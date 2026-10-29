@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { MotionWords } from "@/components/motion-words";
 
 export function PageHeader({
   eyebrow,
@@ -27,11 +28,11 @@ export function PageHeader({
           data-reveal-words
           className="max-w-3xl font-display text-4xl font-light leading-[1.02] tracking-tighter sm:text-6xl"
         >
-          {title}
+          <MotionWords text={title} />
           {emphasis && (
             <>
               {" "}
-              <em className="font-serif font-normal italic">{emphasis}</em>
+              <em className="font-serif font-normal italic"><MotionWords text={emphasis} /></em>
             </>
           )}
         </h1>

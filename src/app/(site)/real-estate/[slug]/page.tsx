@@ -5,6 +5,7 @@ import { ArrowLeft, Bath, BedDouble, Check, MapPin, Ruler } from "lucide-react";
 import { submitPropertyEnquiry } from "@/app/actions/public";
 import { EnquiryForm, type EnquiryField } from "@/components/enquiry-form";
 import { Gallery } from "@/components/gallery";
+import { MotionWords } from "@/components/motion-words";
 import { Badge, StatusBadge } from "@/components/ui/misc";
 import { SaveButton } from "@/components/account/save-button";
 import { getPropertyBySlug } from "@/lib/queries";
@@ -104,11 +105,11 @@ export default async function PropertyDetailPage({ params }: PageProps) {
           Back to all listings
         </Link>
 
-        <div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p className="store-eyebrow">Penman Real Estate · {property.property_type}</p><h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-[#17231d] sm:text-5xl">{property.title}</h1></div><SaveButton kind="property" listingId={property.id} title={property.title} variant="inline" /></div>
+        <div className="mb-7 flex flex-wrap items-end justify-between gap-4"><div><p data-reveal className="store-eyebrow">Penman Real Estate · {property.property_type}</p><h1 data-reveal-words className="mt-2 font-display text-3xl font-semibold tracking-tight text-[#17231d] sm:text-5xl"><MotionWords text={property.title} /></h1></div><SaveButton kind="property" listingId={property.id} title={property.title} variant="inline" /></div>
 
         <div className="grid grid-cols-1 gap-14 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <Gallery images={property.images ?? []} alt={property.title} />
+            <div data-reveal><Gallery images={property.images ?? []} alt={property.title} /></div>
 
             <div className="mt-10">
               <div className="flex flex-wrap items-center gap-2">
@@ -172,7 +173,7 @@ export default async function PropertyDetailPage({ params }: PageProps) {
 
           <aside className="lg:col-span-5">
             <div className="lg:sticky lg:top-28">
-              <div className="rounded-[1.6rem] border border-black/10 bg-white p-7 shadow-[0_12px_36px_rgba(18,32,26,0.06)]">
+              <div data-reveal style={{ transitionDelay: "140ms" }} className="rounded-[1.6rem] border border-black/10 bg-white p-7 shadow-[0_12px_36px_rgba(18,32,26,0.06)]">
                 <p className="store-eyebrow">Property enquiry</p><p className="mt-2 font-display text-3xl font-semibold text-[#17231d]">{priceLabel}</p><a href="#property-enquiry" className="mt-5 inline-flex rounded-full bg-[#17231d] px-5 py-3 text-sm font-semibold text-white">{property.is_reference ? "Ask about similar homes" : "Arrange a viewing"}</a>
                 <div id="property-enquiry" className="mt-6 scroll-mt-32 border-t border-black/10 pt-6">
                 <h2 className="font-display text-2xl font-light tracking-tight">{property.is_reference ? "Find a home like this" : "Enquire about this property"}</h2>
